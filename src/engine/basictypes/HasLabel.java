@@ -2,10 +2,10 @@ package engine.basictypes;
 
 import java.util.Optional;
 
-public interface HasLabel {
+public interface HasLabel{
     String getLabel();
+    HasLabel myClone(); // Returns a clone of the object with the same label
 
-    @Override
     String toString() ;
 
     default boolean equals(HasLabel hl){
@@ -15,13 +15,4 @@ public interface HasLabel {
         String otherLabel = hl.getLabel(); // Get label of hl
         return thisLabel == null ? otherLabel == null : thisLabel.equals(otherLabel); // Compare labels
     }// Returns the label associated with the object
-    default HasLabel clone(){
-        if (this instanceof Label) {
-            return new Label(this.getLabel());
-        } else {
-            return FixedLabel.valueOf(this.getLabel().toUpperCase());
-        }
-    }
-
-
 }

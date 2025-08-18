@@ -20,6 +20,11 @@ public enum FixedLabel implements HasLabel {
         return label;
     }
 
+    @Override
+    public HasLabel myClone(){
+        return this;
+    }
+
     // Optional: custom label-based equality
     public boolean equalsLabel(HasLabel other) {
         if (other == null) return false;

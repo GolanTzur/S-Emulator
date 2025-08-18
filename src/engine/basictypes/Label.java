@@ -25,4 +25,8 @@ public class Label implements HasLabel {
     public String toString() {
         return label;
     }
+    @Override
+    public HasLabel myClone() {
+            return new Label(label);
+    }
 }

@@ -1,19 +1,24 @@
 package engine.basictypes;
 
 public enum InstructionType implements AbstractInstructionType {
-    Increase("INCREASE"),
-    Decrease("DECREASE"),
-    Assignment("ASSIGNMENT"), // Increment the value of a variable
-    Neutral("NEUTRAL"), // No operation, used for empty labels
-    Jumpnotzero("JUMPNOTZERO"), // Jump if the value is not zero
-    Gotolabel("GOTOLABEL"), // Jump to a specific label
-    Zerovar("ZEROVAR"); // Set a variable to zero variable to zero
+    Increase("INCREASE",1),
+    Decrease("DECREASE",1),
+    Neutral("NEUTRAL",0),
+    Jumpnotzero("JUMPNOTZERO",2);
 
     private final String name;
-    InstructionType(String name) {
+    private final int cycles; // Number of cycles for the instruction type
+    InstructionType(String name,int cycles) {
         this.name = name; // Initialize the name of the instruction type
+        this.cycles = cycles; // Initialize the number of cycles for the instruction type
     }
     public String getTypeName() {
         return name; // Getter for the name of the instruction type
+    }
+    public int getDegree() {
+        return 1; // Default degree for basic instruction types
+    }
+    public int getCycles() {
+        return cycles; // Getter for the number of cycles of the instruction type
     }
 }
