@@ -4,11 +4,11 @@ import engine.basictypes.*;
 public class JumpNotZero extends Instruction implements HasGotoLabel {
     private HasLabel gotoLabel;
     public JumpNotZero(HasLabel label,Variable value,HasLabel gotoLabel) {
-        super(label, InstructionType.Jumpnotzero,value,2);
+        super(label, InstructionType.Jumpnotzero,value);
         this.gotoLabel = gotoLabel; // Initialize gotoLabel
     }
     public JumpNotZero(Variable value, HasLabel gotoLabel) {
-        super(InstructionType.Jumpnotzero,value,2);
+        super(InstructionType.Jumpnotzero,value);
         this.gotoLabel = gotoLabel; // Initialize gotoLabel
     }
 
@@ -24,7 +24,7 @@ public class JumpNotZero extends Instruction implements HasGotoLabel {
     public String toString() {
         String parentPrefix = super.toString();
         String childPart = String.format("IF %s != 0 GOTO %s", var, gotoLabel);
-        String parentSuffix = String.format("(%d)", cycles);
+        String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
 

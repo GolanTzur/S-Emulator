@@ -13,11 +13,11 @@ public class ConstAssignment extends SyntheticSugar {
     private int arg;// Variable to be decremented
 
     public ConstAssignment(HasLabel lab, Variable value,int arg) {
-        super(lab, 2, SyntheticType.ConstAssignment,value);
+        super(lab,SyntheticType.ConstAssignment,value);
         this.arg = arg;
     }
     public ConstAssignment(Variable value,int arg) {
-        super(2, SyntheticType.ConstAssignment,value);
+        super( SyntheticType.ConstAssignment,value);
         this.arg = arg;
     }
     public ArrayList<AbstractInstruction> expand() {
@@ -32,7 +32,7 @@ public class ConstAssignment extends SyntheticSugar {
     public String toString() {
         String parentPrefix = super.toString();
         String childPart = String.format("%s <- %d", var, arg);
-        String parentSuffix = String.format("(%d)", cycles);
+        String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
 

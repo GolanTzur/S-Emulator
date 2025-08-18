@@ -8,10 +8,10 @@ import engine.basictypes.*;
 public class ZeroVar extends SyntheticSugar{
 
     public ZeroVar(HasLabel lab, Variable value) {
-         super(lab, 1, SyntheticType.ZeroVar,value);
+         super(lab, SyntheticType.ZeroVar,value);
     }
     public ZeroVar(Variable value) {
-        super(1, SyntheticType.ZeroVar,value);
+        super(SyntheticType.ZeroVar,value);
     }
     public ArrayList<AbstractInstruction> expand() {
         HasLabel firstLabel = this.lab.myClone();
@@ -25,7 +25,7 @@ public class ZeroVar extends SyntheticSugar{
     public String toString() {
         String parentPrefix = super.toString();
         String childPart = String.format("%s <- 0", var);
-        String parentSuffix = String.format("(%d)", cycles);
+        String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
 

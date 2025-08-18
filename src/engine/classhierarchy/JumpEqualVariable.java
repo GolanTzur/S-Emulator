@@ -11,12 +11,12 @@ public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
     private HasLabel gotoLabel;
 
     public JumpEqualVariable(HasLabel lab, Variable value,Variable arg, HasLabel gotoLabel) {
-        super(lab, 2, SyntheticType.JumpEqualVariable,value);
+        super(lab, SyntheticType.JumpEqualVariable,value);
         this.arg = arg;
         this.gotoLabel = gotoLabel; // Initialize gotoLabel
     }
     public JumpEqualVariable(Variable value,Variable arg,HasLabel gotoLabel) {
-        super(2, SyntheticType.JumpEqualVariable,value);
+        super(SyntheticType.JumpEqualVariable,value);
         this.arg = arg;
         this.gotoLabel = gotoLabel; // Initialize gotoLabel
     }
@@ -46,7 +46,7 @@ public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
     public String toString() {
         String parentPrefix = super.toString();
         String childPart = String.format("IF %s = %s GOTO %s", var,arg, gotoLabel);
-        String parentSuffix = String.format("(%d)", cycles);
+        String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
 }

@@ -9,11 +9,11 @@ import java.util.Optional;
 public abstract class SyntheticSugar extends AbstractInstruction {
     protected ArrayList<AbstractInstruction> commands;
 
-    public SyntheticSugar(HasLabel label,int numcycles,SyntheticType st,Variable var) {
-        super(label, st,var ,numcycles);
+    public SyntheticSugar(HasLabel label,SyntheticType st,Variable var) {
+        super(label, st,var);
     }
-    public SyntheticSugar(int numcycles, SyntheticType st, Variable var) {
-        super(st, var,numcycles);
+    public SyntheticSugar( SyntheticType st, Variable var) {
+        super(st, var);
     }
     public ArrayList<AbstractInstruction> getCommands() {
         return commands; // Getter for commands
@@ -22,8 +22,8 @@ public abstract class SyntheticSugar extends AbstractInstruction {
     @Override
     public String toString() {
         return Optional.ofNullable(this.source)
-                .map(src -> String.format("%s <<< (S) [%-3s]", src, this.lab))
-                .orElse(String.format("(S) [%-3s]", this.lab));
+                .map(src -> String.format("%s <<< #%d (S) [%-3s]",src,this.pos,this.lab))
+                .orElse(String.format(" #%d (S) [%-3s]", this.pos,this.lab));
     }
 
     public abstract ArrayList<AbstractInstruction> expand();

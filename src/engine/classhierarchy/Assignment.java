@@ -9,11 +9,11 @@ public class Assignment extends SyntheticSugar{
     private Variable arg;// Variable to be decremented
 
     public Assignment(HasLabel lab, Variable value, Variable arg) {
-        super(lab, 4, SyntheticType.Assignment,value);
+        super(lab,SyntheticType.Assignment,value);
         this.arg = arg;
     }
     public Assignment(Variable value,Variable arg) {
-        super(4, SyntheticType.Assignment,value);
+        super(SyntheticType.Assignment,value);
         this.arg = arg;
     }
     public ArrayList<AbstractInstruction> expand() {
@@ -40,7 +40,7 @@ public class Assignment extends SyntheticSugar{
     public String toString() {
         String parentPrefix = super.toString();
         String childPart = String.format("%s <- %s", var, arg);
-        String parentSuffix = String.format("(%d)", cycles);
+        String parentSuffix = String.format("(%d)",this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
 

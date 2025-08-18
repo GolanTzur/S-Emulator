@@ -1,9 +1,6 @@
 package engine;
 
-import engine.basictypes.FixedLabel;
-import engine.basictypes.HasLabel;
-import engine.basictypes.Label;
-import engine.basictypes.Variable;
+import engine.basictypes.*;
 import engine.classhierarchy.AbstractInstruction;
 import engine.classhierarchy.HasGotoLabel;
 import engine.classhierarchy.SyntheticSugar;
@@ -16,10 +13,14 @@ import java.util.Set;
 public class Program {
     private final String name;
     private ArrayList<AbstractInstruction> instructions;
+    private int programCounter = 0; // Program counter to track execution position
 
     public Program(String name,ArrayList<AbstractInstruction> instructions) {
         this.name = name;
         this.instructions = instructions;
+        for(AbstractInstruction instruction:instructions){
+            instruction.setPos(++programCounter);
+        }
     }
     public Variable execute() {
         new Runner(instructions).run();
@@ -51,6 +52,9 @@ public class Program {
             {
                 AbstractInstruction source;
                 ArrayList<AbstractInstruction> expandedInstructions = ((SyntheticSugar) currentInstruction).expand();
+                for(AbstractInstruction instruction:expandedInstructions){
+                    instruction.setPos(++programCounter); // Set position for each expanded instruction
+                }
                 source=instructions.remove(i);
                 allprogramlabels.remove(source.getLab());
                 if(source.getLab() instanceof Label) {
@@ -157,6 +161,18 @@ private void replaceLabels(ArrayList<AbstractInstruction> instructions, Set<Labe
     }
     public ArrayList<AbstractInstruction> getInstructions() {
         return instructions; // Getter for instructions
+    }
+    public int getProgramDegree(){
+        return this.instructions.stream().filter(instruction->instruction instanceof SyntheticSugar)
+                .max((a,b)->{
+                   int adeg= ((SyntheticType)((SyntheticSugar)a).getType()).getDegree();
+                   int bdeg= ((SyntheticType)((SyntheticSugar)b).getType()).getDegree();
+                     return Integer.compare(adeg, bdeg);
+                }).map(instruction -> ((SyntheticType)((SyntheticSugar)instruction).getType()).getDegree()).orElse(1); // Returns the maximum degree of synthetic sugars in the program);
+    }
+    public int getProgramCycles(){
+        return this.instructions.stream().mapToInt((instruction) -> instruction.getType().getCycles())
+                .sum(); // Returns the total cycles of all instructions in the program
     }
 
 }
