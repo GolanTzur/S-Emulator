@@ -9,14 +9,16 @@ public class GotoLabel extends SyntheticSugar implements HasGotoLabel {
 
     public GotoLabel(HasLabel lab, Variable value, HasLabel gotolabel) {
         super(lab, 1, SyntheticType.GotoLabel,value);
+        this.gotolabel = gotolabel; // Initialize gotolabel
     }
     public GotoLabel(Variable value, HasLabel gotolabel) {
         super(1, SyntheticType.GotoLabel,value);
+        this.gotolabel = gotolabel; // Initialize gotolabel
     }
     public ArrayList<AbstractInstruction> expand()
     {
-        this.commands=new ArrayList<>(List.of(new Increase(this.lab.clone(),this.var),// Call parent constructor with label and value
-                new JumpNotZero(this.var,gotolabel.clone())));
+        this.commands=new ArrayList<>(List.of(new Increase(this.lab.myClone(),this.var),// Call parent constructor with label and value
+                new JumpNotZero(this.var,gotolabel.myClone())));
         return commands; // Getter for commands
     }
 

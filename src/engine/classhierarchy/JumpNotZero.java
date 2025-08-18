@@ -19,7 +19,7 @@ public class JumpNotZero extends Instruction implements HasGotoLabel {
         this.gotoLabel = gotoLabel; // Setter for gotoLabel
     }
     public HasLabel evaluate(){
-        return this.var.getValue()==0 ? gotoLabel : FixedLabel.EMPTY;
+        return this.var.getValue()!=0 ? gotoLabel : FixedLabel.EMPTY;
     }
     public String toString() {
         String parentPrefix = super.toString();

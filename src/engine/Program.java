@@ -1,5 +1,7 @@
 package engine;
 
+import engine.basictypes.FixedLabel;
+import engine.basictypes.HasLabel;
 import engine.basictypes.Label;
 import engine.basictypes.Variable;
 import engine.classhierarchy.AbstractInstruction;
@@ -7,6 +9,8 @@ import engine.classhierarchy.HasGotoLabel;
 import engine.classhierarchy.SyntheticSugar;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class Program {
@@ -33,7 +37,7 @@ public class Program {
     }
     public void deployToDegree(int degree)
     {
-        for(int i=0;i<instructions.size();i++) {
+        for(int i=0;i<degree;i++) {
             deploy();
         }
     }
@@ -45,47 +49,114 @@ public class Program {
             AbstractInstruction currentInstruction = instructions.get(i);
             if(currentInstruction instanceof SyntheticSugar)
             {
+                AbstractInstruction source;
                 ArrayList<AbstractInstruction> expandedInstructions = ((SyntheticSugar) currentInstruction).expand();
-                instructions.remove(i);
+                source=instructions.remove(i);
+                allprogramlabels.remove(source.getLab());
+                if(source.getLab() instanceof Label) {
+                    removeFirstLabelCollisions((Label) source.getLab(), expandedInstructions, allprogramlabels);
+                }// Remove label collisions in the expanded instructions
                 replaceLabels(expandedInstructions, allprogramlabels); // Replace labels in the expanded instructions if needed
                 instructions.addAll(i, expandedInstructions); // Replace the synthetic sugar with its expanded instructions
-                i += expandedInstructions.size() - 1; // Adjust index to account for added instructions
+                expandedInstructions.forEach(instruction->instruction.setSyntheticSource(source));// Set the source for each expanded instruction
+                i += expandedInstructions.size()-1; // Adjust index to account for added instructions
             }
         }
     }
-    private void replaceLabels(ArrayList<AbstractInstruction> instructions, Set<Label> allprogramlabels) {
-        int nextIndexLabel=1;
-        Label nextLabel=new Label("L"+nextIndexLabel); //Searching for available labels in the program
 
-        for (AbstractInstruction instruction : instructions) {
-            if (instruction.getLab() instanceof Label) {
-                Label label = (Label) instruction.getLab();
-                if (allprogramlabels.contains(label)) {
-                    while (!allprogramlabels.contains(nextLabel)) {
-                        nextIndexLabel++; // Increment the label index until an unused label is found
-                        nextLabel = new Label("L" + nextIndexLabel); // Create a new label
-                    }
-                    instruction.setLab(nextLabel); // Replace the label in the instruction
+    private boolean labelExistsInInstructions(Label label, ArrayList<AbstractInstruction> instructions) {
+        for (int i=1; i < instructions.size(); i++) {
+            if (label.equals(instructions.get(i).getLab())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-                    for (AbstractInstruction instr : instructions) {
-                        if (instr.getLab().equals(label)) {
-                            instr.setLab(nextLabel); // Update all instructions with the same label
-                        }
-                        if(instr instanceof HasGotoLabel){
-                            HasGotoLabel gotoLabel = (HasGotoLabel) instr;
-                            if (gotoLabel.getGotolabel().equals(label)) {
-                                gotoLabel.setGotolabel(nextLabel); // Update the gotolabel if it matches the current label
-                            }
-                        }
-                    }
-                    allprogramlabels.add(nextLabel);
-                    nextIndexLabel++;
-                }
+
+private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractInstruction> expandedInstructions, Set<Label> allprogramlabels) {
+
+    Label labelToAssign = parentLabel;
+    if (labelExistsInInstructions(parentLabel, expandedInstructions)) {
+        int nextIndexLabel = 0;
+        Label tempLabel;
+        do {
+            tempLabel = new Label("L" + nextIndexLabel++);
+        } while (allprogramlabels.contains(tempLabel) ||
+                labelExistsInInstructions(tempLabel, expandedInstructions));
+        labelToAssign = tempLabel;
+
+
+        for (int j = 1; j < expandedInstructions.size(); j++) {
+            AbstractInstruction instr = expandedInstructions.get(j);
+            if (instr.getLab() instanceof Label && instr.getLab().equals(parentLabel)) {
+                instr.setLab(labelToAssign.myClone());
+            }
+            if(instr instanceof HasGotoLabel && ((HasGotoLabel) instr).getGotolabel().equals(parentLabel)) {
+                if(expandedInstructions.get(0).getLab().equals(parentLabel)) {}
+                ((HasGotoLabel) instr).setGotolabel(labelToAssign.myClone());
+            }
+        }
+
+        for (int j = 1; j < expandedInstructions.size(); j++) {
+            AbstractInstruction instr = expandedInstructions.get(j);
+            if (instr.getLab() instanceof Label && instr.getLab().equals(parentLabel)) {
+                instr.setLab(labelToAssign.myClone());
+            }
+            if(instr instanceof HasGotoLabel && ((HasGotoLabel) instr).getGotolabel().equals(parentLabel)) {
+                if(expandedInstructions.get(0).getLab().equals(parentLabel)) {}
+                ((HasGotoLabel) instr).setGotolabel(labelToAssign.myClone());
             }
         }
     }
+    }
+
+private void replaceLabels(ArrayList<AbstractInstruction> instructions, Set<Label> allprogramlabels) {
+    Map<Label, Label> labelMap = new HashMap<>();
+    int nextIndexLabel = 0;
+
+    // Find all labels to replace
+    for (AbstractInstruction instruction : instructions) {
+        if (instruction.getLab() instanceof Label) {
+            Label label = (Label) instruction.getLab();
+            if (allprogramlabels.contains(label)) {
+                Label nextLabel;
+                do {
+                    nextLabel = new Label("L" + nextIndexLabel++);
+                } while (allprogramlabels.contains(nextLabel));
+                labelMap.put(label, nextLabel);
+                allprogramlabels.add(nextLabel);
+            }
+        }
+    }
+
+    // Replace labels and goto targets
+    for (AbstractInstruction instruction : instructions) {
+        if (instruction.getLab() instanceof Label && labelMap.containsKey(instruction.getLab())) {
+            instruction.setLab(labelMap.get(instruction.getLab()));
+        }
+        if (instruction instanceof HasGotoLabel) {
+            HasGotoLabel gotoLabel = (HasGotoLabel) instruction;
+            if (labelMap.containsKey(gotoLabel.getGotolabel())) {
+                gotoLabel.setGotolabel(labelMap.get(gotoLabel.getGotolabel()));
+            }
+        }
+    }
+}
     public String getName() {
         return name; // Getter for program name
+    }
+    @Override
+    public String toString()
+    {
+        String res="";
+        for(AbstractInstruction instruction : instructions) {
+            res += instruction.toString() + "\n"; // Concatenate string representations of all instructions
+        }
+        return res; // Return the string representation of the program
+    }
+    public ArrayList<AbstractInstruction> getInstructions() {
+        return instructions; // Getter for instructions
     }
 
 }

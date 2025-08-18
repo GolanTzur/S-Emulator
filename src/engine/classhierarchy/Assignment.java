@@ -23,7 +23,7 @@ public class Assignment extends SyntheticSugar{
         Variable helper=it.next();
 
         ArrayList<AbstractInstruction> tempCommands = new ArrayList<>();
-        tempCommands.add(new ZeroVar(this.lab.clone(), this.var));
+        tempCommands.add(new ZeroVar(this.lab.myClone(), this.var));
         tempCommands.add(new JumpNotZero(arg, new Label("L1")));
         tempCommands.add(new GotoLabel(gotolabelarg, new Label("L3")));
         tempCommands.add(new Decrease(new Label("L1"), arg));

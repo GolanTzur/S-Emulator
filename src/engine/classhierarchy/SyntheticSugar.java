@@ -4,6 +4,7 @@ import engine.Runner;
 import engine.basictypes.*;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public abstract class SyntheticSugar extends AbstractInstruction {
     protected ArrayList<AbstractInstruction> commands;
@@ -18,8 +19,11 @@ public abstract class SyntheticSugar extends AbstractInstruction {
         return commands; // Getter for commands
     }
 
+    @Override
     public String toString() {
-            return String.format("(S)"+"[%3s]",this.lab);
+        return Optional.ofNullable(this.source)
+                .map(src -> String.format("%s <<< (S) [%-3s]", src, this.lab))
+                .orElse(String.format("(S) [%-3s]", this.lab));
     }
 
     public abstract ArrayList<AbstractInstruction> expand();
@@ -32,5 +36,6 @@ public abstract class SyntheticSugar extends AbstractInstruction {
         }
         return new Runner(this.commands).run();
     }
+
 
 }

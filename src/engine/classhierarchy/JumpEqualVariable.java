@@ -26,14 +26,14 @@ public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
         Variable z1 = it.next();
         Variable z2 = it.next();
         Variable z3 = it.next();
-        this.commands.add(new Assignment(this.lab.clone(), z1, this.var));
+        this.commands.add(new Assignment(this.lab.myClone(), z1, this.var));
         this.commands.add(new Assignment(z2, arg));
         this.commands.add(new JumpZero(new Label("L2"), z3, new Label("L3")));
         this.commands.add(new JumpZero(z2, new Label("L1")));
         this.commands.add(new Decrease(z1));
         this.commands.add(new Decrease(z2));
         this.commands.add(new GotoLabel(z3, new Label("L2")));
-        this.commands.add(new JumpZero(new Label("L3"), z2, gotoLabel.clone()));
+        this.commands.add(new JumpZero(new Label("L3"), z2, gotoLabel.myClone()));
         this.commands.add(new Neutral(new Label("L1"), ProgramVars.y));
         return commands; // Getter for commands
     }

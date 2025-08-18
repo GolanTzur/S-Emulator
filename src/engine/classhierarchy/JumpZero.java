@@ -21,7 +21,7 @@ public class JumpZero extends SyntheticSugar implements HasGotoLabel {
         Iterator<Variable> getz=ProgramVars.getZinputs(1).iterator();
         ArrayList<AbstractInstruction> tempCommands = new ArrayList<>();
         tempCommands.add(new JumpNotZero(this.var, new Label("L1")));
-        tempCommands.add(new GotoLabel(getz.next(), gotoLabel.clone()));
+        tempCommands.add(new GotoLabel(getz.next(), gotoLabel.myClone()));
         tempCommands.add(new Neutral(new Label("L1"),ProgramVars.y));
         this.commands = tempCommands;
         return commands; // Getter for commands

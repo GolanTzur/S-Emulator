@@ -14,7 +14,9 @@ public class Decrease extends Instruction {
     }
     @Override
     public HasLabel evaluate(){
-        this.var.setValue(this.var.getValue()-1);
+       if(this.var.getValue() > 0) {
+            this.var.setValue(this.var.getValue() - 1);
+       }
         return FixedLabel.EMPTY;
     }
     public String toString() {

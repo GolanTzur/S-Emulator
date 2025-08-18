@@ -8,6 +8,7 @@ public abstract class AbstractInstruction implements Evaluable {
     protected final AbstractInstructionType type;
     protected Variable var;
     protected final int cycles;
+    protected SyntheticSugar source; // For synthetic instructions
 
     public AbstractInstruction(HasLabel label,AbstractInstructionType ait,Variable var, int cycles) {
         this.lab = label; // Default to an empty label
@@ -39,6 +40,14 @@ public abstract class AbstractInstruction implements Evaluable {
 
     public AbstractInstructionType getType() {
         return type;
+    }
+    public void setSyntheticSource(AbstractInstruction source) {
+        if(source != null && (source instanceof SyntheticSugar)) {
+            this.source = (SyntheticSugar)source;
+        }
+        else {
+            throw new RuntimeException(source.type+" is not a SyntheticSugar");
+        }
     }
 
 }
