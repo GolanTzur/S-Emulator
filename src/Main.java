@@ -16,7 +16,7 @@ public class Main {
            new Increase(new Label("L0"),ProgramVars.input.get(1)),
            new Assignment(new Label("L1"),ProgramVars.y,ProgramVars.input.get(1))
         ) ));
-        System.out.println("Cycles: "+p.getProgramCycles()+"Degree: "+p.getProgramDegree());
+        System.out.println("Cycles: "+p.getProgramCycles()+" Degree: "+p.getProgramDegree());
         System.out.println(p);
         p.deployToDegree(1);
         System.out.println(p);
