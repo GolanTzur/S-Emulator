@@ -38,7 +38,7 @@ public class Variable {
         return this.type.getRepresentation(position);
     }
 
-    public static Variable createOrGetNewVar(VariableType it,int pos) {
+    public static Variable createOrGetNewVar(VariableType it,int pos) { // Factory method to create or get an existing variable
         switch (it) {
             case INPUT:
                 ProgramVars.input.putIfAbsent(pos, new Variable(VariableType.INPUT, pos));

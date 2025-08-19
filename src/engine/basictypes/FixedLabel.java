@@ -3,7 +3,8 @@ package engine.basictypes;
 
 public enum FixedLabel implements HasLabel {
     EXIT("exit"),
-    EMPTY("");
+    EMPTY(""),
+    DEFAULT("default");
 
     private final String label;
 

@@ -49,5 +49,8 @@ public abstract class AbstractInstruction implements Evaluable {
     public void setPos(int pos) {
         this.pos = pos;
     }
+    public SyntheticSugar getSource() {
+        return source;
+    }
 
 }

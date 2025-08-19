@@ -16,7 +16,7 @@ public class ZeroVar extends SyntheticSugar{
     public ArrayList<AbstractInstruction> expand() {
         HasLabel firstLabel = this.lab.myClone();
         if(lab==FixedLabel.EMPTY) { //the first label cant be empty
-         firstLabel=new Label("L0");
+         firstLabel=FixedLabel.DEFAULT;
         }
         this.commands=new ArrayList<>(List.of(new Decrease(firstLabel.myClone(),this.var),
                 new JumpNotZero(this.var,firstLabel.myClone())));
