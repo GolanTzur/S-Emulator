@@ -11,9 +11,8 @@ import java.util.List;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        ProgramVars.input.put(1, new Variable(VariableType.INPUT,1));
         Program p=new Program("TestProgram",new ArrayList<AbstractInstruction>(List.of(
-           new Increase(new Label("L0"),ProgramVars.input.get(1)),
+           new Increase(new Label("L0"),Variable.createOrGetNewVar(VariableType.INPUT,1)),
            new Assignment(new Label("L1"),ProgramVars.y,ProgramVars.input.get(1))
         ) ));
         System.out.println("Cycles: "+p.getProgramCycles()+" Degree: "+p.getProgramDegree());

@@ -1,16 +1,21 @@
 package engine.basictypes;
 
+import engine.ProgramVars;
+
+import java.util.Optional;
+
 public class Variable {
     private final VariableType type;
     private int value;
     private final int position; //Position in the list of variables
 
-    public Variable(int value,int pos,VariableType type) {
-        this.position = pos; //Constructor initializes position
-        this.value = value;
-        this.type = type; //Constructor initializes value and typ
-    }
-    public Variable(VariableType type,int pos) {
+//    public Variable(int value,int pos,VariableType type) {
+//        this.position = pos; //Constructor initializes position
+//        this.value = value;
+//        this.type = type; //Constructor initializes value and typ
+//    } //No need since every variable has a default value of 0
+
+    private Variable(VariableType type,int pos) {
         this.position = pos; //Constructor initializes position
         this.value = 0; //Default value is 0
         this.type = type; //Constructor initializes type
@@ -33,5 +38,19 @@ public class Variable {
         return this.type.getRepresentation(position);
     }
 
+    public static Variable createOrGetNewVar(VariableType it,int pos) {
+        switch (it) {
+            case INPUT:
+                ProgramVars.input.putIfAbsent(pos, new Variable(VariableType.INPUT, pos));
+                return ProgramVars.input.get(pos);
+            case WORK:
+                ProgramVars.envvars.putIfAbsent(pos, new Variable(VariableType.WORK, pos));
+                return ProgramVars.envvars.get(pos);
+            default:
+                return ProgramVars.y==null ?
+                    new Variable(VariableType.RESULT, 0) :
+                    ProgramVars.y; // If y is null, create a new Variable of type RESULT at position 0
+        }
+    }
 
 }

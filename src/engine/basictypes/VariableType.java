@@ -1,8 +1,8 @@
 package engine.basictypes;
 
 public enum VariableType {
-    INPUT{
 
+    INPUT{
         public String getRepresentation(int number) {
             return "x" + number;
         }
@@ -17,7 +17,6 @@ public enum VariableType {
             return "z" + number;
         }
     };
-
 
      public abstract String getRepresentation(int number);
 }
