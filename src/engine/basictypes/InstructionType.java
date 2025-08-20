@@ -1,10 +1,10 @@
 package engine.basictypes;
 
 public enum InstructionType implements AbstractInstructionType {
-    Increase("INCREASE",1),
-    Decrease("DECREASE",1),
-    Neutral("NEUTRAL",0),
-    Jumpnotzero("JUMPNOTZERO",2);
+    INCREASE("INCREASE",1),
+    DECREASE("DECREASE",1),
+    NEUTRAL("NEUTRAL",0),
+    JUMP_NOT_ZERO("JUMPNOTZERO",2);
 
     private final String name;
     private final int cycles; // Number of cycles for the instruction type

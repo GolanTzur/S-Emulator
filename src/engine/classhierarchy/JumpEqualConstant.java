@@ -11,12 +11,12 @@ public class JumpEqualConstant extends SyntheticSugar implements HasGotoLabel {
     private HasLabel gotoLabel;
 
     public JumpEqualConstant(HasLabel lab, Variable value,int arg, HasLabel gotoLabel) {
-        super(lab, SyntheticType.JumpEqualConstant,value);
+        super(lab, SyntheticType.JUMP_EQUAL_CONSTANT,value);
         this.arg = arg;
         this.gotoLabel = gotoLabel; // Initialize gotoLabel
     }
     public JumpEqualConstant(Variable value,int arg,HasLabel gotoLabel) {
-        super( SyntheticType.JumpEqualConstant,value);
+        super( SyntheticType.JUMP_EQUAL_CONSTANT,value);
         this.arg = arg;
         this.gotoLabel = gotoLabel; // Initialize gotoLabel
     }

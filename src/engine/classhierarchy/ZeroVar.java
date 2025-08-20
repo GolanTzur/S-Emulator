@@ -8,10 +8,10 @@ import engine.basictypes.*;
 public class ZeroVar extends SyntheticSugar{
 
     public ZeroVar(HasLabel lab, Variable value) {
-         super(lab, SyntheticType.ZeroVar,value);
+         super(lab, SyntheticType.ZERO_VAR,value);
     }
     public ZeroVar(Variable value) {
-        super(SyntheticType.ZeroVar,value);
+        super(SyntheticType.ZERO_VAR,value);
     }
     public ArrayList<AbstractInstruction> expand() {
         HasLabel firstLabel = this.lab.myClone();

@@ -10,11 +10,11 @@ public class JumpZero extends SyntheticSugar implements HasGotoLabel {
     private HasLabel gotoLabel;// Variable to be decremented
 
     public JumpZero(HasLabel lab, Variable value,HasLabel gotoLabel) {
-        super(lab, SyntheticType.JumpZero,value);
+        super(lab, SyntheticType.JUMP_ZERO,value);
         this.gotoLabel = gotoLabel;
     }
     public JumpZero(Variable value,HasLabel gotoLabel) {
-        super(SyntheticType.JumpZero,value);
+        super(SyntheticType.JUMP_ZERO,value);
         this.gotoLabel = gotoLabel;
     }
     public ArrayList<AbstractInstruction> expand() {

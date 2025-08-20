@@ -5,11 +5,11 @@ import engine.basictypes.*;
 public class Decrease extends Instruction {
 
     public Decrease(HasLabel label,Variable value) {
-        super(label, InstructionType.Decrease,value);
+        super(label, InstructionType.DECREASE,value);
 
     }
     public Decrease(Variable value) {
-        super(InstructionType.Decrease,value);
+        super(InstructionType.DECREASE,value);
 
     }
     @Override

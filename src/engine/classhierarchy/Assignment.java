@@ -9,11 +9,11 @@ public class Assignment extends SyntheticSugar{
     private Variable arg;// Variable to be decremented
 
     public Assignment(HasLabel lab, Variable value, Variable arg) {
-        super(lab,SyntheticType.Assignment,value);
+        super(lab,SyntheticType.ASSIGNMENT,value);
         this.arg = arg;
     }
     public Assignment(Variable value,Variable arg) {
-        super(SyntheticType.Assignment,value);
+        super(SyntheticType.ASSIGNMENT,value);
         this.arg = arg;
     }
     public ArrayList<AbstractInstruction> expand() {

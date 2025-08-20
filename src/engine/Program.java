@@ -39,12 +39,12 @@ public class Program {
     }
     public void deployToDegree(int degree)
     {
-        for(int i=0;i<degree;i++) {
+        for(int i=1;i<degree;i++) {
             deploy();
         }
     }
 
-    public void deploy()
+    private void deploy()
     {
         Set<Label> allprogramlabels = getallprogramlabels();
         for(int i=0;i<instructions.size();i++){
@@ -207,5 +207,18 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         return this.instructions.stream().mapToInt((instruction) -> instruction.getType().getCycles())
                 .sum(); // Returns the total cycles of all instructions in the program
     }
+    public boolean checkValidity()
+    {
+        if(instructions==null) {
+            return true; // Program is invalid if it has no instructions
+        }
+        return instructions.stream().filter(instruction->instruction instanceof HasGotoLabel)
+                .map(instruction->((HasGotoLabel)instruction).getGotolabel())
+                .allMatch(label -> existsLabel(label)); // Check if all goto labels exist in the program
+    }
+    private boolean existsLabel(HasLabel label) {
+        return instructions.stream().anyMatch(instruction -> instruction.getLab().equals(label));
+    }
+
 
 }

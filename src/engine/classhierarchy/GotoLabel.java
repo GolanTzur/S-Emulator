@@ -8,11 +8,11 @@ public class GotoLabel extends SyntheticSugar implements HasGotoLabel {
     private  HasLabel gotolabel;
 
     public GotoLabel(HasLabel lab, Variable value, HasLabel gotolabel) {
-        super(lab, SyntheticType.GotoLabel,value);
+        super(lab, SyntheticType.GOTO_LABEL,value);
         this.gotolabel = gotolabel; // Initialize gotolabel
     }
     public GotoLabel(Variable value, HasLabel gotolabel) {
-        super( SyntheticType.GotoLabel,value);
+        super( SyntheticType.GOTO_LABEL,value);
         this.gotolabel = gotolabel; // Initialize gotolabel
     }
     public ArrayList<AbstractInstruction> expand()

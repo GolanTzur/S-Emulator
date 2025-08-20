@@ -11,12 +11,12 @@ public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
     private HasLabel gotoLabel;
 
     public JumpEqualVariable(HasLabel lab, Variable value,Variable arg, HasLabel gotoLabel) {
-        super(lab, SyntheticType.JumpEqualVariable,value);
+        super(lab, SyntheticType.JUMP_EQUAL_VARIABLE,value);
         this.arg = arg;
         this.gotoLabel = gotoLabel; // Initialize gotoLabel
     }
     public JumpEqualVariable(Variable value,Variable arg,HasLabel gotoLabel) {
-        super(SyntheticType.JumpEqualVariable,value);
+        super(SyntheticType.JUMP_EQUAL_VARIABLE,value);
         this.arg = arg;
         this.gotoLabel = gotoLabel; // Initialize gotoLabel
     }

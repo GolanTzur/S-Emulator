@@ -5,10 +5,10 @@ import engine.basictypes.*;
 public class Neutral extends Instruction {
 
     public Neutral(HasLabel label,Variable value) {
-        super(label, InstructionType.Decrease,value);
+        super(label, InstructionType.DECREASE,value);
     }
     public Neutral(Variable value) {
-        super(InstructionType.Decrease,value);
+        super(InstructionType.DECREASE,value);
     }
 
     public HasLabel evaluate(){

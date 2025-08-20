@@ -31,5 +31,26 @@ public class ProgramVars {
         }
         return res;
     }
+    public static String MytoString()
+    {
+        String res="";
+        Collection<Variable> inputs=input.values();
+        for(Variable var: inputs) {
+            res+=String.format("%s=%d ",var.toString(),var.getValue());
+        }
+
+        res+="\n";
+
+        Collection<Variable> envs=envvars.values();
+        for(Variable env: envs) {
+            res+=String.format("%s=%d ",env.toString(),env.getValue());
+        }
+
+        res+="\n";
+
+        res+=String.format("%s=%d ",y.toString(),y.getValue());
+        return res;
+    }
+
 
 }

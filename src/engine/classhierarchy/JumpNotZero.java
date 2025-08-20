@@ -4,11 +4,11 @@ import engine.basictypes.*;
 public class JumpNotZero extends Instruction implements HasGotoLabel {
     private HasLabel gotoLabel;
     public JumpNotZero(HasLabel label,Variable value,HasLabel gotoLabel) {
-        super(label, InstructionType.Jumpnotzero,value);
+        super(label, InstructionType.JUMP_NOT_ZERO,value);
         this.gotoLabel = gotoLabel; // Initialize gotoLabel
     }
     public JumpNotZero(Variable value, HasLabel gotoLabel) {
-        super(InstructionType.Jumpnotzero,value);
+        super(InstructionType.JUMP_NOT_ZERO,value);
         this.gotoLabel = gotoLabel; // Initialize gotoLabel
     }
 
