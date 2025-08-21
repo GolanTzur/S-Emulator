@@ -9,6 +9,7 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,20 @@ public class XMLHandler { // Singleton class to handle XML operations
         }
         return xhandler;
     }
+    public Program loadProgram(String fileName) throws Exception {
+        File file= getInputFile(fileName); // Loads the program from the XML file
+        if (file == null) {
+            throw new IllegalArgumentException("File not found or invalid file type: " + fileName);
+        }
+        try (InputStream inputStream = new FileInputStream(file)) {
+            SProgram sprogram = getSProgram(inputStream); // Gets the SProgram object from the XML file
+            return convertToProgram(sprogram); // Converts SProgram to Program object
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Error loading program from file: " + fileName, e);
+        }
+
+    }
     public File getInputFile(String fileName) {
         if(fileName.endsWith(".xml")==false) {
             return null;
@@ -37,7 +52,7 @@ public class XMLHandler { // Singleton class to handle XML operations
         }
         return res;
     }
-    public SProgram getProgram(InputStream file) {
+    public SProgram getSProgram(InputStream file) {
         if (file == null) {
             return null; // Returns the SProgram object from the XML file
         }
@@ -130,6 +145,7 @@ public class XMLHandler { // Singleton class to handle XML operations
                     throw new IllegalArgumentException("Unknown instruction type: " + sin.getType());
             }
         }
+        return new Program(name, instructions); // Returns a new Program object with the given name and instructions
     }
     public AbstractInstructionType getType(String typeName,String opName) throws IllegalArgumentException {
 

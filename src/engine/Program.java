@@ -6,10 +6,10 @@ import engine.classhierarchy.HasGotoLabel;
 import engine.classhierarchy.SyntheticSugar;
 import engine.classhierarchy.ZeroVar;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
 
 public class Program {
     private final String name;
@@ -207,18 +207,53 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         return this.instructions.stream().mapToInt((instruction) -> instruction.getType().getCycles())
                 .sum(); // Returns the total cycles of all instructions in the program
     }
-    public boolean checkValidity()
+    public void checkValidity() throws  Exception
     {
         if(instructions==null) {
-            return true; // Program is invalid if it has no instructions
+            throw new Exception("Program has not been initialized.");
         }
-        return instructions.stream().filter(instruction->instruction instanceof HasGotoLabel)
+                 instructions.stream().filter(instruction->instruction instanceof HasGotoLabel)
                 .map(instruction->((HasGotoLabel)instruction).getGotolabel())
-                .allMatch(label -> existsLabel(label)); // Check if all goto labels exist in the program
+                .filter(label -> !existsLabel(label))
+                .map(HasLabel::getLabel) // Check if all goto labels exist in the program
+                .findFirst().ifPresent(label -> {
+                    throw new IllegalArgumentException("Program has invalid goto label: " + label);
+                }); //All goto labels must exist in the program
+
     }
     private boolean existsLabel(HasLabel label) {
         return instructions.stream().anyMatch(instruction -> instruction.getLab().equals(label));
     }
+    public void setUserInput()
+    {
+        Collection<Variable> inputs = ProgramVars.input.values();
+        if(inputs.isEmpty())
+            return; // If there are no inputs, do nothing
+        System.out.println("Please enter the values for the following inputs: ");
+        for(Variable input : inputs) {
+            System.out.print(input+" ");
+        }
+        System.out.println();
+        String userinput;
+        try { // Read user input from the console
+            do {
+                userinput = new BufferedReader(new InputStreamReader(System.in)).readLine();
+            } while (!userinput.matches("^[0-9,]+$"));
+        }catch (IOException e) {
+        throw new RuntimeException("Error reading user input: " + e.getMessage());
+    }
+        String[] userinputs_splitted = userinput.split(","); // Split the input string by commas
+        int [] userinputs_toInt = new int[userinputs_splitted.length]; // Create an array to store the integer values of the inputs
+        for(String s : userinputs_splitted) {
+            userinputs_toInt[Arrays.asList(userinputs_splitted).indexOf(s)] = Integer.parseInt(s);
+        }
+        int i=0;
+        for(Variable input : inputs) {
+            input.setValue(userinputs_toInt[i++]);
+            if(i>=userinputs_toInt.length) break; // Break if all inputs have been set
+        }
+    }
+
 
 
 }

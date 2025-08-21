@@ -37,7 +37,7 @@ public class Main {
         File file = xmlHandler.getInputFile("C:\\Users\\Golan\\Desktop\\xmls\\badic.xml");
         try {
             InputStream is = new FileInputStream(file);
-            SProgram sProgram = xmlHandler.getProgram(is);
+            SProgram sProgram = xmlHandler.getSProgram(is);
             System.out.println(sProgram);
         }catch (FileNotFoundException e){}
 
