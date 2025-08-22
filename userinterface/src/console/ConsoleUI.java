@@ -52,9 +52,15 @@ public class ConsoleUI {
                         break;
                     }
                     int expansionsAvailable = program.getProgramDegree();
-                    int expansionsRequested;
+                    int expansionsRequested=-1;
                     do {
-                        expansionsRequested = new Scanner(System.in).nextInt();
+                        try {
+                            System.out.println("Enter expansion degree: " + expansionsAvailable);
+                            expansionsRequested = new Scanner(System.in).nextInt();
+                        } catch (Exception e) {
+                            System.out.println("Invalid input. Please enter a number.");
+                            continue;
+                        }
                     } while(expansionsRequested <0 || expansionsRequested > expansionsAvailable);
 
                     if(expansionsRequested != programCopy.getProgramDegree()){ // If the degree has changed, re-deploy the program
@@ -71,10 +77,15 @@ public class ConsoleUI {
                     }
                     int degree = program.getProgramDegree();
                     System.out.println("Available Degrees: " + degree);
-                    System.out.println("Select Expansion Degree: ");
-                    int selectedDegree;
+                    int selectedDegree=-1;
                     do {
-                        selectedDegree = new Scanner(System.in).nextInt();
+                        try {
+                            System.out.println("Select Expansion Degree: ");
+                            selectedDegree = new Scanner(System.in).nextInt();
+                        }catch (Exception e) {
+                            System.out.println("Invalid input. Please enter a number.");
+                            continue;
+                        }
                     } while(selectedDegree < 0  || selectedDegree > degree);
 
                     if(selectedDegree != programCopy.getProgramDegree()){ // If the degree has changed, re-deploy the program
@@ -82,7 +93,6 @@ public class ConsoleUI {
                         programCopy.deployToDegree(selectedDegree);
                     }
                     programCopy.setUserInput();
-                    programCopy.deployToDegree(selectedDegree);
                     programCopy.execute();
                     System.out.println("After Execution: ");
                     System.out.println(programCopy);

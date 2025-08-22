@@ -187,6 +187,16 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
     public String toString()
     {
         String res="";
+        res+="Program: "+name+"\n";
+        res+="Program Inputs: \n";
+        for(Variable input : ProgramVars.input.values()) {
+            res += input + " "; // Concatenate string representations of all input variables
+        }
+        res+="\nProgram Labels: \n";
+        for(Label label : getallprogramlabels()) {
+            res += label + " "; // Concatenate string representations of all labels
+        }
+        res+="\nProgram Instructions: \n";
         for(AbstractInstruction instruction : instructions) {
             res += instruction.toString() + "\n"; // Concatenate string representations of all instructions
         }
@@ -201,7 +211,8 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
                    int adeg= ((SyntheticType)((SyntheticSugar)a).getType()).getDegree();
                    int bdeg= ((SyntheticType)((SyntheticSugar)b).getType()).getDegree();
                      return Integer.compare(adeg, bdeg);
-                }).map(instruction -> ((SyntheticType)((SyntheticSugar)instruction).getType()).getDegree()).orElse(1); // Returns the maximum degree of synthetic sugars in the program);
+                }).map(instruction -> ((SyntheticType)((SyntheticSugar)instruction).getType()).getDegree())
+                .orElse(0); // Returns the maximum degree of synthetic sugars in the program);
     }
     public int getProgramCycles(){
         return this.instructions.stream().mapToInt((instruction) -> instruction.getType().getCycles())
@@ -252,6 +263,13 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
             input.setValue(userinputs_toInt[i++]);
             if(i>=userinputs_toInt.length) break; // Break if all inputs have been set
         }
+    }
+    public Program clone() {
+        ArrayList<AbstractInstruction> clonedInstructions = new ArrayList<>();
+        for (AbstractInstruction instruction : this.instructions) {
+            clonedInstructions.add(instruction.clone());
+        }
+        return new Program(this.name, clonedInstructions);
     }
 
 

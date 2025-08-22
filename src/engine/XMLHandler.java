@@ -182,12 +182,14 @@ public class XMLHandler { // Singleton class to handle XML operations
         return varName != null && varName.matches("^(x\\d+|z\\d+|y)+$"); // Checks if the variable name is valid
     }
     private HasLabel loadLabel(String labelName) throws IllegalArgumentException {
+        if (labelName == null||labelName.equals("")) {
+            return FixedLabel.EMPTY; // Returns an empty label
+        }
+
         if (labelName.toLowerCase() == "exit" ) {
             return FixedLabel.EXIT;
         }
-        if (labelName.equals("")|| labelName == null) {
-            return FixedLabel.EMPTY; // Returns an empty label
-        }
+
         return new Label(labelName); // Returns a new label with the given name
     }
     private String lookforValue(String field,List<SInstructionArgument> instructions) { // Looks for a specific field in the instruction arguments
