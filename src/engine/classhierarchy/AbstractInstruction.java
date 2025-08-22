@@ -1,5 +1,6 @@
 package engine.classhierarchy;
 
+import engine.ProgramVars;
 import engine.basictypes.*;
 
 public abstract class AbstractInstruction implements Evaluable,Cloneable {
@@ -53,8 +54,8 @@ public abstract class AbstractInstruction implements Evaluable,Cloneable {
         return source;
     }
 
-    @Override
-    public abstract AbstractInstruction clone();
+
+    public abstract AbstractInstruction clone(ProgramVars context);
     /*public AbstractInstruction clone() {
         try {
             AbstractInstruction copy = (AbstractInstruction) super.clone();

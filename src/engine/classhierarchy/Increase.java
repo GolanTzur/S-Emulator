@@ -24,7 +24,7 @@ public class Increase extends Instruction {
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
     @Override
-    public Increase clone() {
-        return new Increase(lab.myClone(),this.var);
+    public Increase clone(ProgramVars context) {
+        return new Increase(lab.myClone(),this.var.clone(context));
     }
 }

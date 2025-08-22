@@ -27,7 +27,7 @@ public class Decrease extends Instruction {
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
     @Override
-    public Decrease clone() {
-        return new Decrease(lab.myClone(),this.var);
+    public Decrease clone(ProgramVars context) {
+        return new Decrease(lab.myClone(),this.var.clone(context));
     }
 }

@@ -36,8 +36,8 @@ public class ConstAssignment extends SyntheticSugar {
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
     @Override
-    public ConstAssignment clone() {
-        return new ConstAssignment(this.var.clone(),this.arg);
+    public ConstAssignment clone(ProgramVars context) {
+        return new ConstAssignment(this.var.clone(context),this.arg);
     }
 
 }

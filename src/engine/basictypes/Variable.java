@@ -10,12 +10,6 @@ public class Variable implements Cloneable {
     private int value;
     private final int position; //Position in the list of variables
 
-//    public Variable(int value,int pos,VariableType type) {
-//        this.position = pos; //Constructor initializes position
-//        this.value = value;
-//        this.type = type; //Constructor initializes value and typ
-//    } //No need since every variable has a default value of 0
-
     private Variable(VariableType type,int pos) {
         this.position = pos; //Constructor initializes position
         this.value = 0; //Default value is 0
@@ -53,11 +47,9 @@ public class Variable implements Cloneable {
                         pv.getY(); // If y is null, create a new Variable of type RESULT at position 0
         }
     }
-    @Override
-    public Variable clone() {
-        Variable copy = new Variable(this.type, this.position);
-        copy.setValue(this.value);
-        return copy;
+
+    public Variable clone(ProgramVars context) {
+         return createOrGetNewVar(this.type,this.position,context);
     }
 
 }

@@ -29,8 +29,8 @@ public class JumpNotZero extends Instruction implements HasGotoLabel {
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
     @Override
-    public JumpNotZero clone() {
-        return new JumpNotZero(lab.myClone(),var,gotoLabel.myClone());
+    public JumpNotZero clone(ProgramVars context) {
+        return new JumpNotZero(lab.myClone(),var.clone(context),gotoLabel.myClone());
     }
 
 }

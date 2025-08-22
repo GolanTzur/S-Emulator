@@ -29,8 +29,8 @@ public class ZeroVar extends SyntheticSugar{
         String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
-    public ZeroVar clone() {
-        return new ZeroVar(lab.myClone(),var);
+    public ZeroVar clone(ProgramVars context) {
+        return new ZeroVar(lab.myClone(),var.clone(context));
     }
 
 }

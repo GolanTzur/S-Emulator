@@ -243,6 +243,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
     }
     public void setUserInput()
     {
+        this.vars.reset(); // Reset all variables to 0
         Collection<Variable> inputs = vars.getInput().values();
         if(inputs.isEmpty())
             return; // If there are no inputs, do nothing
@@ -272,10 +273,11 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
     }
     public Program clone() {
         ArrayList<AbstractInstruction> clonedInstructions = new ArrayList<>();
+        ProgramVars vars = new ProgramVars();
         for (AbstractInstruction instruction : this.instructions) {
-            clonedInstructions.add(instruction.clone());
+            clonedInstructions.add(instruction.clone(vars));
         }
-        return new Program(this.name, clonedInstructions,vars.clone());
+        return new Program(this.name, clonedInstructions,vars);
     }
 
 
