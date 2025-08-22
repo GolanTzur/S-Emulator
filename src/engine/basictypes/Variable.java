@@ -39,18 +39,18 @@ public class Variable implements Cloneable {
         return this.type.getRepresentation(position);
     }
 
-    public static Variable createOrGetNewVar(VariableType it,int pos) { // Factory method to create or get an existing variable
+    public static Variable createOrGetNewVar(VariableType it,int pos,ProgramVars pv) { // Factory method to create or get an existing variable
         switch (it) {
             case INPUT:
-                ProgramVars.input.putIfAbsent(pos, new Variable(VariableType.INPUT, pos));
-                return ProgramVars.input.get(pos);
+                pv.getInput().putIfAbsent(pos, new Variable(VariableType.INPUT, pos));
+                return pv.getInput().get(pos);
             case WORK:
-                ProgramVars.envvars.putIfAbsent(pos, new Variable(VariableType.WORK, pos));
-                return ProgramVars.envvars.get(pos);
+                pv.getEnvvars().putIfAbsent(pos, new Variable(VariableType.WORK, pos));
+                return pv.getEnvvars().get(pos);
             default:
-                return ProgramVars.y==null ?
+                return pv.getY()==null ?
                     new Variable(VariableType.RESULT, 0) :
-                    ProgramVars.y; // If y is null, create a new Variable of type RESULT at position 0
+                        pv.getY(); // If y is null, create a new Variable of type RESULT at position 0
         }
     }
     @Override

@@ -73,13 +73,13 @@ public class XMLHandler { // Singleton class to handle XML operations
             return null; // Check if instructions are present
         }
         String name = sprogram.getName();
-
+        ProgramVars progVars = new ProgramVars();
         List<SInstruction> sInstructions = sprogram.getSInstructions().getSInstruction();
         ArrayList<AbstractInstruction> instructions = new ArrayList<AbstractInstruction>();
 
         for (SInstruction sin : sInstructions) {
             AbstractInstructionType type=getType(sin.getType(), sin.getName());
-            Variable var= loadVariable(sin.getSVariable());
+            Variable var= loadVariable(sin.getSVariable(),progVars);
             HasLabel label = loadLabel(sin.getSLabel());
             if (label == FixedLabel.EXIT) {
                 throw new IllegalArgumentException("Invalid label: " + sin.getSLabel());
@@ -88,7 +88,7 @@ public class XMLHandler { // Singleton class to handle XML operations
             {
                 case ASSIGNMENT:
                     String assign = lookforValue("assignedVariable", sin.getSInstructionArguments().getSInstructionArgument());
-                    Variable assignvar= loadVariable(assign);
+                    Variable assignvar= loadVariable(assign,progVars);
                     instructions.add(new Assignment(label,var, assignvar));
                     break;
                 case CONST_ASSIGNMENT:
@@ -136,7 +136,7 @@ public class XMLHandler { // Singleton class to handle XML operations
                     break;
                 case JUMP_EQUAL_VARIABLE:
                     String jump_equal_var = lookforValue("constantValue", sin.getSInstructionArguments().getSInstructionArgument());
-                    Variable jump_equal_var_var = loadVariable(jump_equal_var);
+                    Variable jump_equal_var_var = loadVariable(jump_equal_var,progVars);
                     String jumpequalvar_label= lookforValue("JEConstantLabel", sin.getSInstructionArguments().getSInstructionArgument());
                     HasLabel gotoLabel_je_var = loadLabel(jumpequalvar_label);
                     instructions.add(new JumpEqualVariable(label, var, jump_equal_var_var, gotoLabel_je_var));
@@ -145,7 +145,7 @@ public class XMLHandler { // Singleton class to handle XML operations
                     throw new IllegalArgumentException("Unknown instruction type: " + sin.getType());
             }
         }
-        return new Program(name, instructions); // Returns a new Program object with the given name and instructions
+        return new Program(name, instructions,progVars); // Returns a new Program object with the given name and instructions
     }
     public AbstractInstructionType getType(String typeName,String opName) throws IllegalArgumentException {
 
@@ -168,15 +168,15 @@ public class XMLHandler { // Singleton class to handle XML operations
         }
 
     }
-    public Variable loadVariable(String varName) throws IllegalArgumentException {
+    public Variable loadVariable(String varName,ProgramVars context) throws IllegalArgumentException {
         if (!isValidVariableName(varName)) {
             throw new IllegalArgumentException("Invalid variable name: " + varName);
         }
         if(varName.startsWith("x"))
-           return Variable.createOrGetNewVar(VariableType.INPUT,varName.charAt(1)-'0');
+           return Variable.createOrGetNewVar(VariableType.INPUT,varName.charAt(1)-'0',context);
         if(varName.startsWith("z"))
-            return Variable.createOrGetNewVar(VariableType.WORK,varName.charAt(1)-'0');
-        return Variable.createOrGetNewVar(VariableType.RESULT,0);
+            return Variable.createOrGetNewVar(VariableType.WORK,varName.charAt(1)-'0',context);
+        return Variable.createOrGetNewVar(VariableType.RESULT,0,context);
     }
     private boolean isValidVariableName(String varName) {
         return varName != null && varName.matches("^(x\\d+|z\\d+|y)+$"); // Checks if the variable name is valid

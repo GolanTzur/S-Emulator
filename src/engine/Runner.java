@@ -13,9 +13,11 @@ import java.util.Optional;
 
 public class Runner {
     private ArrayList<AbstractInstruction> instructions;
+    private ProgramVars context;
 
-    public Runner(ArrayList<AbstractInstruction> instructions) {
+    public Runner(ArrayList<AbstractInstruction> instructions, ProgramVars context) {
         this.instructions = instructions; // Initialize with the provided instructions
+        this.context = context;
     }
 
     public HasLabel run() {
@@ -24,7 +26,7 @@ public class Runner {
         HasLabel nextLabel = null;
         while (currIndex < instructions.size() && instructions.get(currIndex).getLab() != FixedLabel.EXIT) {
             AbstractInstruction currentInstruction = instructions.get(currIndex);
-            nextLabel = currentInstruction.evaluate(); // Evaluate the current instruction
+            nextLabel = currentInstruction.evaluate(context); // Evaluate the current instruction
             if (nextLabel == FixedLabel.EMPTY) {
                 currIndex++; // Move to the next instruction if no label is returned
             } else {

@@ -96,7 +96,7 @@ public class ConsoleUI {
                     programCopy.execute();
                     System.out.println("After Execution: ");
                     System.out.println(programCopy);
-                    System.out.println(ProgramVars.MytoString());
+                    System.out.println(programCopy.getVars());
                     System.out.println("Total Cycles: " + programCopy.getProgramCycles());
                     break;
                 case 6:

@@ -1,5 +1,6 @@
 package engine.classhierarchy;
 
+import engine.ProgramVars;
 import engine.Runner;
 import engine.basictypes.*;
 
@@ -26,25 +27,15 @@ public abstract class SyntheticSugar extends AbstractInstruction {
                 .orElse(String.format(" #%d (S) [%-3s]", this.pos,this.lab));
     }
 
-    public abstract ArrayList<AbstractInstruction> expand();
+    public abstract ArrayList<AbstractInstruction> expand(ProgramVars context);
 
     @Override
-    public HasLabel evaluate()
+    public HasLabel evaluate(ProgramVars context)
     { //Inner runner
         if(this.commands == null) {
-            this.commands = expand();
+            this.commands = expand(context);
         }
-        return new Runner(this.commands).run();
+        return new Runner(this.commands,context).run();
     }
-   /* @Override
-    public SyntheticSugar clone() {
-        SyntheticSugar cloned = (SyntheticSugar) super.clone();
-        cloned.commands = new ArrayList<>();
-        for (AbstractInstruction command : this.commands) {
-            cloned.commands.add(command.clone());
-        }
-        return cloned;
-    }*/
-
 
 }

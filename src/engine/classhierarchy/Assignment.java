@@ -16,8 +16,8 @@ public class Assignment extends SyntheticSugar{
         super(SyntheticType.ASSIGNMENT,value);
         this.arg = arg;
     }
-    public ArrayList<AbstractInstruction> expand() {
-        Collection<Variable> nextz= ProgramVars.getZinputs(2);
+    public ArrayList<AbstractInstruction> expand(ProgramVars context) {
+        Collection<Variable> nextz= context.getZinputs(2);
         Iterator<Variable> it=nextz.iterator();
         Variable gotolabelarg=it.next();
         Variable helper=it.next();

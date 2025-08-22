@@ -1,5 +1,6 @@
 package engine.classhierarchy;
 
+import engine.ProgramVars;
 import engine.basictypes.*;
 
 public class Neutral extends Instruction {
@@ -11,7 +12,7 @@ public class Neutral extends Instruction {
         super(InstructionType.DECREASE,value);
     }
 
-    public HasLabel evaluate(){
+    public HasLabel evaluate(ProgramVars context){
         return FixedLabel.EMPTY;
     }
     public String toString() {

@@ -15,17 +15,23 @@ public class Program {
     private final String name;
     private ArrayList<AbstractInstruction> instructions;
     private int programCounter = 0; // Program counter to track execution position
+    private ProgramVars vars;
 
-    public Program(String name,ArrayList<AbstractInstruction> instructions) {
+    public Program(String name,ArrayList<AbstractInstruction> instructions,ProgramVars vars) {
         this.name = name;
         this.instructions = instructions;
         for(AbstractInstruction instruction:instructions){
             instruction.setPos(++programCounter);
         }
+        this.vars = vars;
+    }
+
+    public ProgramVars getVars() {
+        return vars;
     }
     public Variable execute() {
-        new Runner(instructions).run();
-        return ProgramVars.y;
+        new Runner(instructions,vars).run();
+        return vars.getY();
     }
     private Set<Label> getallprogramlabels()
     {
@@ -52,7 +58,7 @@ public class Program {
             if(currentInstruction instanceof SyntheticSugar)
             {
                 AbstractInstruction source;
-                ArrayList<AbstractInstruction> expandedInstructions = ((SyntheticSugar) currentInstruction).expand();
+                ArrayList<AbstractInstruction> expandedInstructions = ((SyntheticSugar) currentInstruction).expand(this.vars);
                 for(AbstractInstruction instruction:expandedInstructions){
                     instruction.setPos(++programCounter); // Set position for each expanded instruction
                 }
@@ -189,7 +195,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         String res="";
         res+="Program: "+name+"\n";
         res+="Program Inputs: \n";
-        for(Variable input : ProgramVars.input.values()) {
+        for(Variable input : vars.getInput().values()) {
             res += input + " "; // Concatenate string representations of all input variables
         }
         res+="\nProgram Labels: \n";
@@ -237,7 +243,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
     }
     public void setUserInput()
     {
-        Collection<Variable> inputs = ProgramVars.input.values();
+        Collection<Variable> inputs = vars.getInput().values();
         if(inputs.isEmpty())
             return; // If there are no inputs, do nothing
         System.out.println("Please enter the values for the following inputs: ");
@@ -269,7 +275,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         for (AbstractInstruction instruction : this.instructions) {
             clonedInstructions.add(instruction.clone());
         }
-        return new Program(this.name, clonedInstructions);
+        return new Program(this.name, clonedInstructions,vars.clone());
     }
 
 

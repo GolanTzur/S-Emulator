@@ -20,7 +20,7 @@ public class ConstAssignment extends SyntheticSugar {
         super( SyntheticType.CONST_ASSIGNMENT,value);
         this.arg = arg;
     }
-    public ArrayList<AbstractInstruction> expand() {
+    public ArrayList<AbstractInstruction> expand(ProgramVars context) {
         this.commands=new ArrayList<>();
         this.commands.add(new ZeroVar(this.lab.myClone(),this.var));
         for (int i=0;i<arg;i++)

@@ -1,5 +1,6 @@
 package engine.classhierarchy;
 
+import engine.ProgramVars;
 import engine.basictypes.*;
 
 public class Decrease extends Instruction {
@@ -13,7 +14,7 @@ public class Decrease extends Instruction {
 
     }
     @Override
-    public HasLabel evaluate(){
+    public HasLabel evaluate(ProgramVars context) {
        if(this.var.getValue() > 0) {
             this.var.setValue(this.var.getValue() - 1);
        }

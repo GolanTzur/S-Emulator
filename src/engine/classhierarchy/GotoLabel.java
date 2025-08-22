@@ -2,6 +2,7 @@ package engine.classhierarchy;
 
 import java.util.*;
 
+import engine.ProgramVars;
 import engine.basictypes.*;
 
 public class GotoLabel extends SyntheticSugar implements HasGotoLabel {
@@ -15,7 +16,7 @@ public class GotoLabel extends SyntheticSugar implements HasGotoLabel {
         super( SyntheticType.GOTO_LABEL,value);
         this.gotolabel = gotolabel; // Initialize gotolabel
     }
-    public ArrayList<AbstractInstruction> expand()
+    public ArrayList<AbstractInstruction> expand(ProgramVars context)
     {
         this.commands=new ArrayList<>(List.of(new Increase(this.lab.myClone(),this.var),// Call parent constructor with label and value
                 new JumpNotZero(this.var,gotolabel.myClone())));

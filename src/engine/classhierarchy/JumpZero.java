@@ -17,12 +17,12 @@ public class JumpZero extends SyntheticSugar implements HasGotoLabel {
         super(SyntheticType.JUMP_ZERO,value);
         this.gotoLabel = gotoLabel;
     }
-    public ArrayList<AbstractInstruction> expand() {
-        Iterator<Variable> getz=ProgramVars.getZinputs(1).iterator();
+    public ArrayList<AbstractInstruction> expand(ProgramVars context) {
+        Iterator<Variable> getz=context.getZinputs(1).iterator();
         ArrayList<AbstractInstruction> tempCommands = new ArrayList<>();
         tempCommands.add(new JumpNotZero(this.lab.myClone(),this.var, new Label("L1")));
         tempCommands.add(new GotoLabel(getz.next(), gotoLabel.myClone()));
-        tempCommands.add(new Neutral(new Label("L1"),ProgramVars.y));
+        tempCommands.add(new Neutral(new Label("L1"),this.var));
         this.commands = tempCommands;
         return commands; // Getter for commands
     }

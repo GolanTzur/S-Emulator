@@ -3,6 +3,7 @@ package engine.classhierarchy;
 import java.util.ArrayList;
 import java.util.List;
 
+import engine.ProgramVars;
 import engine.basictypes.*;
 
 public class ZeroVar extends SyntheticSugar{
@@ -13,7 +14,7 @@ public class ZeroVar extends SyntheticSugar{
     public ZeroVar(Variable value) {
         super(SyntheticType.ZERO_VAR,value);
     }
-    public ArrayList<AbstractInstruction> expand() {
+    public ArrayList<AbstractInstruction> expand(ProgramVars context) {
         HasLabel firstLabel = this.lab.myClone();
         if(lab==FixedLabel.EMPTY) { //the first label cant be empty
          firstLabel=FixedLabel.DEFAULT;

@@ -8,12 +8,16 @@ import engine.classhierarchy.Instruction;
 
 import java.util.*;
 
-public class ProgramVars {
-    public static Map<Integer, Variable> input=new HashMap<>();
-    public static Map<Integer, Variable> envvars=new HashMap<>();
-    public static Variable y=Variable.createOrGetNewVar(VariableType.RESULT,0); //Default pos for y
-
-    public static Collection<Variable> getZinputs(int count) { // Get a collection of Available work variables (z inputs)
+public class ProgramVars implements Cloneable {
+    private Map<Integer, Variable> input;
+    private Map<Integer, Variable> envvars;
+    private Variable y; //Default pos for y
+    public ProgramVars() {
+        input=new HashMap<>();
+        envvars=new HashMap<>();
+        y=Variable.createOrGetNewVar(VariableType.RESULT,0,this);
+    }
+    public Collection<Variable> getZinputs(int count) { // Get a collection of Available work variables (z inputs)
         if (count < 0) {
             throw new IllegalArgumentException("Count must be non-negative");
         }
@@ -24,14 +28,14 @@ public class ProgramVars {
             final int finalStart = start;
             maybekey.ifPresentOrElse((v)->{},
                     ()-> {
-                        Variable newVar = Variable.createOrGetNewVar(VariableType.WORK, finalStart);
+                        Variable newVar = Variable.createOrGetNewVar(VariableType.WORK, finalStart,this);
                         res.add(newVar);
                     });
             start++;
         }
         return res;
     }
-    public static String MytoString()
+    public String toString()
     {
         String res="";
         Collection<Variable> inputs=input.values();
@@ -50,6 +54,28 @@ public class ProgramVars {
 
         res+=String.format("%s=%d ",y.toString(),y.getValue());
         return res;
+    }
+    public Map<Integer, Variable> getInput() {
+        return input;
+    }
+    public Map<Integer, Variable> getEnvvars() {
+        return envvars;
+    }
+    public Variable getY() {
+        return y;
+    }
+    public ProgramVars clone() {
+        ProgramVars copy = new ProgramVars();
+        copy.input = new HashMap<>();
+        for (Map.Entry<Integer, Variable> entry : this.input.entrySet()) {
+            copy.input.put(entry.getKey(), entry.getValue().clone());
+        }
+        copy.envvars = new HashMap<>();
+        for (Map.Entry<Integer, Variable> entry : this.envvars.entrySet()) {
+            copy.envvars.put(entry.getKey(), entry.getValue().clone());
+        }
+        copy.y = this.y.clone();
+        return copy;
     }
 
 
