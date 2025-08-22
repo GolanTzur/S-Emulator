@@ -1,10 +1,11 @@
 package engine.basictypes;
 
 import engine.ProgramVars;
+import engine.classhierarchy.Instruction;
 
 import java.util.Optional;
 
-public class Variable {
+public class Variable implements Cloneable {
     private final VariableType type;
     private int value;
     private final int position; //Position in the list of variables
@@ -51,6 +52,12 @@ public class Variable {
                     new Variable(VariableType.RESULT, 0) :
                     ProgramVars.y; // If y is null, create a new Variable of type RESULT at position 0
         }
+    }
+    @Override
+    public Variable clone() {
+        Variable copy = new Variable(this.type, this.position);
+        copy.setValue(this.value);
+        return copy;
     }
 
 }

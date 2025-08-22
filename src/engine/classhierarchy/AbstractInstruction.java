@@ -2,9 +2,9 @@ package engine.classhierarchy;
 
 import engine.basictypes.*;
 
-public abstract class AbstractInstruction implements Evaluable {
+public abstract class AbstractInstruction implements Evaluable,Cloneable {
     protected HasLabel lab;
-    protected final AbstractInstructionType type;
+    protected AbstractInstructionType type;
     protected Variable var;
     protected SyntheticSugar source; // For synthetic instructions
     protected int pos; // Position in the program, used for debugging
@@ -52,5 +52,23 @@ public abstract class AbstractInstruction implements Evaluable {
     public SyntheticSugar getSource() {
         return source;
     }
+
+    @Override
+    public abstract AbstractInstruction clone();
+    /*public AbstractInstruction clone() {
+        try {
+            AbstractInstruction copy = (AbstractInstruction) super.clone();
+            copy.lab = (lab != null) ? lab.myClone() : null;
+            copy.type = (type != null) ? type : null;
+            copy.var = (var != null) ? var.clone() : null;
+            copy.source = (source != null) ? source.clone() : null;
+            copy.pos = this.pos; // Copy position
+            // Copy other fields as needed
+            return copy;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Clone failed", e);
+        }
+    }
+    }*/
 
 }

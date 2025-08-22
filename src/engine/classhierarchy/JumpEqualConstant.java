@@ -49,5 +49,8 @@ public class JumpEqualConstant extends SyntheticSugar implements HasGotoLabel {
         String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
-
+    @Override
+    public JumpEqualConstant clone() {
+        return new JumpEqualConstant(lab.myClone(),var,arg,gotoLabel.myClone());
+    }
 }

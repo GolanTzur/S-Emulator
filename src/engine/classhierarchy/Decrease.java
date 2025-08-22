@@ -25,4 +25,8 @@ public class Decrease extends Instruction {
         String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
+    @Override
+    public Decrease clone() {
+        return new Decrease(lab.myClone(),this.var);
+    }
 }

@@ -20,4 +20,7 @@ public class Neutral extends Instruction {
         String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
+    public Neutral clone() {
+        return new Neutral(lab.myClone(),var);
+    }
 }

@@ -35,5 +35,9 @@ public class ConstAssignment extends SyntheticSugar {
         String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
+    @Override
+    public ConstAssignment clone() {
+        return new ConstAssignment(this.var.clone(),this.arg);
+    }
 
 }

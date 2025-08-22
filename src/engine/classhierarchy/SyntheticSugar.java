@@ -36,6 +36,15 @@ public abstract class SyntheticSugar extends AbstractInstruction {
         }
         return new Runner(this.commands).run();
     }
+   /* @Override
+    public SyntheticSugar clone() {
+        SyntheticSugar cloned = (SyntheticSugar) super.clone();
+        cloned.commands = new ArrayList<>();
+        for (AbstractInstruction command : this.commands) {
+            cloned.commands.add(command.clone());
+        }
+        return cloned;
+    }*/
 
 
 }

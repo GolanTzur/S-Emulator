@@ -34,5 +34,8 @@ public class GotoLabel extends SyntheticSugar implements HasGotoLabel {
         String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
+    public GotoLabel clone() {
+        return new GotoLabel(this.lab.myClone(), this.var, this.gotolabel.myClone());
+    }
 
 }
