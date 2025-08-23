@@ -186,7 +186,7 @@ public class XMLHandler { // Singleton class to handle XML operations
             return FixedLabel.EMPTY; // Returns an empty label
         }
 
-        if (labelName.toLowerCase() == "exit" ) {
+        if (labelName.toLowerCase().equals("exit") ) {
             return FixedLabel.EXIT;
         }
 

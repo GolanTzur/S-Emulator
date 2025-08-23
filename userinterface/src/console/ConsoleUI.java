@@ -1,15 +1,17 @@
 package console;
 
 import engine.Program;
-import engine.ProgramVars;
+import engine.Statistics;
 import engine.XMLHandler;
+import engine.basictypes.Variable;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.Scanner;
 
 public class ConsoleUI {
-    public static void main(String[] args) {
+    public ConsoleUI() {
         Program program=null;
         Program programCopy = null;
         XMLHandler xmlHandler = XMLHandler.getInstance();
@@ -35,6 +37,7 @@ public class ConsoleUI {
                         program.checkValidity();
                         programCopy = program.clone();
                         System.out.println("Program loaded successfully.");
+                        Statistics.reset();
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -55,11 +58,11 @@ public class ConsoleUI {
                     int expansionsRequested=-1;
                     do {
                         try {
-                            System.out.println("Enter expansion degree: " + expansionsAvailable);
+                            System.out.println("Enter expansion degree, Max is: " + expansionsAvailable);
                             expansionsRequested = new Scanner(System.in).nextInt();
                         } catch (Exception e) {
                             System.out.println("Invalid input. Please enter a number.");
-                            continue;
+                            expansionsRequested=-1;
                         }
                     } while(expansionsRequested <0 || expansionsRequested > expansionsAvailable);
 
@@ -92,12 +95,30 @@ public class ConsoleUI {
                         programCopy= program.clone();
                         programCopy.deployToDegree(selectedDegree);
                     }
-                    programCopy.setUserInput();
-                    programCopy.execute();
-                    System.out.println("After Execution: ");
-                    System.out.println(programCopy);
-                    System.out.println(programCopy.getVars());
-                    System.out.println("Total Cycles: " + programCopy.getProgramCycles());
+                    Collection<Variable>initVars= programCopy.setUserInput();
+                    int cycles= programCopy.getProgramCycles();
+                    int y=programCopy.execute().getValue();
+                    try {
+                        new Statistics(selectedDegree, initVars, cycles, y).appendStatistics();
+                    }catch (Exception e) {
+                        System.out.println("Error writing statistics: " + e.getMessage());
+                    }
+                    finally {
+                        System.out.println("After Execution: ");
+                        System.out.println(programCopy);
+                        System.out.println(programCopy.getVars());
+                        System.out.println("Total Cycles: " + programCopy.getProgramCycles());
+                    }
+                    break;
+                case 5:
+                    try {
+                        Collection<Statistics> programStats = Statistics.loadStatisticsIndividually();
+                        for(Statistics stats: programStats){
+                            System.out.println(stats);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Error loading statistics: " + e.getMessage());
+                    }
                     break;
                 case 6:
                     exit = true;
@@ -107,6 +128,10 @@ public class ConsoleUI {
                     System.out.println("Invalid option. Please try again.");
             }
         }
+    }
+
+    public static void main(String[] args) {
+        new ConsoleUI();
     }
 
     public static void Menu() {

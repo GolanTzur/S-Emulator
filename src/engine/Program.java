@@ -45,7 +45,7 @@ public class Program {
     }
     public void deployToDegree(int degree)
     {
-        for(int i=1;i<degree;i++) {
+        for(int i=0;i<degree;i++) {
             deploy();
         }
     }
@@ -231,7 +231,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         }
                  instructions.stream().filter(instruction->instruction instanceof HasGotoLabel)
                 .map(instruction->((HasGotoLabel)instruction).getGotolabel())
-                .filter(label -> !existsLabel(label))
+                .filter(label -> (!existsLabel(label))&&(label!=FixedLabel.EXIT)) // Filter labels that do not exist in the program and are not EXIT
                 .map(HasLabel::getLabel) // Check if all goto labels exist in the program
                 .findFirst().ifPresent(label -> {
                     throw new IllegalArgumentException("Program has invalid goto label: " + label);
@@ -241,12 +241,13 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
     private boolean existsLabel(HasLabel label) {
         return instructions.stream().anyMatch(instruction -> instruction.getLab().equals(label));
     }
-    public void setUserInput()
+    public Collection<Variable> setUserInput()
     {
+        Collection<Variable> initialVars = new ArrayList<>();
         this.vars.reset(); // Reset all variables to 0
         Collection<Variable> inputs = vars.getInput().values();
         if(inputs.isEmpty())
-            return; // If there are no inputs, do nothing
+            return initialVars; // If there are no inputs, do nothing
         System.out.println("Please enter the values for the following inputs: ");
         for(Variable input : inputs) {
             System.out.print(input+" ");
@@ -268,8 +269,10 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         int i=0;
         for(Variable input : inputs) {
             input.setValue(userinputs_toInt[i++]);
+            initialVars.add(Variable.createDummyVar(input.getType(),input.getPosition(),input.getValue()));// Create a dummy variable to store the initial value of the input
             if(i>=userinputs_toInt.length) break; // Break if all inputs have been set
         }
+        return  initialVars;
     }
     public Program clone() {
         ArrayList<AbstractInstruction> clonedInstructions = new ArrayList<>();
