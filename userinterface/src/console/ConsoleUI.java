@@ -58,11 +58,11 @@ public class ConsoleUI {
                     int expansionsRequested=-1;
                     do {
                         try {
-                            System.out.println("Enter expansion degree: " + expansionsAvailable);
+                            System.out.println("Enter expansion degree, Max is: " + expansionsAvailable);
                             expansionsRequested = new Scanner(System.in).nextInt();
                         } catch (Exception e) {
                             System.out.println("Invalid input. Please enter a number.");
-                            continue;
+                            expansionsRequested=-1;
                         }
                     } while(expansionsRequested <0 || expansionsRequested > expansionsAvailable);
 
@@ -99,7 +99,7 @@ public class ConsoleUI {
                     int cycles= programCopy.getProgramCycles();
                     int y=programCopy.execute().getValue();
                     try {
-                        new Statistics(selectedDegree, initVars, cycles, y).writeStatistics();
+                        new Statistics(selectedDegree, initVars, cycles, y).appendStatistics();
                     }catch (Exception e) {
                         System.out.println("Error writing statistics: " + e.getMessage());
                     }

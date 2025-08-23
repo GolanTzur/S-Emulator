@@ -45,7 +45,7 @@ public class Program {
     }
     public void deployToDegree(int degree)
     {
-        for(int i=1;i<degree;i++) {
+        for(int i=0;i<degree;i++) {
             deploy();
         }
     }
@@ -231,7 +231,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         }
                  instructions.stream().filter(instruction->instruction instanceof HasGotoLabel)
                 .map(instruction->((HasGotoLabel)instruction).getGotolabel())
-                .filter(label -> !existsLabel(label))
+                .filter(label -> (!existsLabel(label))&&(label!=FixedLabel.EXIT)) // Filter labels that do not exist in the program and are not EXIT
                 .map(HasLabel::getLabel) // Check if all goto labels exist in the program
                 .findFirst().ifPresent(label -> {
                     throw new IllegalArgumentException("Program has invalid goto label: " + label);
