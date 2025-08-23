@@ -34,11 +34,7 @@ public class Runner {
                 if (nextIndex.isPresent()) {
                     currIndex = nextIndex.get(); // Jump to the label's index if it exists
                 } else {
-                    for(AbstractInstruction instruction : instructions) {
-                        System.out.println(instruction);
-                    }
-                    System.out.println(labelIndices);
-                    throw new RuntimeException("Label not found: " + nextLabel); // Handle case where label is not found
+                    return nextLabel;
                 }
             }
         }

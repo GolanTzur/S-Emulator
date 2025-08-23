@@ -13,7 +13,7 @@ public abstract class SyntheticSugar extends AbstractInstruction {
     public SyntheticSugar(HasLabel label,SyntheticType st,Variable var) {
         super(label, st,var);
     }
-    public SyntheticSugar( SyntheticType st, Variable var) {
+    public SyntheticSugar(SyntheticType st, Variable var) {
         super(st, var);
     }
     public ArrayList<AbstractInstruction> getCommands() {

@@ -13,7 +13,7 @@ public class GotoLabel extends SyntheticSugar implements HasGotoLabel {
         this.gotolabel = gotolabel; // Initialize gotolabel
     }
     public GotoLabel(Variable value, HasLabel gotolabel) {
-        super( SyntheticType.GOTO_LABEL,value);
+        super(SyntheticType.GOTO_LABEL,value);
         this.gotolabel = gotolabel; // Initialize gotolabel
     }
     public ArrayList<AbstractInstruction> expand(ProgramVars context)
@@ -36,7 +36,7 @@ public class GotoLabel extends SyntheticSugar implements HasGotoLabel {
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
     public GotoLabel clone(ProgramVars context) {
-        return new GotoLabel(this.lab.myClone(), this.var.clone(context), this.gotolabel.myClone());
+        return new GotoLabel(this.lab.myClone(), this.var.cloneDummy(), this.gotolabel.myClone());
     }
 
 }

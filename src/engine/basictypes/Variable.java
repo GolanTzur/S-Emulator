@@ -57,4 +57,7 @@ public class Variable implements Cloneable, Serializable {
         dummy.setValue(value);
         return dummy;
     }
+    public Variable cloneDummy() {
+        return createDummyVar(this.type,this.position,this.value);
+    }
 }
