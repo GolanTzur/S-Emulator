@@ -1,8 +1,6 @@
 package engine.classhierarchy;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import engine.ProgramVars;
 import engine.basictypes.*;
 

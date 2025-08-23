@@ -1,7 +1,5 @@
 package engine.basictypes;
 
-import java.util.Optional;
-
 public interface HasLabel{
     String getLabel();
     HasLabel myClone(); // Returns a clone of the object with the same label

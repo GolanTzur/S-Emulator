@@ -1,4 +1,4 @@
-// src/engine/basictypes/FixedLabel.java
+
 package engine.basictypes;
 
 public enum FixedLabel implements HasLabel {

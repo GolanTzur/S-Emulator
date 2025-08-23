@@ -1,6 +1,5 @@
 package engine.classhierarchy;
 import engine.basictypes.*;
-
 import java.util.Optional;
 
 public abstract class Instruction extends AbstractInstruction {

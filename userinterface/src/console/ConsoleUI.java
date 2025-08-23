@@ -4,7 +4,6 @@ import engine.Program;
 import engine.Statistics;
 import engine.XMLHandler;
 import engine.basictypes.Variable;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Collection;

@@ -21,6 +21,8 @@ public class Label implements HasLabel {
     public int hashCode() {
         return label == null ? 0 : label.hashCode();
     }
+    //hash code and equals implemented for use in hash-based collections
+
     @Override
     public String toString() {
         return label;

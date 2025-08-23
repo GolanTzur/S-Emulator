@@ -1,5 +1,4 @@
 package engine.classhierarchy;
-
 import engine.ProgramVars;
 import engine.basictypes.*;
 

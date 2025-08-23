@@ -1,11 +1,8 @@
 package engine;
-
 import engine.basictypes.*;
 import engine.classhierarchy.AbstractInstruction;
 import engine.classhierarchy.HasGotoLabel;
 import engine.classhierarchy.SyntheticSugar;
-import engine.classhierarchy.ZeroVar;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
