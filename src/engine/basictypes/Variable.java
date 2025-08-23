@@ -3,9 +3,10 @@ package engine.basictypes;
 import engine.ProgramVars;
 import engine.classhierarchy.Instruction;
 
+import java.io.Serializable;
 import java.util.Optional;
 
-public class Variable implements Cloneable {
+public class Variable implements Cloneable, Serializable {
     private final VariableType type;
     private int value;
     private final int position; //Position in the list of variables
@@ -51,5 +52,9 @@ public class Variable implements Cloneable {
     public Variable clone(ProgramVars context) {
          return createOrGetNewVar(this.type,this.position,context);
     }
-
+    public static Variable createDummyVar(VariableType it,int pos,int value) { // Factory method to create a new variable without checking existing ones
+        Variable dummy =new Variable(it,pos);
+        dummy.setValue(value);
+        return dummy;
+    }
 }
