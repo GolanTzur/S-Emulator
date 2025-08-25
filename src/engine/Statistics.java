@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class Statistics implements Serializable {
-    private static String sourceFile="src\\statistics\\statistics.bin";
+    private static String sourceFile="data\\statistics\\statistics.bin";
     private static int runCounter = 1;
     private final int degree;
     private Collection<Variable> variables;

@@ -91,7 +91,7 @@ public class XMLHandler { // Singleton class to handle XML operations
                     Variable assignvar= loadVariable(assign,progVars);
                     instructions.add(new Assignment(label,var, assignvar));
                     break;
-                case CONST_ASSIGNMENT:
+                case CONSTANT_ASSIGNMENT:
                      String const_assign = lookforValue("constantValue", sin.getSInstructionArguments().getSInstructionArgument());
                      if(!const_assign.matches("\\d+")|| Integer.parseInt(const_assign) < 0) {
                          throw new IllegalArgumentException("Invalid constant value: " + const_assign);
@@ -123,7 +123,7 @@ public class XMLHandler { // Singleton class to handle XML operations
                     Variable dummyVar = Variable.createDummyVar(VariableType.WORK, var.getPosition(), 0);
                     instructions.add(new GotoLabel(label, dummyVar, gotoLabel_label));
                     break;
-                case ZERO_VAR:
+                case ZERO_VARIABLE:
                     instructions.add(new ZeroVar(label, var));
                     break;
                 case JUMP_EQUAL_CONSTANT:
@@ -136,9 +136,9 @@ public class XMLHandler { // Singleton class to handle XML operations
                     instructions.add(new JumpEqualConstant(label, var, Integer.parseInt(jump_equal_const), gotoLabel_je_const));
                     break;
                 case JUMP_EQUAL_VARIABLE:
-                    String jump_equal_var = lookforValue("constantValue", sin.getSInstructionArguments().getSInstructionArgument());
+                    String jump_equal_var = lookforValue("variableName", sin.getSInstructionArguments().getSInstructionArgument());
                     Variable jump_equal_var_var = loadVariable(jump_equal_var,progVars);
-                    String jumpequalvar_label= lookforValue("JEConstantLabel", sin.getSInstructionArguments().getSInstructionArgument());
+                    String jumpequalvar_label= lookforValue("JEVariableLabel", sin.getSInstructionArguments().getSInstructionArgument());
                     HasLabel gotoLabel_je_var = loadLabel(jumpequalvar_label);
                     instructions.add(new JumpEqualVariable(label, var, jump_equal_var_var, gotoLabel_je_var));
                     break;

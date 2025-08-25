@@ -13,11 +13,11 @@ public class ConstAssignment extends SyntheticSugar {
     private int arg;// Variable to be decremented
 
     public ConstAssignment(HasLabel lab, Variable value,int arg) {
-        super(lab,SyntheticType.CONST_ASSIGNMENT,value);
+        super(lab,SyntheticType.CONSTANT_ASSIGNMENT,value);
         this.arg = arg;
     }
     public ConstAssignment(Variable value,int arg) {
-        super( SyntheticType.CONST_ASSIGNMENT,value);
+        super( SyntheticType.CONSTANT_ASSIGNMENT,value);
         this.arg = arg;
     }
     public ArrayList<AbstractInstruction> expand(ProgramVars context) {

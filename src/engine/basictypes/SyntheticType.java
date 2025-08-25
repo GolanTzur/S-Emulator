@@ -3,8 +3,8 @@ package engine.basictypes;
 public enum SyntheticType implements AbstractInstructionType {
     ASSIGNMENT("ASSIGNMENT",2,4),// Increment the value of a variable
     GOTO_LABEL("GOTOLABEL",1,1), // Jump to a specific label
-    ZERO_VAR("ZEROVAR",1,1),
-    CONST_ASSIGNMENT("CONSTASSIGNMENT",1,2), // Assign a constant value to a variable
+    ZERO_VARIABLE("ZEROVAR",1,1),
+    CONSTANT_ASSIGNMENT("CONSTASSIGNMENT",1,2), // Assign a constant value to a variable
     JUMP_ZERO("JUMPZERO",2,2),
     JUMP_EQUAL_CONSTANT("JUMPEQUALCONSTANT",3,2), // Jump if the value is equal to a constant
     JUMP_EQUAL_VARIABLE("JUMPEQUALVARIABLE",3,2)
