@@ -4,7 +4,7 @@ import engine.basictypes.*;
 import engine.classhierarchy.AbstractInstruction;
 import engine.classhierarchy.HasGotoLabel;
 import engine.classhierarchy.SyntheticSugar;
-import engine.classhierarchy.ZeroVar;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,13 +33,23 @@ public class Program {
         new Runner(instructions,vars).run();
         return vars.getY();
     }
-    private Set<Label> getallprogramlabels()
+    private Set<HasLabel> getallprogramlabels()
     {
-        Set<Label> labels = new java.util.HashSet<>();
+        Set<HasLabel> labels = new HashSet<>();
+        boolean hasExit=false;
         for (AbstractInstruction instruction : instructions) {
             if(instruction.getLab() instanceof Label) {
                 labels.add((Label) instruction.getLab()); // Add label to the set
             }
+            if (instruction instanceof HasGotoLabel) {
+                HasGotoLabel gotoLabel = (HasGotoLabel) instruction;
+                if(gotoLabel.getGotolabel()==FixedLabel.EXIT) {
+                   hasExit=true;
+                }
+            }
+        }
+        if(hasExit) {
+            labels.add(FixedLabel.EXIT);
         }
         return labels; // Returns a set of all labels in the program
     }
@@ -52,7 +62,7 @@ public class Program {
 
     private void deploy()
     {
-        Set<Label> allprogramlabels = getallprogramlabels();
+        Set<HasLabel> allprogramlabels = getallprogramlabels();
         for(int i=0;i<instructions.size();i++){
             AbstractInstruction currentInstruction = instructions.get(i);
             if(currentInstruction instanceof SyntheticSugar)
@@ -64,10 +74,9 @@ public class Program {
                 }
                 source=instructions.remove(i);
                 expandedInstructions.forEach(instruction->instruction.setSyntheticSource(source));// Set the source for each expanded instruction
-                //allprogramlabels.remove(source.getLab());
                 if(source.getLab() instanceof Label) {
                     removeFirstLabelCollisions((Label) source.getLab(), expandedInstructions, allprogramlabels);
-                }// Remove label collisions in the expanded instructions
+                }
                 replaceLabels(expandedInstructions, allprogramlabels); // Replace labels in the expanded instructions if needed
                 instructions.addAll(i, expandedInstructions); // Replace the synthetic sugar with its expanded instructions
                 i+=expandedInstructions.size()-1; // Adjust index to account for the newly added instructions
@@ -86,7 +95,7 @@ public class Program {
     }
 
 
-private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractInstruction> expandedInstructions, Set<Label> allprogramlabels) {
+private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractInstruction> expandedInstructions, Set<HasLabel> allprogramlabels) {
 
     Label labelToAssign = parentLabel;
     if (labelExistsInInstructions(parentLabel, expandedInstructions)) {
@@ -123,7 +132,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
     }
     }
 
-    private void replaceLabels(ArrayList<AbstractInstruction> instructions, Set<Label> allprogramlabels) {
+    private void replaceLabels(ArrayList<AbstractInstruction> instructions, Set<HasLabel> allprogramlabels) {
         Map<Label, Label> labelMap = new HashMap<>();
         int nextIndexLabel = 0;
 
@@ -186,7 +195,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
             res += input + " "; // Concatenate string representations of all input variables
         }
         res+="\nProgram Labels: \n";
-        for(Label label : getallprogramlabels()) {
+        for(HasLabel label : getallprogramlabels()) {
             res += label + " "; // Concatenate string representations of all labels
         }
         res+="\nProgram Instructions: \n";

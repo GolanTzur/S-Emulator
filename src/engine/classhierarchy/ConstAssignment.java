@@ -2,12 +2,12 @@ package engine.classhierarchy;
 
 import engine.ProgramVars;
 import engine.basictypes.*;
-import engine.classhierarchy.*;
+//import engine.classhierarchy.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+//import java.util.Collection;
+//import java.util.Iterator;
+//import java.util.List;
 
 public class ConstAssignment extends SyntheticSugar {
     private int arg;// Variable to be decremented

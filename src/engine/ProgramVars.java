@@ -71,19 +71,5 @@ public class ProgramVars implements Cloneable {
             var.setValue(0);
         y.setValue(0);
     }
-    /*public ProgramVars clone() {
-        ProgramVars copy = new ProgramVars();
-        copy.input = new HashMap<>();
-        for (Map.Entry<Integer, Variable> entry : this.input.entrySet()) {
-            copy.input.put(entry.getKey(), entry.getValue().clone(copy));
-        }
-        copy.envvars = new HashMap<>();
-        for (Map.Entry<Integer, Variable> entry : this.envvars.entrySet()) {
-            copy.envvars.put(entry.getKey(), entry.getValue().clone(copy));
-        }
-        copy.y = this.y.clone(copy);
-        return copy;
-    }*/
-
 
 }

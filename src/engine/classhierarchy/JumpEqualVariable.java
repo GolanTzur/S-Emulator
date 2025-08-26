@@ -39,7 +39,7 @@ public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
         replaceLabels();
         return commands; // Getter for commands
     }
-    public void replaceLabels() {
+    private void replaceLabels() {
         int nextLabelNum = 4;
         ArrayList<String> usedLabels = new ArrayList<>(List.of("L1","L2","L3"));
         if(usedLabels.contains(this.lab.getLabel())) {

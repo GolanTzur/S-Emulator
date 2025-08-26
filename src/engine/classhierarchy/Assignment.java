@@ -38,7 +38,7 @@ public class Assignment extends SyntheticSugar{
         replaceLabels();
         return commands; // Getter for commands
     }
-    public void replaceLabels()
+    private void replaceLabels()
     {
         String currentLabel=this.lab.getLabel();
         if(currentLabel.equals("L1"))
