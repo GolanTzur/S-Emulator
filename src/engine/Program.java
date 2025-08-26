@@ -195,8 +195,17 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
             res += input + " "; // Concatenate string representations of all input variables
         }
         res+="\nProgram Labels: \n";
+        boolean showExit=false;
         for(HasLabel label : getallprogramlabels()) {
-            res += label + " "; // Concatenate string representations of all labels
+            if(label instanceof Label) {
+                res += label + " "; // Concatenate string representations of all labels
+            }
+            else {
+                showExit=true;
+            }
+        }
+        if (showExit) {
+            res += FixedLabel.EXIT + " "; // Concatenate EXIT label if present
         }
         res+="\nProgram Instructions: \n";
         for(AbstractInstruction instruction : instructions) {
