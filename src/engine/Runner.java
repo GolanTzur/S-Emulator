@@ -66,7 +66,7 @@ public class Runner {
                     if(j==i) continue; // Skip the current instruction
                     AbstractInstruction instr = instructions.get(j);
                     if (instr instanceof HasGotoLabel && ((HasGotoLabel) instr).getGotolabel().equals(FixedLabel.DEFAULT)) {
-                        instr.setLab(nextLabel.myClone()); // Clone the label to avoid reference issues
+                        ((HasGotoLabel) instr).setGotolabel(nextLabel.myClone()); // Clone the label to avoid reference issues
                     }
                 }
                 break;
@@ -74,7 +74,48 @@ public class Runner {
         }
 
     }
+    public void replaceFirstLabelAndGoto(ArrayList<AbstractInstruction> instructions) {
+        int nextIndex = 0;
+        HasLabel newLabel = null;
+        HasLabel newGotoLabel = null;
+        HasLabel originalLabel = null;
+        HasLabel originalGotoLabel = null;
 
+        // Find the first instruction with a Label
+        for (AbstractInstruction instr : instructions) {
+            if (instr.getLab() instanceof Label) {
+                originalLabel = instr.getLab();
+                // Generate unused label for instruction label
+                do {
+                    newLabel = new Label("L" + nextIndex++);
+                } while (containsLabel(instructions, newLabel));
+                instr.setLab(newLabel);
+
+                // If instruction has gotoLabel, generate unused label for it
+                if (instr instanceof HasGotoLabel) {
+                    originalGotoLabel = ((HasGotoLabel) instr).getGotolabel();
+                    do {
+                        newGotoLabel = new Label("L" + nextIndex++);
+                    } while (containsLabel(instructions, newGotoLabel));
+                    ((HasGotoLabel) instr).setGotolabel(newGotoLabel);
+                }
+                break; // Only replace the first found
+            }
+        }
+
+        // Replace all other occurrences of the original label and gotoLabel
+        for (AbstractInstruction instr : instructions) {
+            if (instr.getLab().equals(originalLabel)) {
+                instr.setLab(newLabel);
+            }
+            if (originalGotoLabel != null && instr instanceof HasGotoLabel) {
+                HasGotoLabel gotoInstr = (HasGotoLabel) instr;
+                if (gotoInstr.getGotolabel().equals(originalGotoLabel)) {
+                    gotoInstr.setGotolabel(newGotoLabel);
+                }
+            }
+        }
+    }
     boolean containsLabel(ArrayList<AbstractInstruction> instructions, HasLabel label) {
         for (AbstractInstruction instruction : instructions) {
             if (instruction.getLab().equals(label)) {

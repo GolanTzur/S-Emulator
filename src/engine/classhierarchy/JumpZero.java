@@ -24,8 +24,24 @@ public class JumpZero extends SyntheticSugar implements HasGotoLabel {
         tempCommands.add(new GotoLabel(getz.next(), gotoLabel.myClone()));
         tempCommands.add(new Neutral(new Label("L1"),this.var));
         this.commands = tempCommands;
+        replaceL1();
         return commands; // Getter for commands
     }
+    private void replaceL1()
+    {
+        int nextLabelNum = 1;
+        if (this.lab.getLabel().equals("L1") || this.gotoLabel.getLabel().equals("L1")) {
+            nextLabelNum++;
+            if (this.gotoLabel.getLabel().equals("L2") || this.lab.getLabel().equals("L2")) {
+                nextLabelNum++;
+            }
+            HasLabel newLabel = new Label("L"+nextLabelNum);
+            ((HasGotoLabel)this.commands.get(0)).setGotolabel(newLabel);
+            this.commands.get(2).setLab(newLabel);
+        }
+
+    }
+
     public HasLabel getGotolabel() {
         return gotoLabel; // Getter for gotoLabel
     }

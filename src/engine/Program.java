@@ -70,9 +70,9 @@ public class Program {
                 }// Remove label collisions in the expanded instructions
                 replaceLabels(expandedInstructions, allprogramlabels); // Replace labels in the expanded instructions if needed
                 instructions.addAll(i, expandedInstructions); // Replace the synthetic sugar with its expanded instructions
-
-                i += expandedInstructions.size()-1; // Adjust index to account for added instructions
+                i+=expandedInstructions.size()-1; // Adjust index to account for the newly added instructions
             }
+
         }
     }
 
@@ -172,19 +172,6 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
             }
         }
 
-
-        // Replace labels and goto targets
-       for (AbstractInstruction instruction : instructions) {
-        if (instruction.getLab() instanceof Label && labelMap.containsKey(instruction.getLab())) {
-            instruction.setLab(labelMap.get(instruction.getLab()));
-        }
-        if (instruction instanceof HasGotoLabel) {
-            HasGotoLabel gotoLabel = (HasGotoLabel) instruction;
-            if (labelMap.containsKey(gotoLabel.getGotolabel())) {
-                gotoLabel.setGotolabel(labelMap.get(gotoLabel.getGotolabel()));
-            }
-        }
-       }
    }
     public String getName() {
         return name; // Getter for program name

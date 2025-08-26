@@ -47,7 +47,7 @@ public class ConsoleUI {
                         System.out.println("No program loaded. Please load a program first.");
                         break;
                     }
-                    System.out.print(programCopy);
+                    System.out.print(program);
                     break;
                 case 3:
                     if(program==null){

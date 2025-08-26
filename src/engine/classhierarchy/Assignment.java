@@ -35,7 +35,41 @@ public class Assignment extends SyntheticSugar{
         tempCommands.add(new JumpNotZero(helper, new Label("L2")));
         tempCommands.add(new Neutral(new Label("L3"), this.var));
         this.commands = tempCommands;
+        replaceLabels();
         return commands; // Getter for commands
+    }
+    public void replaceLabels()
+    {
+        String currentLabel=this.lab.getLabel();
+        if(currentLabel.equals("L1"))
+        {
+            replaceL1(new Label("L4"));
+        }
+        else if(currentLabel.equals("L2"))
+        {
+            replaceL2(new Label("L4"));
+        }
+        else if(currentLabel.equals("L3"))
+        {
+            replaceL3(new Label("L4"));
+        }
+    }
+
+    private void replaceL1(HasLabel newLabel)
+    {
+        ((HasGotoLabel)this.commands.get(1)).setGotolabel(newLabel);
+        this.commands.get(3).setLab(newLabel);
+        ((HasGotoLabel) this.commands.get(5)).setGotolabel(newLabel);
+    }
+    private void replaceL2(HasLabel newLabel)
+    {
+        this.commands.get(6).setLab(newLabel);
+        ((HasGotoLabel) this.commands.get(9)).setGotolabel(newLabel);
+    }
+    private void replaceL3(HasLabel newLabel)
+    {
+        ((HasGotoLabel)this.commands.get(2)).setGotolabel(newLabel);
+        this.commands.get(10).setLab(newLabel);
     }
     public String toString() {
         String parentPrefix = super.toString();

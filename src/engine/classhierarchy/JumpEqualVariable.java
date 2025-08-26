@@ -5,6 +5,7 @@ import engine.basictypes.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
     private Variable arg;// Variable to be decremented
@@ -22,10 +23,10 @@ public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
     }
     public ArrayList<AbstractInstruction> expand(ProgramVars context) {
         this.commands = new ArrayList<>();
-        Iterator<Variable> it = context.getZinputs(3).iterator();
+        Iterator<Variable> it = context.getZinputs(2).iterator();
         Variable z1 = it.next();
         Variable z2 = it.next();
-        Variable z3 = it.next();
+        Variable z3 = Variable.createDummyVar(VariableType.WORK, 1, 0);
         this.commands.add(new Assignment(this.lab.myClone(), z1, this.var));
         this.commands.add(new Assignment(z2, arg));
         this.commands.add(new JumpZero(new Label("L2"), z3, new Label("L3")));
@@ -35,8 +36,61 @@ public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
         this.commands.add(new GotoLabel(z3, new Label("L2")));
         this.commands.add(new JumpZero(new Label("L3"), z2, gotoLabel.myClone()));
         this.commands.add(new Neutral(new Label("L1"), this.var));
+        replaceLabels();
         return commands; // Getter for commands
     }
+    public void replaceLabels() {
+        int nextLabelNum = 4;
+        ArrayList<String> usedLabels = new ArrayList<>(List.of("L1","L2","L3"));
+        if(usedLabels.contains(this.lab.getLabel())) {
+            if(gotoLabel.getLabel().equals("L"+nextLabelNum)) {
+                nextLabelNum++;
+            }
+            String currentLabel = this.lab.getLabel();
+            if(currentLabel.equals("L1")) {
+                replaceL1(new Label("L"+nextLabelNum));
+            }
+            else if(currentLabel.equals("L2")) {
+                replaceL2(new Label("L"+nextLabelNum));
+            }
+            else if(currentLabel.equals("L3")) {
+                replaceL3(new Label("L"+nextLabelNum));
+            }
+            usedLabels.remove(currentLabel);
+            usedLabels.add("L"+nextLabelNum);
+            nextLabelNum++;
+        }
+        if(usedLabels.contains(gotoLabel.getLabel())) {
+            if(lab.getLabel().equals("L"+nextLabelNum)) {
+                nextLabelNum++;
+            }
+            String currentLabel = this.gotoLabel.getLabel();
+            if(currentLabel.equals("L1")) {
+                replaceL1(new Label("L"+nextLabelNum));
+            }
+            else if(currentLabel.equals("L2")) {
+                replaceL2(new Label("L"+nextLabelNum));
+            }
+            else if(currentLabel.equals("L3")) {
+                replaceL3(new Label("L"+nextLabelNum));
+            }
+
+        }
+
+        }
+
+    private void replaceL1(HasLabel label) {
+        this.commands.get(8).setLab(label);
+        ((HasGotoLabel)this.commands.get(3)).setGotolabel(label);
+    }
+    private void replaceL2(HasLabel label) {
+        this.commands.get(2).setLab(label);
+        ((HasGotoLabel)this.commands.get(6)).setGotolabel(label);
+    }
+    private void replaceL3(HasLabel label) {
+        this.commands.get(7).setLab(label);
+    }
+
     public HasLabel getGotolabel() {
         return gotoLabel; // Getter for gotoLabel
     }
