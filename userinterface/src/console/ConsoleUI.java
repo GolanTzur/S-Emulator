@@ -65,8 +65,9 @@ public class ConsoleUI {
                             expansionsRequested=-1;
                         }
                     } while(expansionsRequested <0 || expansionsRequested > expansionsAvailable);
+                    int diffDegrees=program.getProgramDegree()-programCopy.getProgramDegree();
 
-                    if(expansionsRequested != programCopy.getProgramDegree()){ // If the degree has changed, re-deploy the program
+                    if(expansionsRequested != diffDegrees){ // If the degree has changed, re-deploy the program
                         programCopy= program.clone();
                         programCopy.deployToDegree(expansionsRequested);
                     }
@@ -91,7 +92,8 @@ public class ConsoleUI {
                         }
                     } while(selectedDegree < 0  || selectedDegree > degree);
 
-                    if(selectedDegree != programCopy.getProgramDegree()){ // If the degree has changed, re-deploy the program
+                    diffDegrees=program.getProgramDegree()-programCopy.getProgramDegree();
+                    if(selectedDegree != diffDegrees){ // If the degree has changed, re-deploy the program
                         programCopy= program.clone();
                         programCopy.deployToDegree(selectedDegree);
                     }
