@@ -35,7 +35,7 @@ public abstract class SyntheticSugar extends AbstractInstruction {
         if(this.commands == null) {
             this.commands = expand(context);
         }
-        return new Runner(this.commands,context).run();
+        return new Runner(this.commands,context).run(false);
     }
 
 }

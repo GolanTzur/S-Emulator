@@ -14,18 +14,23 @@ import java.util.Optional;
 public class Runner {
     private ArrayList<AbstractInstruction> instructions;
     private ProgramVars context;
+    private int cycleCount = 0;
 
     public Runner(ArrayList<AbstractInstruction> instructions, ProgramVars context) {
         this.instructions = instructions; // Initialize with the provided instructions
         this.context = context;
     }
 
-    public HasLabel run() {
+    public HasLabel run(boolean countCycles) {
         Map<HasLabel, Integer> labelIndices = getIndices();
         int currIndex = 0;// Get the indices of labels
         HasLabel nextLabel = null;
         while (currIndex < instructions.size() && instructions.get(currIndex).getLab() != FixedLabel.EXIT) {
+
             AbstractInstruction currentInstruction = instructions.get(currIndex);
+            if(countCycles){
+                this.cycleCount+=currentInstruction.getType().getCycles();
+            }
             nextLabel = currentInstruction.evaluate(context); // Evaluate the current instruction
             if (nextLabel == FixedLabel.EMPTY) {
                 currIndex++; // Move to the next instruction if no label is returned
@@ -124,6 +129,9 @@ public class Runner {
         }
         return false; // Return false if the label is not found
 
+    }
+    public int getCycleCount() {
+        return cycleCount;
     }
 }
 

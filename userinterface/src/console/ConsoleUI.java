@@ -98,8 +98,8 @@ public class ConsoleUI {
                         programCopy.deployToDegree(selectedDegree);
                     }
                     Collection<Variable>initVars= programCopy.setUserInput();
-                    int cycles= programCopy.getProgramCycles();
                     int y=programCopy.execute().getValue();
+                    int cycles= programCopy.getCycleCount();
                     try {
                         new Statistics(selectedDegree, initVars, cycles, y).appendStatistics();
                     }catch (Exception e) {
@@ -109,7 +109,7 @@ public class ConsoleUI {
                         System.out.println("After Execution: ");
                         System.out.println(programCopy);
                         System.out.println(programCopy.getVars());
-                        System.out.println("Total Cycles: " + programCopy.getProgramCycles());
+                        System.out.println("Total Cycles: " + cycles);
                     }
                     break;
                 case 5:

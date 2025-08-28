@@ -13,6 +13,7 @@ import java.util.*;
 
 public class Program {
     private final String name;
+    private int cycleCount=0;
     private ArrayList<AbstractInstruction> instructions;
     private int programCounter = 0; // Program counter to track execution position
     private ProgramVars vars;
@@ -29,10 +30,16 @@ public class Program {
     public ProgramVars getVars() {
         return vars;
     }
+
+
     public Variable execute() {
-        new Runner(instructions,vars).run();
+        Runner runner= new Runner(instructions,vars);
+        runner.run(true);
+        this.cycleCount=runner.getCycleCount();
         return vars.getY();
     }
+
+
     private Set<HasLabel> getallprogramlabels()
     {
         Set<HasLabel> labels = new HashSet<>();
@@ -225,10 +232,10 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
                 }).map(instruction -> ((SyntheticType)((SyntheticSugar)instruction).getType()).getDegree())
                 .orElse(0); // Returns the maximum degree of synthetic sugars in the program);
     }
-    public int getProgramCycles(){
+    /*public int getProgramCycles(){
         return this.instructions.stream().mapToInt((instruction) -> instruction.getType().getCycles())
                 .sum(); // Returns the total cycles of all instructions in the program
-    }
+    }*/
     public void checkValidity() throws  Exception
     {
         if(instructions==null) {
@@ -287,7 +294,11 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         }
         return new Program(this.name, clonedInstructions,vars);
     }
-
-
+    public int getCycleCount() {
+        return cycleCount;
+    }
+    public void setCycleCount(int cycleCount) {
+        this.cycleCount = cycleCount;
+    }
 
 }
