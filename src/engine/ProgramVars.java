@@ -1,10 +1,8 @@
 package engine;
 
-import engine.basictypes.InstructionType;
-import engine.basictypes.Label;
 import engine.basictypes.Variable;
 import engine.basictypes.VariableType;
-import engine.classhierarchy.Instruction;
+
 
 import java.util.*;
 

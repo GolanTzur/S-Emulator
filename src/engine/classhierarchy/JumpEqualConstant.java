@@ -6,7 +6,7 @@ import engine.basictypes.*;
 import java.util.*;
 
 public class JumpEqualConstant extends SyntheticSugar implements HasGotoLabel {
-    private int arg;// Variable to be decremented
+    private final int arg;// Variable to be decremented
     private HasLabel gotoLabel;
 
     public JumpEqualConstant(HasLabel lab, Variable value, int arg, HasLabel gotoLabel) {

@@ -17,8 +17,6 @@ public class Assignment extends SyntheticSugar{
         this.arg = arg;
     }
     public ArrayList<AbstractInstruction> expand(ProgramVars context) {
-        //Collection<Variable> nextz= context.getZinputs(2);
-        //Iterator<Variable> it=nextz.iterator();
         Variable gotolabelarg=Variable.createDummyVar(VariableType.WORK,1,0);
         Variable helper=Variable.createDummyVar(VariableType.WORK,2,0);
 
