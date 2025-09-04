@@ -9,9 +9,10 @@ import engine.classhierarchy.SyntheticSugar;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.*;
 
-public class Program {
+public class Program implements Serializable {
     private final String name;
     private int cycleCount=0;
     private ArrayList<AbstractInstruction> instructions;

@@ -4,9 +4,10 @@ import engine.basictypes.Variable;
 import engine.basictypes.VariableType;
 
 
+import java.io.Serializable;
 import java.util.*;
 
-public class ProgramVars implements Cloneable {
+public class ProgramVars implements Cloneable, Serializable {
     private Map<Integer, Variable> input;
     private Map<Integer, Variable> envvars;
     private Variable y; //Default pos for y

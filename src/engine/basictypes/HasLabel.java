@@ -2,7 +2,9 @@ package engine.basictypes;
 
 //import java.util.Optional;
 
-public interface HasLabel{
+import java.io.Serializable;
+
+public interface HasLabel extends Serializable {
     String getLabel();
     HasLabel myClone(); // Returns a clone of the object with the same label
 

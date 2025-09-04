@@ -1,6 +1,7 @@
 package console;
 
 import engine.Program;
+import engine.ProgramState;
 import engine.Statistics;
 import engine.XMLHandler;
 import engine.basictypes.Variable;
@@ -126,6 +127,27 @@ public class ConsoleUI {
                     exit = true;
                     System.out.println("Exiting S-Emulator IDE. Goodbye!");
                     break;
+                case 7:
+                    ProgramState state=new ProgramState(program,programCopy);
+                    try {
+                        state.saveProgramState();
+                        System.out.println("Program state saved successfully.");
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case 8:
+                    try {
+                        ProgramState toLoad=ProgramState.loadProgramState();
+                        program=toLoad.getOrigin();
+                        programCopy=toLoad.getCopy();
+                        Statistics.reset();
+                        System.out.println("Program state loaded successfully.");
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
@@ -137,12 +159,13 @@ public class ConsoleUI {
     }
 
     public static void Menu() {
-
         System.out.println("1. Load Program from XML");
         System.out.println("2. Display Program");
         System.out.println("3. Expand Program");
         System.out.println("4. Run Program");
         System.out.println("5. Show History and Statistics");
         System.out.println("6. Exit");
+        System.out.println("7. Save Current Program State");
+        System.out.println("8. Load Program State");
     }
 }

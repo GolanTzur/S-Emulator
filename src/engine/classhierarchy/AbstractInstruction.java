@@ -3,7 +3,9 @@ package engine.classhierarchy;
 import engine.ProgramVars;
 import engine.basictypes.*;
 
-public abstract class AbstractInstruction implements Evaluable,Cloneable {
+import java.io.Serializable;
+
+public abstract class AbstractInstruction implements Evaluable,Cloneable, Serializable {
     protected HasLabel lab;
     protected AbstractInstructionType type;
     protected Variable var;
