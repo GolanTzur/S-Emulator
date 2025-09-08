@@ -75,6 +75,9 @@ public class Assignment extends SyntheticSugar{
         String parentSuffix = String.format("(%d)",this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
+    public String getChildPart(){
+        return String.format("%s <- %s", var, arg);
+    }
     public Assignment clone(ProgramVars context) {
          return new Assignment(this.var.clone(context),this.arg.clone(context));
     }

@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<ScrollPane fitToHeight="true" fitToWidth="true" minHeight="538.6666870117188" minWidth="756.6666870117188" prefHeight="530.0" prefWidth="788.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="windowui.MainController">
+   <content>
+      <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="479.3333435058594" minWidth="565.3333129882812" prefHeight="515.0" prefWidth="608.0" style="-fx-background-color: white;">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="308.0" minWidth="10.0" prefWidth="249.33331298828125" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="367.3333740234375" minWidth="10.0" prefWidth="154.0000203450521" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="367.3333740234375" minWidth="10.0" prefWidth="197.99997965494794" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="128.66668701171875" minHeight="0.0" prefHeight="45.333343505859375" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="318.3333333333333" minHeight="10.0" prefHeight="48.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="318.3333168029785" minHeight="10.0" prefHeight="40.66667175292969" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="318.3333168029785" minHeight="10.0" prefHeight="42.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="308.6666615804036" minHeight="10.0" prefHeight="140.66667683919272" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="308.6666615804036" minHeight="10.0" prefHeight="19.99998982747394" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="308.6666615804036" minHeight="10.0" prefHeight="64.66666666666669" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="308.6666615804036" minHeight="10.0" prefHeight="100.66666666666663" vgrow="ALWAYS" />
+            <RowConstraints maxHeight="308.6666615804036" minHeight="10.0" prefHeight="45.99999999999994" vgrow="ALWAYS" />
+        </rowConstraints>
+         <children>
+            <Label alignment="BOTTOM_CENTER" prefHeight="40.0" prefWidth="513.0" text="S-Emulator IDE" GridPane.columnSpan="3">
+               <padding>
+                  <Insets left="200.0" />
+               </padding>
+               <font>
+                  <Font name="System Bold" size="28.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+               <children>
+                  <Button id="load" fx:id="load" mnemonicParsing="false" onAction="#loadProgram" styleClass="main-buttons" text="Load">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Button>
+                  <TextField id="fileroute" fx:id="fileroute" prefHeight="25.0" prefWidth="327.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+               <GridPane.margin>
+                  <Insets left="20.0" />
+               </GridPane.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="20.0" GridPane.columnSpan="2" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets left="20.0" />
+               </GridPane.margin>
+               <children>
+                  <Button id="loadsavedprogram" fx:id="loadsavedprogram" mnemonicParsing="false" onAction="#loadSavedProgram" prefHeight="25.0" prefWidth="128.0" styleClass="main-buttons" text="Load Saved Program" textAlignment="JUSTIFY" />
+                  <Button id="saveprogram" fx:id="saveprogram" mnemonicParsing="false" onAction="#saveProgram" prefHeight="25.0" prefWidth="136.0" styleClass="main-buttons" text="Save Program" />
+                  <Button id="run" fx:id="run" mnemonicParsing="false" onAction="#runProgram" prefHeight="25.0" prefWidth="75.0" styleClass="main-buttons" text="Run">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnSpan="2" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets left="20.0" />
+               </GridPane.margin>
+               <children>
+                  <Button id="expand" fx:id="expand" mnemonicParsing="false" onAction="#expandProgram" prefHeight="41.0" prefWidth="52.0" styleClass="vice-buttons" text="Expand">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Button>
+                  <Label id="currdeg" fx:id="currdeg" text="1">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="/">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label id="maxdeg" fx:id="maxdeg" text="2">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="Degrees">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Button id="collapse" fx:id="collapse" mnemonicParsing="false" onAction="#collapseProgram" prefHeight="41.0" prefWidth="51.0" styleClass="vice-buttons" text="Collapse">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Button>
+                  <Button id="functionselector" fx:id="functionselector" alignment="CENTER" mnemonicParsing="false" onAction="#selectFunction" prefHeight="42.0" prefWidth="59.0" styleClass="vice-buttons" text="Function Selector" textAlignment="JUSTIFY" wrapText="true" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets left="20.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Button>
+                  <Button id="highlightselection" fx:id="highlightselection" mnemonicParsing="false" onAction="#highlightSelection" prefHeight="42.0" prefWidth="57.0" styleClass="vice-buttons" text="Highlight Selection" wrapText="true">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+            <StackPane GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.rowSpan="3" GridPane.vgrow="ALWAYS">
+               <GridPane.margin>
+                  <Insets left="20.0" top="5.0" />
+               </GridPane.margin>
+               <children>
+                  <AnchorPane>
+                     <children>
+                        <TableView id="instructionstable" fx:id="instructionstable" editable="true" prefHeight="219.0" prefWidth="393.0">
+                          <columns>
+                            <TableColumn id="instructiontablenumber" fx:id="instructiontablenumber" prefWidth="43.999969482421875" text="#" />
+                            <TableColumn id="instructiontablelabel" fx:id="instructiontablelabel" prefWidth="50.666656494140625" text="Label" />
+                              <TableColumn id="instructiontabletype" fx:id="instructiontabletype" prefWidth="48.666656494140625" text="Type" />
+                              <TableColumn id="instructiontableinstr" fx:id="instructiontableinstr" prefWidth="193.99996948242188" text="Instruction" />
+                              <TableColumn id="instructiontablecycles" fx:id="instructiontablecycles" prefWidth="52.66668701171875" text="Cycles" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </StackPane>
+            <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnSpan="2" GridPane.rowIndex="7" GridPane.rowSpan="2" GridPane.vgrow="ALWAYS">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="TOP" prefHeight="26.0" prefWidth="400.0" text="Command's History">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </Label>
+                  <AnchorPane prefHeight="105.0" prefWidth="345.0">
+                     <children>
+                        <TableView id="commandshistory" fx:id="commandshistory" editable="true" prefHeight="105.0" prefWidth="394.0">
+                           <columns>
+                              <TableColumn id="commandstablenumber" fx:id="commandstablenumber" maxWidth="43.999969482421875" minWidth="43.999969482421875" prefWidth="43.999969482421875" resizable="false" text="#" />
+                              <TableColumn id="commandstablelabel" fx:id="commandstablelabel" maxWidth="50.666656494140625" minWidth="50.666656494140625" prefWidth="50.666656494140625" resizable="false" text="Label" />
+                              <TableColumn id="commandstabletype" fx:id="commandstabletype" maxWidth="48.666656494140625" minWidth="48.666656494140625" prefWidth="48.666656494140625" resizable="false" text="Type" />
+                              <TableColumn id="commandstableinstr" fx:id="commandstableinstr" maxWidth="1.7976931348623157E308" prefWidth="196.66665649414062" text="Instruction" />
+                              <TableColumn id="commandstablecycles" fx:id="commandstablecycles" maxWidth="83.33331298828125" minWidth="50.6666259765625" prefWidth="52.0" resizable="false" text="Cycles" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+               </children>
+               <GridPane.margin>
+                  <Insets left="20.0" />
+               </GridPane.margin>
+            </VBox>
+            <VBox id="programinputsvbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="141.0" prefWidth="181.0" GridPane.columnIndex="2" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.vgrow="ALWAYS">
+               <children>
+                  <Label id="programinputs" fx:id="programinputs" alignment="CENTER" prefHeight="31.0" prefWidth="316.0" text="Program Inputs">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Label>
+                  <ScrollPane VBox.vgrow="ALWAYS">
+                     <content>
+                        <VBox id="programinputsvbox" fx:id="programinputsvbox" fillWidth="false" prefHeight="114.0" prefWidth="301.0" />
+                     </content>
+                  </ScrollPane>
+               </children>
+               <GridPane.margin>
+                  <Insets left="10.0" right="10.0" />
+               </GridPane.margin>
+            </VBox>
+            <VBox id="programinputsvbox" prefHeight="150.0" prefWidth="316.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
+               <children>
+                  <Label id="programinputs" fx:id="programinputs1" alignment="CENTER" prefHeight="27.0" prefWidth="247.0" text="Program Variables">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <ScrollPane maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="83.0" prefWidth="246.0" VBox.vgrow="ALWAYS">
+                     <content>
+                        <VBox id="programvarsvbox" fx:id="programvarsvbox" fillWidth="false" prefHeight="82.0" prefWidth="219.0">
+                           <padding>
+                              <Insets bottom="5.0" />
+                           </padding>
+                        </VBox>
+                     </content>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </ScrollPane>
+                  <HBox alignment="CENTER_LEFT" spacing="20.0">
+                     <children>
+                        <Button id="debug" fx:id="debug" mnemonicParsing="false" onAction="#debugProgram" text="Debug" />
+                        <Button id="resume" fx:id="resume" mnemonicParsing="false" onAction="#resumeProgram" text="Resume" />
+                        <Button id="stop" fx:id="stop" mnemonicParsing="false" onAction="#stopdebug" text="Stop" />
+                     </children>
+                  </HBox>
+               </children>
+               <GridPane.margin>
+                  <Insets left="10.0" right="10.0" top="10.0" />
+               </GridPane.margin>
+            </VBox>
+            <VBox alignment="TOP_CENTER" prefHeight="192.0" prefWidth="348.0" spacing="3.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.rowSpan="3">
+               <children>
+                  <Label alignment="CENTER" prefHeight="29.0" prefWidth="203.0" text="Program's History">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </Label>
+                  <AnchorPane prefHeight="117.0" prefWidth="269.0">
+                     <children>
+                        <TableView id="programhistorytable" fx:id="programhistorytable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="117.0" prefWidth="317.0">
+                          <columns>
+                            <TableColumn id="historytablenumber" fx:id="historytablenumber" maxWidth="25.333373427391052" minWidth="25.333373427391052" prefWidth="25.333373427391052" resizable="false" text="#" />
+                            <TableColumn id="historytabledegree" fx:id="historytabledegree" maxWidth="48.66668510437012" minWidth="48.66668510437012" prefWidth="48.66668510437012" resizable="false" text="Degree" />
+                              <TableColumn id="historytableinput" fx:id="historytableinput" maxWidth="1.7976931348623157E308" prefWidth="120.00003051757812" text="Input" />
+                              <TableColumn id="historytableresult" fx:id="historytableresult" maxWidth="64.0" minWidth="64.0" prefWidth="64.0" resizable="false" text="Result" />
+                              <TableColumn id="historytablecycles" fx:id="historytablecycles" maxWidth="55.999959309895814" minWidth="55.999959309895814" prefWidth="55.999959309895814" resizable="false" text="Cycles" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+                  <Button id="rerun" fx:id="rerun" alignment="CENTER" mnemonicParsing="false" text="Rerun">
+                     <VBox.margin>
+                        <Insets bottom="15.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+               <GridPane.margin>
+                  <Insets left="10.0" right="10.0" />
+               </GridPane.margin>
+            </VBox>
+         </children>
+      </GridPane>
+   </content>
+</ScrollPane>

@@ -54,6 +54,9 @@ public class JumpZero extends SyntheticSugar implements HasGotoLabel {
         String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
+    public String getChildPart(){
+        return String.format("IF %s = 0 GOTO %s", var, gotoLabel);
+    }
     @Override
     public JumpZero clone(ProgramVars context) {
         return new JumpZero(lab.myClone(),var.clone(context),gotoLabel.myClone());

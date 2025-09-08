@@ -26,6 +26,9 @@ public class Decrease extends Instruction {
         String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
+    public String getChildPart(){
+        return String.format("%s <- %s-1", var, var);
+    }
     @Override
     public Decrease clone(ProgramVars context) {
         return new Decrease(lab.myClone(),this.var.clone(context));

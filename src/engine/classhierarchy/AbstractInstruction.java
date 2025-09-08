@@ -58,5 +58,6 @@ public abstract class AbstractInstruction implements Evaluable,Cloneable, Serial
 
 
     public abstract AbstractInstruction clone(ProgramVars context);
+    public abstract String getChildPart();
 
 }

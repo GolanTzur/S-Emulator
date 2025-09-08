@@ -23,6 +23,9 @@ public class Increase extends Instruction {
         String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
+    public String getChildPart(){
+        return String.format("%s <- %s+1", var, var);
+    }
     @Override
     public Increase clone(ProgramVars context) {
         return new Increase(lab.myClone(),this.var.clone(context));

@@ -103,6 +103,9 @@ public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
         String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
+    public String getChildPart(){
+        return String.format("IF %s = %s GOTO %s", var,arg, gotoLabel);
+    }
     @Override
     public JumpEqualVariable clone(ProgramVars context) {
         return new JumpEqualVariable(lab.myClone(),var.clone(context),arg,gotoLabel.myClone());

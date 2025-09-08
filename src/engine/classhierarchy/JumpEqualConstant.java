@@ -53,6 +53,9 @@ public class JumpEqualConstant extends SyntheticSugar implements HasGotoLabel {
         String parentSuffix = String.format("(%d)", this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
+    public String getChildPart(){
+        return String.format("IF %s = %d GOTO %s", var, arg, gotoLabel);
+    }
 
     private void replaceLabels() {
         int nextLabelNum = 1;
