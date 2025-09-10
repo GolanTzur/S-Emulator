@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -36,14 +37,15 @@
             <RowConstraints maxHeight="308.6666615804036" minHeight="10.0" prefHeight="45.99999999999994" vgrow="ALWAYS" />
         </rowConstraints>
          <children>
-            <Label alignment="BOTTOM_CENTER" prefHeight="40.0" prefWidth="513.0" text="S-Emulator IDE" GridPane.columnSpan="3">
-               <padding>
-                  <Insets left="200.0" />
-               </padding>
-               <font>
-                  <Font name="System Bold" size="28.0" />
-               </font>
-            </Label>
+            <StackPane alignment="TOP_CENTER" GridPane.columnSpan="3">
+               <children>
+                  <Label alignment="BOTTOM_CENTER" prefHeight="40.0" prefWidth="513.0" text="S-Emulator IDE">
+                     <font>
+                        <Font name="System Bold" size="28.0" />
+                     </font>
+                  </Label>
+               </children>
+            </StackPane>
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
                <children>
                   <Button id="load" fx:id="load" mnemonicParsing="false" onAction="#loadProgram" styleClass="main-buttons" text="Load">
@@ -134,26 +136,28 @@
                   </Button>
                </children>
             </HBox>
-            <StackPane GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.rowSpan="3" GridPane.vgrow="ALWAYS">
+            <AnchorPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="224.0" prefWidth="369.0" GridPane.columnSpan="2" GridPane.rowIndex="4" GridPane.rowSpan="3">
+               <children>
+                  <TableView id="instructionstable" fx:id="instructionstable" editable="true" prefHeight="219.0" prefWidth="395.0" AnchorPane.bottomAnchor="1.3333333333333286" AnchorPane.leftAnchor="1.3333333333333333" AnchorPane.rightAnchor="1.3333333333333144" AnchorPane.topAnchor="1.3333333333333333">
+                    <columns>
+                      <TableColumn id="instructiontablenumber" fx:id="instructiontablenumber" maxWidth="44.0" minWidth="44.0" prefWidth="44.0" resizable="false" text="#" />
+                      <TableColumn id="instructiontablelabel" fx:id="instructiontablelabel" maxWidth="52.666656494140625" minWidth="52.666656494140625" prefWidth="52.666656494140625" resizable="false" text="Label" />
+                        <TableColumn id="instructiontabletype" fx:id="instructiontabletype" maxWidth="48.666656494140625" minWidth="48.666656494140625" prefWidth="48.666656494140625" resizable="false" text="Type" />
+                        <TableColumn id="instructiontableinstr" fx:id="instructiontableinstr" prefWidth="189.33334350585938" text="Instruction" />
+                        <TableColumn id="instructiontablecycles" fx:id="instructiontablecycles" maxWidth="58.0" minWidth="58.0" prefWidth="58.0" resizable="false" text="Cycles" />
+                    </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TableView>
+               </children>
                <GridPane.margin>
                   <Insets left="20.0" top="5.0" />
                </GridPane.margin>
-               <children>
-                  <AnchorPane>
-                     <children>
-                        <TableView id="instructionstable" fx:id="instructionstable" editable="true" prefHeight="219.0" prefWidth="393.0">
-                          <columns>
-                            <TableColumn id="instructiontablenumber" fx:id="instructiontablenumber" prefWidth="43.999969482421875" text="#" />
-                            <TableColumn id="instructiontablelabel" fx:id="instructiontablelabel" prefWidth="50.666656494140625" text="Label" />
-                              <TableColumn id="instructiontabletype" fx:id="instructiontabletype" prefWidth="48.666656494140625" text="Type" />
-                              <TableColumn id="instructiontableinstr" fx:id="instructiontableinstr" prefWidth="193.99996948242188" text="Instruction" />
-                              <TableColumn id="instructiontablecycles" fx:id="instructiontablecycles" prefWidth="52.66668701171875" text="Cycles" />
-                          </columns>
-                        </TableView>
-                     </children>
-                  </AnchorPane>
-               </children>
-            </StackPane>
+               <cursor>
+                  <Cursor fx:constant="DEFAULT" />
+               </cursor>
+            </AnchorPane>
             <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnSpan="2" GridPane.rowIndex="7" GridPane.rowSpan="2" GridPane.vgrow="ALWAYS">
                <children>
                   <Label alignment="CENTER" contentDisplay="TOP" prefHeight="26.0" prefWidth="400.0" text="Command's History">
@@ -163,13 +167,13 @@
                   </Label>
                   <AnchorPane prefHeight="105.0" prefWidth="345.0">
                      <children>
-                        <TableView id="commandshistory" fx:id="commandshistory" editable="true" prefHeight="105.0" prefWidth="394.0">
+                        <TableView id="commandshistory" fx:id="commandshistory" editable="true" prefHeight="105.0" prefWidth="394.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
                            <columns>
                               <TableColumn id="commandstablenumber" fx:id="commandstablenumber" maxWidth="43.999969482421875" minWidth="43.999969482421875" prefWidth="43.999969482421875" resizable="false" text="#" />
                               <TableColumn id="commandstablelabel" fx:id="commandstablelabel" maxWidth="50.666656494140625" minWidth="50.666656494140625" prefWidth="50.666656494140625" resizable="false" text="Label" />
                               <TableColumn id="commandstabletype" fx:id="commandstabletype" maxWidth="48.666656494140625" minWidth="48.666656494140625" prefWidth="48.666656494140625" resizable="false" text="Type" />
-                              <TableColumn id="commandstableinstr" fx:id="commandstableinstr" maxWidth="1.7976931348623157E308" prefWidth="196.66665649414062" text="Instruction" />
-                              <TableColumn id="commandstablecycles" fx:id="commandstablecycles" maxWidth="83.33331298828125" minWidth="50.6666259765625" prefWidth="52.0" resizable="false" text="Cycles" />
+                              <TableColumn id="commandstableinstr" fx:id="commandstableinstr" maxWidth="1.7976931348623157E308" prefWidth="189.99996948242188" text="Instruction" />
+                              <TableColumn id="commandstablecycles" fx:id="commandstablecycles" maxWidth="83.33331298828125" minWidth="50.6666259765625" prefWidth="58.66668701171875" resizable="false" text="Cycles" />
                            </columns>
                         </TableView>
                      </children>
@@ -181,12 +185,12 @@
             </VBox>
             <VBox id="programinputsvbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="141.0" prefWidth="181.0" GridPane.columnIndex="2" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.vgrow="ALWAYS">
                <children>
-                  <Label id="programinputs" fx:id="programinputs" alignment="CENTER" prefHeight="31.0" prefWidth="316.0" text="Program Inputs">
+                  <Label id="programinputs" fx:id="programinputs" alignment="CENTER" prefHeight="31.0" prefWidth="246.0" text="Program Inputs">
                      <font>
-                        <Font size="19.0" />
+                        <Font size="16.0" />
                      </font>
                   </Label>
-                  <ScrollPane VBox.vgrow="ALWAYS">
+                  <ScrollPane maxWidth="-Infinity" prefHeight="110.0" prefWidth="245.0" VBox.vgrow="ALWAYS">
                      <content>
                         <VBox id="programinputsvbox" fx:id="programinputsvbox" fillWidth="false" prefHeight="114.0" prefWidth="301.0" />
                      </content>
@@ -196,7 +200,7 @@
                   <Insets left="10.0" right="10.0" />
                </GridPane.margin>
             </VBox>
-            <VBox id="programinputsvbox" prefHeight="150.0" prefWidth="316.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
+            <VBox id="programinputsvbox" prefHeight="150.0" prefWidth="316.0" GridPane.columnIndex="2" GridPane.rowIndex="4" GridPane.rowSpan="2">
                <children>
                   <Label id="programinputs" fx:id="programinputs1" alignment="CENTER" prefHeight="27.0" prefWidth="247.0" text="Program Variables">
                      <font>
@@ -236,7 +240,7 @@
                   </Label>
                   <AnchorPane prefHeight="117.0" prefWidth="269.0">
                      <children>
-                        <TableView id="programhistorytable" fx:id="programhistorytable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="117.0" prefWidth="317.0">
+                        <TableView id="programhistorytable" fx:id="programhistorytable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="117.0" prefWidth="317.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="30.666666666666686" AnchorPane.topAnchor="0.0">
                           <columns>
                             <TableColumn id="historytablenumber" fx:id="historytablenumber" maxWidth="25.333373427391052" minWidth="25.333373427391052" prefWidth="25.333373427391052" resizable="false" text="#" />
                             <TableColumn id="historytabledegree" fx:id="historytabledegree" maxWidth="48.66668510437012" minWidth="48.66668510437012" prefWidth="48.66668510437012" resizable="false" text="Degree" />

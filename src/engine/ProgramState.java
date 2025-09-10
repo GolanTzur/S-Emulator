@@ -6,9 +6,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class ProgramState implements Serializable {
-    private static String sourceFile = "data\\programstate\\programstate.bin";
-    private Program origin;
-    private Program copy;
+    private static final String sourceFile = "data\\programstate\\programstate.bin";
+    private final Program origin;
+    private final Program copy;
 
     public ProgramState(Program origin, Program copy) {
         this.origin = origin;

@@ -285,7 +285,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
             initialVars.add(Variable.createDummyVar(input.getType(),input.getPosition(),input.getValue()));// Create a dummy variable to store the initial value of the input
             if(i>=userinputs_toInt.length) break; // Break if all inputs have been set
         }
-        return  initialVars;
+        return initialVars;
     }
     public Program clone() {
         ArrayList<AbstractInstruction> clonedInstructions = new ArrayList<>();

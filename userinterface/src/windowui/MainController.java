@@ -1,20 +1,27 @@
 package windowui;
 import engine.Program;
+import engine.ProgramState;
 import engine.XMLHandler;
+import engine.basictypes.Variable;
 import engine.classhierarchy.AbstractInstruction;
 import engine.classhierarchy.SyntheticSugar;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MainController {
@@ -23,7 +30,9 @@ public class MainController {
  private Program programcopy;
  private final SimpleIntegerProperty currdegree = new SimpleIntegerProperty(0);
  private final SimpleIntegerProperty maxdegree = new SimpleIntegerProperty(0);
- private String currentFilePath="";
+ private String currentFilePath ="";
+ private boolean loadedFromFile;
+ private Map<Integer, TextField> inputFields = new HashMap<>();
 
  @FXML
  private Button collapse;
@@ -141,15 +150,14 @@ public class MainController {
  void collapseProgram(ActionEvent event) {
   if(currdegree.get() == 0) {
    Alert alert = new Alert(Alert.AlertType.ERROR);
-   alert.setTitle("Expand Program Error");
-   alert.setHeaderText("Cannot expand further");
+   alert.setTitle("Collapse Program Error");
+   alert.setHeaderText("Cannot collapse further");
    alert.showAndWait();
    return;
   }
   currdegree.setValue(currdegree.getValue()-1);
   programcopy= program.clone();
   programcopy.deployToDegree(currdegree.getValue());
-
   instructionstable.setItems(getInstructions(programcopy));
   commandshistory.getItems().clear();
  }
@@ -188,19 +196,24 @@ public class MainController {
 
   XMLHandler xmlhandler = XMLHandler.getInstance();
   try {
+
    program = xmlhandler.loadProgram(fileroute.getText());
    program.checkValidity();
    programcopy = program.clone();
+
    programLoaded();
    currdegree.set(0);
    maxdegree.set(program.getProgramDegree());
+   setInputVariables(program);
+
    instructionstable.setItems(getInstructions(program));
    commandshistory.getItems().clear();
    programhistorytable.getItems().clear();
+   loadedFromFile=false;
    currentFilePath=fileroute.getText();
+
   } catch (Exception e) {
    Alert alert = new Alert(Alert.AlertType.ERROR);
-   instructionstable.getItems().clear();
    alert.setTitle("Load Program Error");
    alert.setHeaderText("Could not load the program");
    alert.setContentText(e.getMessage()); // or a custom message
@@ -217,9 +230,40 @@ public class MainController {
   setCommandshistoryListener();
  }
 
-
  @FXML
  void loadSavedProgram(ActionEvent event) {
+    if(loadedFromFile) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Load Program from file");
+        alert.setHeaderText("Program already loaded from file");
+        alert.showAndWait();
+     return;
+    }
+    try {
+     ProgramState toLoad = ProgramState.loadProgramState();
+     program = toLoad.getOrigin();
+     programcopy = toLoad.getCopy();
+     commandshistory.getItems().clear();
+     programhistorytable.getItems().clear();
+     instructionstable.setItems(getInstructions(programcopy));
+     loadedFromFile=true;
+     currdegree.set(program.getProgramDegree()-programcopy.getProgramDegree());
+     maxdegree.set(program.getProgramDegree());
+     programLoaded();
+     setInputVariables(program);
+     Alert alert = new Alert(Alert.AlertType.INFORMATION);
+     alert.setTitle("Load Program from file");
+     alert.setHeaderText(String.format("Program %s with degree %d/%d loaded successfully.",program.getName(),currdegree.getValue(),maxdegree.getValue()));
+     alert.showAndWait();
+     currentFilePath="";
+     fileroute.setText("");
+    } catch (Exception e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Load Program from file Error");
+        alert.setHeaderText("Could not load the program");
+        alert.setContentText(e.getMessage()); // or a custom message
+        alert.showAndWait();
+    }
 
  }
 
@@ -230,12 +274,43 @@ public class MainController {
 
  @FXML
  void runProgram(ActionEvent event) {
-
+  try {
+   loadVariablesToProgramCopy();
+  } catch (Exception e) {
+   Alert alert = new Alert(Alert.AlertType.ERROR);
+   alert.setTitle("Run Program Error");
+   alert.setHeaderText("Could not load input variables");
+   alert.setContentText(e.getMessage()); // or a custom message
+   alert.showAndWait();
+   return;
+  }
+  programcopy.execute();
+  showVariables();
  }
 
  @FXML
  void saveProgram(ActionEvent event) {
-
+    if(program==null || programcopy==null){
+     Alert alert = new Alert(Alert.AlertType.ERROR);
+     alert.setTitle("Save Program Error");
+     alert.setHeaderText("No program loaded");
+     alert.showAndWait();
+     return;
+    }
+    ProgramState state=new ProgramState(program,programcopy);
+    try {
+     state.saveProgramState();
+     Alert alert = new Alert(Alert.AlertType.INFORMATION);
+     alert.setTitle("Save Program");
+     alert.setHeaderText(String.format("Program %s with degree %d/%d saved successfully.",program.getName(),currdegree.getValue(),maxdegree.getValue()));
+     alert.showAndWait();
+    } catch (Exception e) {
+     Alert alert = new Alert(Alert.AlertType.ERROR);
+     alert.setTitle("Save Program Error");
+     alert.setHeaderText("Could not save the program");
+     alert.setContentText(e.getMessage()); // or a custom message
+     alert.showAndWait();
+    }
  }
 
  @FXML
@@ -301,6 +376,9 @@ public class MainController {
   programhistorytable.setPlaceholder(new Label("No program loaded"));
   instructionstable.getItems().clear();
   commandshistory.getItems().clear();
+  programhistorytable.getItems().clear();
+  inputFields.clear();
+  loadedFromFile=false;
   program=null;
   programcopy=null;
   expand.setVisible(false);
@@ -333,5 +411,100 @@ public class MainController {
   currdeg.textProperty().bind(currdegree.asString());
   maxdeg.textProperty().bind(maxdegree.asString());
  }
+ public void setInputVariables(Program program) {
+    programinputsvbox.getChildren().clear();
+    if(program==null) return;
+
+    Collection<Variable> inputs = program.getVars().getInput().values();
+    if(inputs.isEmpty()) {
+     programinputs.setText("No input variables");
+     return;
+    }
+
+  boolean fill=false;
+  Label previousLabel = null;
+  TextField previousTextField = null;
+
+  for (Map.Entry<Integer, Variable> entry : program.getVars().getInput().entrySet()) {
+   Integer varPos = entry.getKey();
+   Variable var = entry.getValue();
+
+   Label label = new Label(var.toString());
+   TextField textField = new TextField();
+   textField.setMaxSize(60, 60);
+
+   textField.textProperty().addListener((obs, oldValue, newValue) -> {
+    if (!newValue.matches("\\d*")) {
+     textField.setText(newValue.replaceAll("[^\\d]", ""));
+    }
+   });
+
+   inputFields.put(varPos, textField);
+    if(!fill) {
+     fill=true;
+     previousLabel = label;
+     previousTextField = textField;
+    }
+    else {
+     HBox hBox = new HBox(10,previousLabel,previousTextField, label,textField); // 10 is spacing between label and field
+     hBox.paddingProperty().set(new javafx.geometry.Insets(5, 5, 5, 5));
+     programinputsvbox.getChildren().add(hBox);
+     fill=false;
+    }
+  }
+    if(fill) {
+     HBox hBox = new HBox(10, previousLabel, previousTextField); // 10 is spacing between label and field
+     hBox.paddingProperty().set(new javafx.geometry.Insets(5, 5, 5, 5));
+     programinputsvbox.getChildren().add(hBox);
+    }
+ }
+ public void loadVariablesToProgramCopy() throws Exception {
+    if(programcopy==null) return;
+    for (Map.Entry<Integer, TextField> entry : inputFields.entrySet()) {
+     Integer varPos = entry.getKey();
+     TextField textField = entry.getValue();
+     String text = textField.getText();
+     if (text == null) {
+      throw new Exception("Input variable at position " + varPos + " is empty.");
+     }
+
+     if(text.isEmpty()) {
+      text = "0";
+     }
+
+     try {
+      int value = Integer.parseInt(text);
+      programcopy.getVars().getInput().get(varPos).setValue(value);
+     } catch (NumberFormatException e) {
+      throw new Exception("Input variable at position " + varPos + " is not a valid integer.");
+     }
+    }
+ }
+ public void showVariables()
+ {
+     HBox hBox = new HBox(10);// 10 is spacing between label and field
+     VBox inputVars = new VBox();
+     javafx.geometry.Insets insets = new javafx.geometry.Insets(5, 5, 5, 5);
+     inputVars.paddingProperty().set(insets);
+
+    for(Variable var:programcopy.getVars().getInput().values()) {
+     Label label = new Label(var.toString()+" = "+var.getValue());
+     inputVars.getChildren().add(label);
+    }
+    VBox workVars = new VBox();
+    workVars.paddingProperty().set(insets);
+
+    for (Variable var : programcopy.getVars().getEnvvars().values()) {
+     Label label = new Label(var.toString()+" = "+var.getValue());
+     workVars.getChildren().add(label);
+    }
+
+    Label yLabel= new Label("y = "+programcopy.getVars().getY().getValue());
+    yLabel.paddingProperty().set(insets);
+    hBox.getChildren().addAll(inputVars, workVars, yLabel);
+    programvarsvbox.getChildren().clear();
+    programvarsvbox.getChildren().add(hBox);
+ }
+
 
 }
