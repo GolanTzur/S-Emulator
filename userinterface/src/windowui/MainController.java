@@ -178,7 +178,7 @@ public class MainController {
    return;
   }
   currdegree.setValue(currdegree.getValue()+1);
-  programcopy.deployToDegree(currdegree.getValue());
+  programcopy.deployToDegree(1);
   instructionstable.setItems(getInstructions(programcopy));
   commandshistory.getItems().clear();
 
@@ -242,12 +242,15 @@ public class MainController {
      ProgramState toLoad = ProgramState.loadProgramState();
      program = toLoad.getOrigin();
      programcopy = toLoad.getCopy();
+
      commandshistory.getItems().clear();
      programhistorytable.getItems().clear();
      instructionstable.setItems(getInstructions(programcopy));
      loadedFromFile=true;
+
      currdegree.set(program.getProgramDegree()-programcopy.getProgramDegree());
      maxdegree.set(program.getProgramDegree());
+
      programLoaded();
      setInputVariables(program);
      Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -256,6 +259,7 @@ public class MainController {
      alert.showAndWait();
      currentFilePath="";
      fileroute.setText("");
+
     } catch (Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Load Program from file Error");

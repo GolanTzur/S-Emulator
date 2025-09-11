@@ -17,7 +17,10 @@ public class ConstAssignment extends SyntheticSugar {
         super(SyntheticType.CONSTANT_ASSIGNMENT,value);
         this.arg = arg;
     }
-    public ArrayList<AbstractInstruction> expand(ProgramVars context) {
+    public ArrayList<AbstractInstruction> expand(ProgramVars... context) {
+        if (context.length > 1)
+            throw new RuntimeException("Wrong number of arguments");
+
         this.commands=new ArrayList<>();
         this.commands.add(new ZeroVar(this.lab.myClone(),this.var));
         for (int i=0;i<arg;i++)

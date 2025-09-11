@@ -21,20 +21,29 @@ public class JumpEqualConstant extends SyntheticSugar implements HasGotoLabel {
         this.gotoLabel = gotoLabel; // Initialize gotoLabel
     }
 
-    public ArrayList<AbstractInstruction> expand(ProgramVars context) {
-        this.commands = new ArrayList<>();
-        Iterator<Variable> it = context.getZinputs(2).iterator();
-        Variable z1 = it.next(); // Get the first variable from the iterator
-       // Variable z2 = Variable.createDummyVar(VariableType.WORK, 1, 0);
-        Variable z2 = it.next(); // Get the second variable from the iterator
-        this.commands.add(new Assignment(this.lab.myClone(), z1, this.var)); // Call parent constructor with label and value
+    public ArrayList<AbstractInstruction> expand(ProgramVars... context) {
+        Variable z1,z2;
+        if(context.length==0)
+        {
+            z1=Variable.createDummyVar(VariableType.WORK,1,0);
+        }
+        else if(context.length==1) {
+            Iterator<Variable> it = context[0].getZinputs(1).iterator();
+            z1 = it.next();
+        }
+        else
+        {
+            throw new RuntimeException("Wrong number of arguments");
+        }
 
+        this.commands = new ArrayList<>();
+        this.commands.add(new Assignment(this.lab.myClone(), z1, this.var)); // Call parent constructor with label and value
         for (int i = 0; i < arg; i++) {
             this.commands.add(new JumpZero(z1, new Label("L1")));// Add Increase instruction
             this.commands.add(new Decrease(z1)); // Add Increase instruction
         }
         this.commands.add(new JumpNotZero(z1, new Label("L1")));// Add JumpNotZero instruction
-        this.commands.add(new GotoLabel(z2, gotoLabel.myClone())); // Add GotoLabel instruction
+        this.commands.add(new GotoLabel(gotoLabel.myClone())); // Add GotoLabel instruction
         this.commands.add(new Neutral(new Label("L1"), this.var));
         replaceLabels();
         return commands; // Getter for commands

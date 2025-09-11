@@ -122,8 +122,7 @@ public class XMLHandler { // Singleton class to handle XML operations
                 case GOTO_LABEL:
                     String gotoLabel = lookforValue("gotoLabel", sin.getSInstructionArguments().getSInstructionArgument());
                     HasLabel gotoLabel_label = loadLabel(gotoLabel);
-                    Variable dummyVar = Variable.createDummyVar(VariableType.WORK, var.getPosition(), 0);
-                    instructions.add(new GotoLabel(label, dummyVar, gotoLabel_label));
+                    instructions.add(new GotoLabel(label, gotoLabel_label));
                     break;
                 case ZERO_VARIABLE:
                     instructions.add(new ZeroVar(label, var));

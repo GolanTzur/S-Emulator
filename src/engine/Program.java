@@ -34,7 +34,7 @@ public class Program implements Serializable {
 
 
     public Variable execute() {
-        Runner runner= new Runner(instructions,vars);
+        Runner runner= new Runner(instructions/*,vars*/);
         runner.run(true);
         this.cycleCount=runner.getCycleCount();
         return vars.getY();

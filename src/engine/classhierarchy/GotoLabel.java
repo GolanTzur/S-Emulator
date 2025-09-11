@@ -16,8 +16,23 @@ public class GotoLabel extends SyntheticSugar implements HasGotoLabel {
         super(SyntheticType.GOTO_LABEL,value);
         this.gotolabel = gotolabel; // Initialize gotolabel
     }
-    public ArrayList<AbstractInstruction> expand(ProgramVars context)
+    public GotoLabel(HasLabel gotolabel) {
+        super(SyntheticType.GOTO_LABEL,Variable.createDummyVar(VariableType.WORK,1,0));
+        this.gotolabel = gotolabel; // Initialize gotolabel
+    }
+    public GotoLabel(HasLabel lab, HasLabel gotolabel) {
+        super(lab, SyntheticType.GOTO_LABEL,Variable.createDummyVar(VariableType.WORK,1,0));
+        this.gotolabel = gotolabel; // Initialize gotolabel
+    }
+    public ArrayList<AbstractInstruction> expand(ProgramVars... context)
     {
+        if(context.length==1) {
+            Iterator<Variable> it = context[0].getZinputs(1).iterator();
+            this.var = it.next();
+        }
+        else
+        if (context.length > 1)
+            throw new RuntimeException("Wrong number of arguments");
         this.commands=new ArrayList<>(List.of(new Increase(this.lab.myClone(),this.var),// Call parent constructor with label and value
                 new JumpNotZero(this.var,gotolabel.myClone())));
         return commands; // Getter for commands

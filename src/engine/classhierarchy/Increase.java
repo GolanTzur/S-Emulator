@@ -13,7 +13,7 @@ public class Increase extends Instruction {
     }
 
     @Override
-    public HasLabel evaluate(ProgramVars context){
+    public HasLabel evaluate(/*ProgramVars context*/){
         this.var.setValue(this.var.getValue()+1);
         return FixedLabel.EMPTY;
     }

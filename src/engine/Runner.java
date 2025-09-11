@@ -13,12 +13,12 @@ import java.util.Optional;
 
 public class Runner {
     private ArrayList<AbstractInstruction> instructions;
-    private ProgramVars context;
+    //private ProgramVars context;
     private int cycleCount = 0;
 
-    public Runner(ArrayList<AbstractInstruction> instructions, ProgramVars context) {
+    public Runner(ArrayList<AbstractInstruction> instructions/*, ProgramVars context*/) {
         this.instructions = instructions; // Initialize with the provided instructions
-        this.context = context;
+        //this.context = context;
     }
 
     public HasLabel run(boolean countCycles) {
@@ -30,7 +30,7 @@ public class Runner {
             if(countCycles){
                 this.cycleCount+=currentInstruction.getType().getCycles();
             }
-            nextLabel = currentInstruction.evaluate(context); // Evaluate the current instruction
+            nextLabel = currentInstruction.evaluate(/*context*/); // Evaluate the current instruction
             if (nextLabel == FixedLabel.EMPTY) {
                 currIndex++; // Move to the next instruction if no label is returned
             } else {

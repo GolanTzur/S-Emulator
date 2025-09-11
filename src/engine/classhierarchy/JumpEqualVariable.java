@@ -21,20 +21,31 @@ public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
         this.arg = arg;
         this.gotoLabel = gotoLabel; // Initialize gotoLabel
     }
-    public ArrayList<AbstractInstruction> expand(ProgramVars context) {
+    public ArrayList<AbstractInstruction> expand(ProgramVars... context) {
+
+        Variable z1,z2;
+        if(context.length==0)
+        {
+            z1=Variable.createDummyVar(VariableType.WORK,1,0);
+            z2=Variable.createDummyVar(VariableType.WORK,2,0);
+        }
+        else if(context.length==1) {
+            Iterator<Variable> it = context[0].getZinputs(3).iterator();
+            z1 = it.next();
+            z2 = it.next();
+        }
+        else
+        {
+            throw new RuntimeException("Wrong number of arguments");
+        }
         this.commands = new ArrayList<>();
-        Iterator<Variable> it = context.getZinputs(3).iterator();
-        Variable z1 = it.next();
-        Variable z2 = it.next();
-        //Variable z3 = Variable.createDummyVar(VariableType.WORK, 1, 0);
-        Variable z3 = it.next();
         this.commands.add(new Assignment(this.lab.myClone(), z1, this.var));
         this.commands.add(new Assignment(z2, arg));
-        this.commands.add(new JumpZero(new Label("L2"), z3, new Label("L3")));
+        this.commands.add(new JumpZero(new Label("L2"), z1, new Label("L3")));
         this.commands.add(new JumpZero(z2, new Label("L1")));
         this.commands.add(new Decrease(z1));
         this.commands.add(new Decrease(z2));
-        this.commands.add(new GotoLabel(z3, new Label("L2")));
+        this.commands.add(new GotoLabel(new Label("L2")));
         this.commands.add(new JumpZero(new Label("L3"), z2, gotoLabel.myClone()));
         this.commands.add(new Neutral(new Label("L1"), this.var));
         replaceLabels();

@@ -16,17 +16,25 @@ public class Assignment extends SyntheticSugar{
         super(SyntheticType.ASSIGNMENT,value);
         this.arg = arg;
     }
-    public ArrayList<AbstractInstruction> expand(ProgramVars context) {
-        //Variable gotolabelarg=Variable.createDummyVar(VariableType.WORK,1,0);
-        //Variable helper=Variable.createDummyVar(VariableType.WORK,2,0);
-        Iterator<Variable> it = context.getZinputs(2).iterator();
-        Variable gotolabelarg = it.next();
-        Variable helper = it.next();
+    public ArrayList<AbstractInstruction> expand(ProgramVars... context) {
+        Variable gotolabelarg,helper;
+        if(context.length==0)
+        {
+            helper=Variable.createDummyVar(VariableType.WORK,2,0);
+        }
+        else if(context.length==1) {
+            Iterator<Variable> it = context[0].getZinputs(1).iterator();
+            helper = it.next();
+        }
+        else
+        {
+            throw  new RuntimeException("Wrong number of arguments");
+        }
 
         ArrayList<AbstractInstruction> tempCommands = new ArrayList<>();
         tempCommands.add(new ZeroVar(this.lab.myClone(), this.var));
         tempCommands.add(new JumpNotZero(arg, new Label("L1")));
-        tempCommands.add(new GotoLabel(gotolabelarg, new Label("L3")));
+        tempCommands.add(new GotoLabel(new Label("L3")));
         tempCommands.add(new Decrease(new Label("L1"), arg));
         tempCommands.add(new Increase(helper));
         tempCommands.add(new JumpNotZero(arg, new Label("L1")));

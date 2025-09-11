@@ -12,7 +12,7 @@ public class Neutral extends Instruction {
         super(InstructionType.DECREASE,value);
     }
 
-    public HasLabel evaluate(ProgramVars context){
+    public HasLabel evaluate(/*ProgramVars context*/){
         return FixedLabel.EMPTY;
     }
     public String toString() {

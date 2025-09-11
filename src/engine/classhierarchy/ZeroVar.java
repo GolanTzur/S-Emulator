@@ -15,11 +15,16 @@ public class ZeroVar extends SyntheticSugar{
         super(SyntheticType.ZERO_VARIABLE,value);
     }
 
-    public ArrayList<AbstractInstruction> expand(ProgramVars context) {
+    public ArrayList<AbstractInstruction> expand(ProgramVars... context) {
+        if (context.length > 1)
+            throw new RuntimeException("Wrong number of arguments");
+
         HasLabel firstLabel = this.lab.myClone();
+
         if(lab==FixedLabel.EMPTY) { //the first label cant be empty
          firstLabel=FixedLabel.DEFAULT;
         }
+
         this.commands=new ArrayList<>(List.of(new Decrease(firstLabel.myClone(),this.var),
                 new JumpNotZero(this.var,firstLabel.myClone())));
         return commands; // Getter for commands

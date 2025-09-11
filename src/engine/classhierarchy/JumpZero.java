@@ -17,11 +17,15 @@ public class JumpZero extends SyntheticSugar implements HasGotoLabel {
         super(SyntheticType.JUMP_ZERO,value);
         this.gotoLabel = gotoLabel;
     }
-    public ArrayList<AbstractInstruction> expand(ProgramVars context) {
-        Iterator<Variable> getz=context.getZinputs(1).iterator();
+    public ArrayList<AbstractInstruction> expand(ProgramVars... context) {
+
+        if(context.length>1){
+            throw new RuntimeException("Wrong number of arguments");
+        }
+
         ArrayList<AbstractInstruction> tempCommands = new ArrayList<>();
         tempCommands.add(new JumpNotZero(this.lab.myClone(),this.var, new Label("L1")));
-        tempCommands.add(new GotoLabel(getz.next(), gotoLabel.myClone()));
+        tempCommands.add(new GotoLabel(gotoLabel.myClone()));
         tempCommands.add(new Neutral(new Label("L1"),this.var));
         this.commands = tempCommands;
         replaceL1();

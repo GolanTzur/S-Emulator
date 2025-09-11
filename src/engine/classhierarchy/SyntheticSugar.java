@@ -27,15 +27,15 @@ public abstract class SyntheticSugar extends AbstractInstruction {
                 .orElse(String.format(" #%d (S) [%-3s]", this.pos,this.lab));
     }
 
-    public abstract ArrayList<AbstractInstruction> expand(ProgramVars context);
+    public abstract ArrayList<AbstractInstruction> expand(ProgramVars... context);
 
     @Override
-    public HasLabel evaluate(ProgramVars context)
+    public HasLabel evaluate(/*ProgramVars context*/)
     { //Inner runner
         if(this.commands == null) {
-            this.commands = expand(context);
+            this.commands = expand(/*context*/);
         }
-        return new Runner(this.commands,context).run(false);
+        return new Runner(this.commands/*,context*/).run(false);
     }
 
 }
