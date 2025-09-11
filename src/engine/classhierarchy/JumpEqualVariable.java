@@ -23,10 +23,11 @@ public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
     }
     public ArrayList<AbstractInstruction> expand(ProgramVars context) {
         this.commands = new ArrayList<>();
-        Iterator<Variable> it = context.getZinputs(2).iterator();
+        Iterator<Variable> it = context.getZinputs(3).iterator();
         Variable z1 = it.next();
         Variable z2 = it.next();
-        Variable z3 = Variable.createDummyVar(VariableType.WORK, 1, 0);
+        //Variable z3 = Variable.createDummyVar(VariableType.WORK, 1, 0);
+        Variable z3 = it.next();
         this.commands.add(new Assignment(this.lab.myClone(), z1, this.var));
         this.commands.add(new Assignment(z2, arg));
         this.commands.add(new JumpZero(new Label("L2"), z3, new Label("L3")));

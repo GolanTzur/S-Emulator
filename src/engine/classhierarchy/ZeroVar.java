@@ -14,6 +14,7 @@ public class ZeroVar extends SyntheticSugar{
     public ZeroVar(Variable value) {
         super(SyntheticType.ZERO_VARIABLE,value);
     }
+
     public ArrayList<AbstractInstruction> expand(ProgramVars context) {
         HasLabel firstLabel = this.lab.myClone();
         if(lab==FixedLabel.EMPTY) { //the first label cant be empty

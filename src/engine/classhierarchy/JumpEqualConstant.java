@@ -23,9 +23,10 @@ public class JumpEqualConstant extends SyntheticSugar implements HasGotoLabel {
 
     public ArrayList<AbstractInstruction> expand(ProgramVars context) {
         this.commands = new ArrayList<>();
-        Iterator<Variable> it = context.getZinputs(1).iterator();
+        Iterator<Variable> it = context.getZinputs(2).iterator();
         Variable z1 = it.next(); // Get the first variable from the iterator
-        Variable z2 = Variable.createDummyVar(VariableType.WORK, 1, 0);
+       // Variable z2 = Variable.createDummyVar(VariableType.WORK, 1, 0);
+        Variable z2 = it.next(); // Get the second variable from the iterator
         this.commands.add(new Assignment(this.lab.myClone(), z1, this.var)); // Call parent constructor with label and value
 
         for (int i = 0; i < arg; i++) {

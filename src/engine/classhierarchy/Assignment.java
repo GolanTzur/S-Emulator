@@ -17,8 +17,11 @@ public class Assignment extends SyntheticSugar{
         this.arg = arg;
     }
     public ArrayList<AbstractInstruction> expand(ProgramVars context) {
-        Variable gotolabelarg=Variable.createDummyVar(VariableType.WORK,1,0);
-        Variable helper=Variable.createDummyVar(VariableType.WORK,2,0);
+        //Variable gotolabelarg=Variable.createDummyVar(VariableType.WORK,1,0);
+        //Variable helper=Variable.createDummyVar(VariableType.WORK,2,0);
+        Iterator<Variable> it = context.getZinputs(2).iterator();
+        Variable gotolabelarg = it.next();
+        Variable helper = it.next();
 
         ArrayList<AbstractInstruction> tempCommands = new ArrayList<>();
         tempCommands.add(new ZeroVar(this.lab.myClone(), this.var));

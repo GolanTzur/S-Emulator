@@ -26,7 +26,6 @@ public class Runner {
         int currIndex = 0;// Get the indices of labels
         HasLabel nextLabel = null;
         while (currIndex < instructions.size() && instructions.get(currIndex).getLab() != FixedLabel.EXIT) {
-
             AbstractInstruction currentInstruction = instructions.get(currIndex);
             if(countCycles){
                 this.cycleCount+=currentInstruction.getType().getCycles();
