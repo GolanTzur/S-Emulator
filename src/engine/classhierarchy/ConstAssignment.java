@@ -14,7 +14,7 @@ public class ConstAssignment extends SyntheticSugar {
         this.arg = arg;
     }
     public ConstAssignment(Variable value,int arg) {
-        super( SyntheticType.CONSTANT_ASSIGNMENT,value);
+        super(SyntheticType.CONSTANT_ASSIGNMENT,value);
         this.arg = arg;
     }
     public ArrayList<AbstractInstruction> expand(ProgramVars context) {

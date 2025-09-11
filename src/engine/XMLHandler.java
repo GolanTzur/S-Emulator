@@ -33,9 +33,11 @@ public class XMLHandler { // Singleton class to handle XML operations
         if (file == null) {
             throw new IllegalArgumentException("File not found or invalid file type: " + fileName);
         }
+
         try (InputStream inputStream = new FileInputStream(file)) {
             SProgram sprogram = getSProgram(inputStream); // Gets the SProgram object from the XML file
             return convertToProgram(sprogram); // Converts SProgram to Program object
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Error loading program from file: " + fileName, e);

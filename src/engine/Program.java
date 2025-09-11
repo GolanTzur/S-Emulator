@@ -122,12 +122,12 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
                 instr.setLab(labelToAssign.myClone());
             }
             if(instr instanceof HasGotoLabel && ((HasGotoLabel) instr).getGotolabel().equals(parentLabel)) {
-                if(expandedInstructions.get(0).getLab().equals(parentLabel)) {}
+                if(expandedInstructions.get(0).getLab().equals(parentLabel))
                 ((HasGotoLabel) instr).setGotolabel(labelToAssign.myClone());
             }
         }
 
-        for (int j = 1; j < expandedInstructions.size(); j++) {
+        /*for (int j = 1; j < expandedInstructions.size(); j++) {
             AbstractInstruction instr = expandedInstructions.get(j);
             if (instr.getLab() instanceof Label && instr.getLab().equals(parentLabel)) {
                 instr.setLab(labelToAssign.myClone());
@@ -136,7 +136,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
                 if(expandedInstructions.get(0).getLab().equals(parentLabel)) {}
                 ((HasGotoLabel) instr).setGotolabel(labelToAssign.myClone());
             }
-        }
+        }*/
     }
     }
 
@@ -233,10 +233,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
                 }).map(instruction -> ((SyntheticType)((SyntheticSugar)instruction).getType()).getDegree())
                 .orElse(0); // Returns the maximum degree of synthetic sugars in the program);
     }
-    /*public int getProgramCycles(){
-        return this.instructions.stream().mapToInt((instruction) -> instruction.getType().getCycles())
-                .sum(); // Returns the total cycles of all instructions in the program
-    }*/
+
     public void checkValidity() throws  Exception
     {
         if(instructions==null) {

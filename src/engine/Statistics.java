@@ -12,14 +12,17 @@ public class Statistics implements Serializable {
     private static String sourceFile="data\\statistics\\statistics.bin";
     private static int runCounter = 1;
     private final int degree;
-    private Collection<Variable> variables;
-    private final int result;
+
+    private final Collection<Variable> variables;
+    private final ProgramVars results;
+
     private final int cycles;
     private final int id;
-    public Statistics(int degree,Collection<Variable> variables,int cycles,int result) {
+
+    public Statistics(int degree,Collection<Variable> variables,int cycles,ProgramVars results) {
         this.degree = degree;
         this.variables = variables;
-        this.result = result;
+        this.results = results;
         this.cycles = cycles;
         this.id=runCounter++;
     }
@@ -80,9 +83,24 @@ public class Statistics implements Serializable {
             sb.append(var.getValue()).append(" ");
         }
         sb.append("\n");
-        sb.append("Result: ").append(result).append("\n");
+        sb.append("Result: ").append(results.getY().getValue()).append("\n");
         sb.append("Cycles: ").append(cycles).append("\n");
         return sb.toString();
+    }
+    public int getId() {
+        return id;
+    }
+    public final Collection<Variable> getVariables() {
+        return variables;
+    }
+    public final ProgramVars getResults() {
+        return results;
+    }
+    public int getCycles() {
+            return cycles;
+    }
+    public int getDegree() {
+        return degree;
     }
 
 }

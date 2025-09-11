@@ -1,9 +1,6 @@
 package console;
 
-import engine.Program;
-import engine.ProgramState;
-import engine.Statistics;
-import engine.XMLHandler;
+import engine.*;
 import engine.basictypes.Variable;
 
 import java.io.BufferedReader;
@@ -99,10 +96,12 @@ public class ConsoleUI {
                         programCopy.deployToDegree(selectedDegree);
                     }
                     Collection<Variable>initVars= programCopy.setUserInput();
-                    int y=programCopy.execute().getValue();
+                    programCopy.execute();
+                    ProgramVars results= programCopy.getVars().clone();
                     int cycles= programCopy.getCycleCount();
+
                     try {
-                        new Statistics(selectedDegree, initVars, cycles, y).appendStatistics();
+                        new Statistics(selectedDegree,initVars,cycles,results).appendStatistics();
                     }catch (Exception e) {
                         System.out.println("Error writing statistics: " + e.getMessage());
                     }

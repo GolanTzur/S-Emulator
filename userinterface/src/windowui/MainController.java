@@ -1,6 +1,7 @@
 package windowui;
 import engine.Program;
 import engine.ProgramState;
+import engine.Statistics;
 import engine.XMLHandler;
 import engine.basictypes.Variable;
 import engine.classhierarchy.AbstractInstruction;
@@ -83,22 +84,22 @@ public class MainController {
  private Label maxdeg;
 
  @FXML
- private TableView<?> programhistorytable;
+ private TableView<Statistics> programhistorytable;
 
  @FXML
- private TableColumn<?, ?> historytablecycles;
+ private TableColumn<Statistics, Integer> historytablecycles;
 
  @FXML
- private TableColumn<?, ?> historytabledegree;
+ private TableColumn<Statistics, Integer> historytabledegree;
 
  @FXML
- private TableColumn<?, ?> historytableinput;
+ private TableColumn<Statistics, String> historytableinput;
 
  @FXML
- private TableColumn<?, ?> historytablenumber;
+ private TableColumn<Statistics, Integer> historytablenumber;
 
  @FXML
- private TableColumn<?, ?> historytableresult;
+ private TableColumn<Statistics, Integer> historytableresult;
 
  @FXML
  private TableView<AbstractInstruction> commandshistory;
@@ -206,9 +207,6 @@ public class MainController {
    maxdegree.set(program.getProgramDegree());
    setInputVariables(program);
 
-   instructionstable.setItems(getInstructions(program));
-   commandshistory.getItems().clear();
-   programhistorytable.getItems().clear();
    loadedFromFile=false;
    currentFilePath=fileroute.getText();
 
@@ -225,8 +223,9 @@ public class MainController {
  @FXML
  public void initialize() {
   noLoadedProgram();
-  setInstructionsTableListener(commandstablelabel, commandstablenumber, commandstablecycles, commandstabletype, commandstableinstr);
-  setInstructionsTableListener(instructiontablelabel, instructiontablenumber, instructiontablecycles, instructiontabletype, instructiontableinstr);
+  setInstructionsTableAddFormat(commandstablelabel, commandstablenumber, commandstablecycles, commandstabletype, commandstableinstr);
+  setInstructionsTableAddFormat(instructiontablelabel, instructiontablenumber, instructiontablecycles, instructiontabletype, instructiontableinstr);
+  setProgramHistoryAddFormat(historytablenumber, historytabledegree, historytablecycles, historytableinput, historytableresult);
   setCommandshistoryListener();
  }
 
@@ -274,8 +273,9 @@ public class MainController {
 
  @FXML
  void runProgram(ActionEvent event) {
+  Collection<Variable>initialInputs;
   try {
-   loadVariablesToProgramCopy();
+   initialInputs = loadVariablesToProgramCopy();
   } catch (Exception e) {
    Alert alert = new Alert(Alert.AlertType.ERROR);
    alert.setTitle("Run Program Error");
@@ -285,6 +285,9 @@ public class MainController {
    return;
   }
   programcopy.execute();
+  Statistics stats=new Statistics(currdegree.getValue(),initialInputs,programcopy.getCycleCount(),programcopy.getVars().clone());
+  stats.appendStatistics();
+  programhistorytable.getItems().add(stats);
   showVariables();
  }
 
@@ -330,7 +333,7 @@ public class MainController {
   return instructions;
  }
 
- private void setInstructionsTableListener(TableColumn<AbstractInstruction, String> label, TableColumn<AbstractInstruction, Integer> number, TableColumn<AbstractInstruction, Integer> cycles, TableColumn<AbstractInstruction, String> type, TableColumn<AbstractInstruction, String> instr) {
+ private void setInstructionsTableAddFormat(TableColumn<AbstractInstruction, String> label, TableColumn<AbstractInstruction, Integer> number, TableColumn<AbstractInstruction, Integer> cycles, TableColumn<AbstractInstruction, String> type, TableColumn<AbstractInstruction, String> instr) {
   // Define how each column gets its value
   label.setCellValueFactory(cellData ->
           new SimpleStringProperty(cellData.getValue().getLab().toString())
@@ -353,6 +356,36 @@ public class MainController {
 
  }
 
+ private void setProgramHistoryAddFormat(TableColumn<Statistics, Integer> number, TableColumn<Statistics, Integer> degree, TableColumn<Statistics, Integer> cycles, TableColumn<Statistics, String> input, TableColumn<Statistics, Integer> result) {
+  // Define how each column gets its value
+
+  number.setCellValueFactory(cellData ->
+          new SimpleIntegerProperty(cellData.getValue().getId()).asObject()
+  );
+
+  degree.setCellValueFactory(cellData ->
+          new SimpleIntegerProperty(cellData.getValue().getDegree()).asObject()
+  );
+
+  cycles.setCellValueFactory(cellData ->
+          new SimpleIntegerProperty(cellData.getValue().getCycles()).asObject()
+  );
+
+  input.setCellValueFactory(cellData -> {
+           StringBuilder sb = new StringBuilder();
+           cellData.getValue().getVariables().forEach((var) -> {;
+            sb.append(var.toString()).append("=").append(var.getValue()).append(",");
+           });
+           if(!sb.isEmpty()) sb.deleteCharAt(sb.length()-1);
+           return new SimpleStringProperty(sb.toString());
+          }
+  );
+  result.setCellValueFactory(cellData ->
+          new SimpleIntegerProperty(cellData.getValue().getResults().getY().getValue()).asObject()
+  );
+
+ }
+
  public void setCommandshistoryListener() {
   instructionstable.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
    commandshistory.getItems().clear();
@@ -365,9 +398,7 @@ public class MainController {
     history.add(next);
     prev = next;
    }
-
-   for (int i = history.size() - 1; i >= 0; i--)
-    commandshistory.getItems().add(history.get(i));
+   commandshistory.getItems().addAll(history);
   });
  }
  public void noLoadedProgram(){
@@ -410,6 +441,12 @@ public class MainController {
   highlightselection.setVisible(true);
   currdeg.textProperty().bind(currdegree.asString());
   maxdeg.textProperty().bind(maxdegree.asString());
+  instructionstable.setItems(getInstructions(program));
+  commandshistory.getItems().clear();
+  programhistorytable.getItems().clear();
+  inputFields.clear();
+  programvarsvbox.getChildren().clear();
+  Statistics.reset();
  }
  public void setInputVariables(Program program) {
     programinputsvbox.getChildren().clear();
@@ -458,8 +495,10 @@ public class MainController {
      programinputsvbox.getChildren().add(hBox);
     }
  }
- public void loadVariablesToProgramCopy() throws Exception {
-    if(programcopy==null) return;
+
+ public Collection<Variable> loadVariablesToProgramCopy() throws Exception {
+    Collection<Variable> variables = new ArrayList<>();
+    if(programcopy==null) return variables;
     for (Map.Entry<Integer, TextField> entry : inputFields.entrySet()) {
      Integer varPos = entry.getKey();
      TextField textField = entry.getValue();
@@ -474,11 +513,14 @@ public class MainController {
 
      try {
       int value = Integer.parseInt(text);
-      programcopy.getVars().getInput().get(varPos).setValue(value);
+      Variable toUpdate = programcopy.getVars().getInput().get(varPos);
+      toUpdate.setValue(value);
+      variables.add(Variable.createDummyVar(toUpdate.getType(), toUpdate.getPosition(), toUpdate.getValue()));
      } catch (NumberFormatException e) {
       throw new Exception("Input variable at position " + varPos + " is not a valid integer.");
      }
     }
+  return variables;
  }
  public void showVariables()
  {
@@ -501,7 +543,11 @@ public class MainController {
 
     Label yLabel= new Label("y = "+programcopy.getVars().getY().getValue());
     yLabel.paddingProperty().set(insets);
-    hBox.getChildren().addAll(inputVars, workVars, yLabel);
+
+    Label cyclesLabel= new Label("Cycles = "+programcopy.getCycleCount());
+    cyclesLabel.paddingProperty().set(insets);
+
+    hBox.getChildren().addAll(inputVars,workVars,yLabel,cyclesLabel);
     programvarsvbox.getChildren().clear();
     programvarsvbox.getChildren().add(hBox);
  }
