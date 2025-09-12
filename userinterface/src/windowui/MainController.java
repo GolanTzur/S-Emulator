@@ -245,13 +245,16 @@ public class MainController {
 
      commandshistory.getItems().clear();
      programhistorytable.getItems().clear();
+     programLoaded();
+
+     instructionstable.getItems().clear();
      instructionstable.setItems(getInstructions(programcopy));
      loadedFromFile=true;
 
      currdegree.set(program.getProgramDegree()-programcopy.getProgramDegree());
      maxdegree.set(program.getProgramDegree());
 
-     programLoaded();
+
      setInputVariables(program);
      Alert alert = new Alert(Alert.AlertType.INFORMATION);
      alert.setTitle("Load Program from file");

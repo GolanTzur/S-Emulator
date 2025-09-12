@@ -22,7 +22,7 @@ public class JumpEqualConstant extends SyntheticSugar implements HasGotoLabel {
     }
 
     public ArrayList<AbstractInstruction> expand(ProgramVars... context) {
-        Variable z1,z2;
+        Variable z1;
         if(context.length==0)
         {
             z1=Variable.createDummyVar(VariableType.WORK,1,0);

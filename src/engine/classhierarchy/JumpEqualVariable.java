@@ -30,7 +30,7 @@ public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
             z2=Variable.createDummyVar(VariableType.WORK,2,0);
         }
         else if(context.length==1) {
-            Iterator<Variable> it = context[0].getZinputs(3).iterator();
+            Iterator<Variable> it = context[0].getZinputs(2).iterator();
             z1 = it.next();
             z2 = it.next();
         }
