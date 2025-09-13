@@ -22,7 +22,6 @@ public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
         this.gotoLabel = gotoLabel; // Initialize gotoLabel
     }
     public ArrayList<AbstractInstruction> expand(ProgramVars... context) {
-
         Variable z1,z2;
         if(context.length==0)
         {
