@@ -20,6 +20,7 @@ public class JumpNotZero extends Instruction implements HasGotoLabel {
         this.gotoLabel = gotoLabel; // Setter for gotoLabel
     }
     public HasLabel evaluate(/*ProgramVars context*/) {
+        super.evaluate();
         return this.var.getValue()!=0 ? gotoLabel : FixedLabel.EMPTY;
     }
     public String toString() {

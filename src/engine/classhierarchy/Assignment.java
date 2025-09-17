@@ -5,7 +5,7 @@ import engine.basictypes.*;
 
 import java.util.*;
 
-public class Assignment extends SyntheticSugar{
+public class Assignment extends SyntheticSugar implements  HasExtraVar {
     private Variable arg;// Variable to be decremented
 
     public Assignment(HasLabel lab, Variable value, Variable arg) {
@@ -86,6 +86,14 @@ public class Assignment extends SyntheticSugar{
         String parentSuffix = String.format("(%d)",this.type.getCycles());
         return String.format("%s %s %s", parentPrefix, childPart, parentSuffix);
     }
+
+    public Variable getArg() {
+        return arg;
+    }
+    public void setArg(Variable var) {
+        this.arg = var;
+    }
+
     public String getChildPart(){
         return String.format("%s <- %s", var, arg);
     }

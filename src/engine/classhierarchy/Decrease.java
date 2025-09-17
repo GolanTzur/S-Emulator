@@ -15,6 +15,7 @@ public class Decrease extends Instruction {
     }
     @Override
     public HasLabel evaluate(/*ProgramVars context*/) {
+        super.evaluate();
        if(this.var.getValue() > 0) {
             this.var.setValue(this.var.getValue() - 1);
        }

@@ -4,7 +4,9 @@ import engine.basictypes.FixedLabel;
 import engine.basictypes.HasLabel;
 import engine.basictypes.Label;
 import engine.classhierarchy.AbstractInstruction;
+import engine.classhierarchy.Function;
 import engine.classhierarchy.HasGotoLabel;
+import engine.classhierarchy.JumpEqualFunction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +31,10 @@ public class Runner {
             AbstractInstruction currentInstruction = instructions.get(currIndex);
             if(countCycles){
                 this.cycleCount+=currentInstruction.getType().getCycles();
+                if(currentInstruction instanceof Function)
+                    this.cycleCount+=((Function) currentInstruction).getCycles();
+                else if(currentInstruction instanceof JumpEqualFunction)
+                    this.cycleCount+=((JumpEqualFunction) currentInstruction).getFunc().getCycles();
             }
             nextLabel = currentInstruction.evaluate(/*context*/); // Evaluate the current instruction
             if (nextLabel == FixedLabel.EMPTY) {

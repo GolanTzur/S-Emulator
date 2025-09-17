@@ -32,6 +32,7 @@ public abstract class SyntheticSugar extends AbstractInstruction {
     @Override
     public HasLabel evaluate(/*ProgramVars context*/)
     { //Inner runner
+        super.evaluate(); //if there result vars - calculate them
         if(this.commands == null) {
             this.commands = expand(/*context*/);
         }

@@ -11,11 +11,12 @@ public class Variable implements Cloneable, Serializable {
     private int value;
     private final int position; //Position in the list of variables
 
-    private Variable(VariableType type,int pos) {
+    protected Variable(VariableType type,int pos) {
         this.position = pos; //Constructor initializes position
         this.value = 0; //Default value is 0
         this.type = type; //Constructor initializes type
     }
+
     public int getValue() {
         return value; //Getter for value
     }

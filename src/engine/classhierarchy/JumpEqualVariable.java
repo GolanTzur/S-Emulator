@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
+public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel,HasExtraVar {
     private Variable arg;// Variable to be decremented
     private HasLabel gotoLabel;
 
@@ -88,9 +88,15 @@ public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel {
 
         }
 
-        }
+    }
+    public Variable getArg() {
+        return arg;
+    }
+    public void setArg(Variable var) {
+        this.arg = var;
+    }
 
-    private void replaceL1(HasLabel label) {
+        private void replaceL1(HasLabel label) {
         this.commands.get(8).setLab(label);
         ((HasGotoLabel)this.commands.get(3)).setGotolabel(label);
     }

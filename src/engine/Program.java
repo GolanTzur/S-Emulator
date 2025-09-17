@@ -1,11 +1,10 @@
 package engine;
 
 import engine.basictypes.*;
-import engine.classhierarchy.AbstractInstruction;
-import engine.classhierarchy.HasGotoLabel;
-import engine.classhierarchy.SyntheticSugar;
+import engine.classhierarchy.*;
 
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -88,6 +87,16 @@ public class Program implements Serializable {
                 replaceLabels(expandedInstructions, allprogramlabels); // Replace labels in the expanded instructions if needed
                 instructions.addAll(i, expandedInstructions); // Replace the synthetic sugar with its expanded instructions
                 i+=expandedInstructions.size()-1; // Adjust index to account for the newly added instructions
+            } else if (currentInstruction instanceof Function) {
+                AbstractInstruction source;
+                ArrayList<AbstractInstruction> expandedInstructions = ((Function) currentInstruction).expand(this.vars,allprogramlabels);
+                for(AbstractInstruction instruction:expandedInstructions){
+                    instruction.setPos(++programCounter); // Set position for each expanded instruction
+                }
+                source=instructions.remove(i);
+                expandedInstructions.forEach(instruction->instruction.setSyntheticSource(source));// Set the source for each expanded instruction
+                instructions.addAll(i, expandedInstructions); // Replace the synthetic sugar with its expanded instructions
+                i+=expandedInstructions.size()-1; // Adjust index to account for the newly added instructions
             }
 
         }
@@ -127,16 +136,6 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
             }
         }
 
-        /*for (int j = 1; j < expandedInstructions.size(); j++) {
-            AbstractInstruction instr = expandedInstructions.get(j);
-            if (instr.getLab() instanceof Label && instr.getLab().equals(parentLabel)) {
-                instr.setLab(labelToAssign.myClone());
-            }
-            if(instr instanceof HasGotoLabel && ((HasGotoLabel) instr).getGotolabel().equals(parentLabel)) {
-                if(expandedInstructions.get(0).getLab().equals(parentLabel)) {}
-                ((HasGotoLabel) instr).setGotolabel(labelToAssign.myClone());
-            }
-        }*/
     }
     }
 
@@ -225,10 +224,48 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         return instructions; // Getter for instructions
     }
     public int getProgramDegree(){
-        return this.instructions.stream().filter(instruction->instruction instanceof SyntheticSugar)
+        return this.instructions.stream()
                 .max((a,b)->{
-                   int adeg= ((SyntheticType)((SyntheticSugar)a).getType()).getDegree();
-                   int bdeg= ((SyntheticType)((SyntheticSugar)b).getType()).getDegree();
+                    AbstractInstruction instr = a;
+                    int adeg=0,bdeg=0;
+                    for(int i=0;i<2;i++)
+                    {
+                        if(instr instanceof Function) {
+                            if(instr==a) {
+                                adeg= ((Function) instr).getDegree();
+                            }
+                            else {
+                                bdeg= ((Function) instr).getDegree();
+                            }
+                        }
+                        else if(instr instanceof JumpEqualFunction){
+                            if(instr==a) {
+                                adeg= Math.max(((JumpEqualFunction) instr).getFunc().getDegree(),SyntheticType.JUMP_EQUAL_FUNCTION.getDegree());
+                            }
+                            else {
+                                bdeg= Math.max(((JumpEqualFunction) instr).getFunc().getDegree(),SyntheticType.JUMP_EQUAL_FUNCTION.getDegree());
+                            }
+                        }
+                        else if(instr instanceof SyntheticSugar) {
+                            if (instr == a) {
+                                adeg = ((SyntheticType) ((SyntheticSugar) instr).getType()).getDegree();
+                            } else {
+                                bdeg = ((SyntheticType) ((SyntheticSugar) instr).getType()).getDegree();
+                            }
+                        }
+                        else
+                        {
+                            if(instr==a) {
+                                adeg=0;
+                            }
+                            else {
+                                bdeg=0;
+                        }
+
+                        }
+                            instr=b;
+                    }
+
                      return Integer.compare(adeg, bdeg);
                 }).map(instruction -> ((SyntheticType)((SyntheticSugar)instruction).getType()).getDegree())
                 .orElse(0); // Returns the maximum degree of synthetic sugars in the program);

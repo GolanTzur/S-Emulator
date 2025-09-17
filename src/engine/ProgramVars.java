@@ -1,7 +1,9 @@
 package engine;
 
+import engine.basictypes.ResultVar;
 import engine.basictypes.Variable;
 import engine.basictypes.VariableType;
+import engine.classhierarchy.Function;
 
 
 import java.io.Serializable;
@@ -37,6 +39,20 @@ public class ProgramVars implements Cloneable, Serializable {
         }
         return res;
     }
+    /*public ResultVar getResultVar(Function function) {
+        int index=0;
+        while(true)
+        {
+            Optional<Variable> maybekey = Optional.ofNullable(envvars.get(index));
+            final int finalIndex = index;
+            if(maybekey.isEmpty())
+            {
+                Variable newVar = Variable.createOrGetNewVar(VariableType.RESULT, finalIndex, this);
+                return ((ResultVar)newVar).setFunction(function);
+            }
+            index++;
+        }
+    }*/
 
     public String toString() {
         String res = "";

@@ -7,7 +7,10 @@ public enum SyntheticType implements AbstractInstructionType {
     CONSTANT_ASSIGNMENT("CONSTASSIGNMENT",1,2), // Assign a constant value to a variable
     JUMP_ZERO("JUMPZERO",2,2),
     JUMP_EQUAL_CONSTANT("JUMPEQUALCONSTANT",3,2), // Jump if the value is equal to a constant
-    JUMP_EQUAL_VARIABLE("JUMPEQUALVARIABLE",3,2)
+    JUMP_EQUAL_VARIABLE("JUMPEQUALVARIABLE",3,2),
+    JUMP_EQUAL_FUNCTION("JUMPEQUALFUNCTION",3,6), // Jump if the value is equal to a function result
+    QUOTE("QUOTE",1,5); // Assign the value of one variable to another
+    //Cycles and Degree expected to rise - quote and jump equal function
     ; // Set a variable to zero
 
     private final String name;

@@ -4,12 +4,13 @@ import engine.ProgramVars;
 import engine.basictypes.*;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 public abstract class AbstractInstruction implements Evaluable,Cloneable, Serializable {
     protected HasLabel lab;
     protected AbstractInstructionType type;
     protected Variable var;
-    protected SyntheticSugar source; // For synthetic instructions
+    protected AbstractInstruction source; // For synthetic instructions
     protected int pos;
 
     public AbstractInstruction(HasLabel label, AbstractInstructionType ait, Variable var) {
@@ -24,7 +25,6 @@ public abstract class AbstractInstruction implements Evaluable,Cloneable, Serial
         this.var = var; // Variable to be used in the instruction
     }
 
-
     public HasLabel getLab() {
         return lab;
     }
@@ -34,16 +34,19 @@ public abstract class AbstractInstruction implements Evaluable,Cloneable, Serial
     public Variable getVar() {
         return var;
     }
+    public void setVar(Variable var) {
+        this.var = var;
+    }
 
     public AbstractInstructionType getType() {
         return type;
     }
     public void setSyntheticSource(AbstractInstruction source) {
-        if(source != null && (source instanceof SyntheticSugar)) {
-            this.source = (SyntheticSugar)source;
+        if(source == null || (source instanceof Instruction)) {
+            throw new RuntimeException(source.type+" is not a SyntheticSugar");
         }
         else {
-            throw new RuntimeException(source.type+" is not a SyntheticSugar");
+            this.source = source;
         }
     }
     public int getPos() {
@@ -52,12 +55,28 @@ public abstract class AbstractInstruction implements Evaluable,Cloneable, Serial
     public void setPos(int pos) {
         this.pos = pos;
     }
-    public SyntheticSugar getSource() {
+    public  AbstractInstruction getSource() {
         return source;
     }
 
 
     public abstract AbstractInstruction clone(ProgramVars context);
     public abstract String getChildPart();
+    public HasLabel evaluate(/*ProgramVars context*/) {
+        if (var instanceof ResultVar)
+            ((ResultVar) var).evaluate();
+
+        if (this instanceof HasExtraVar) {
+            if (((HasExtraVar) this).getArg() instanceof ResultVar)
+                ((ResultVar) ((HasExtraVar) this).getArg()).evaluate();
+        } else if (this instanceof Function) {
+            Collection<Variable> funcInputs = ((Function) this).getUsedVariables();
+            for (Variable v : funcInputs) {
+                if (v instanceof ResultVar)
+                    ((ResultVar) v).evaluate();
+            }
+        }
+        return FixedLabel.EMPTY;
+    }
 
 }

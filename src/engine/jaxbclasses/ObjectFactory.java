@@ -41,13 +41,23 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SProgram }
+     * Create an instance of {@link SFunctions }
      * 
      * @return
-     *     the new instance of {@link SProgram }
+     *     the new instance of {@link SFunctions }
      */
-    public SProgram createSProgram() {
-        return new SProgram();
+    public SFunctions createSFunctions() {
+        return new SFunctions();
+    }
+
+    /**
+     * Create an instance of {@link SFunction }
+     * 
+     * @return
+     *     the new instance of {@link SFunction }
+     */
+    public SFunction createSFunction() {
+        return new SFunction();
     }
 
     /**
@@ -88,6 +98,16 @@ public class ObjectFactory {
      */
     public SInstructionArgument createSInstructionArgument() {
         return new SInstructionArgument();
+    }
+
+    /**
+     * Create an instance of {@link SProgram }
+     * 
+     * @return
+     *     the new instance of {@link SProgram }
+     */
+    public SProgram createSProgram() {
+        return new SProgram();
     }
 
     /**
