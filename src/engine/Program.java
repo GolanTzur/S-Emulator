@@ -228,48 +228,52 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
                 .max((a,b)->{
                     AbstractInstruction instr = a;
                     int adeg=0,bdeg=0;
-                    for(int i=0;i<2;i++)
-                    {
-                        if(instr instanceof Function) {
-                            if(instr==a) {
-                                adeg= ((Function) instr).getDegree();
+                    for(int i=0;i<2;i++) {
+                        if (instr instanceof Function) {
+                            if (instr == a) {
+                                adeg = 1+((Function) instr).getDegree();
+                            } else {
+                                bdeg = 1+((Function) instr).getDegree();
                             }
-                            else {
-                                bdeg= ((Function) instr).getDegree();
+                        } else if (instr instanceof JumpEqualFunction) {
+                            if (instr == a) {
+                                adeg = Math.max(((JumpEqualFunction) instr).getFunc().getDegree(), SyntheticType.JUMP_EQUAL_FUNCTION.getDegree());
+                            } else {
+                                bdeg = Math.max(((JumpEqualFunction) instr).getFunc().getDegree(), SyntheticType.JUMP_EQUAL_FUNCTION.getDegree());
                             }
-                        }
-                        else if(instr instanceof JumpEqualFunction){
-                            if(instr==a) {
-                                adeg= Math.max(((JumpEqualFunction) instr).getFunc().getDegree(),SyntheticType.JUMP_EQUAL_FUNCTION.getDegree());
-                            }
-                            else {
-                                bdeg= Math.max(((JumpEqualFunction) instr).getFunc().getDegree(),SyntheticType.JUMP_EQUAL_FUNCTION.getDegree());
-                            }
-                        }
-                        else if(instr instanceof SyntheticSugar) {
+                        } else if (instr instanceof SyntheticSugar) {
                             if (instr == a) {
                                 adeg = ((SyntheticType) ((SyntheticSugar) instr).getType()).getDegree();
                             } else {
                                 bdeg = ((SyntheticType) ((SyntheticSugar) instr).getType()).getDegree();
                             }
-                        }
-                        else
-                        {
-                            if(instr==a) {
-                                adeg=0;
+                        } else {
+                            if (instr == a) {
+                                adeg = 0;
+                            } else {
+                                bdeg = 0;
                             }
-                            else {
-                                bdeg=0;
-                        }
 
+                            instr = b;
                         }
-                            instr=b;
                     }
 
                      return Integer.compare(adeg, bdeg);
-                }).map(instruction -> ((SyntheticType)((SyntheticSugar)instruction).getType()).getDegree())
-                .orElse(0); // Returns the maximum degree of synthetic sugars in the program);
+                }
+                ).map(instruction -> {
+                    if (instruction instanceof Function) {
+                        return 1 + ((Function) instruction).getDegree();
+                    } else if (instruction instanceof JumpEqualFunction) {
+                        return Math.max(((JumpEqualFunction) instruction).getFunc().getDegree(), SyntheticType.JUMP_EQUAL_FUNCTION.getDegree());
+                    } else if (instruction instanceof SyntheticSugar) {
+                        return ((SyntheticType) ((SyntheticSugar) instruction).getType()).getDegree();
+                    } else {
+                        return 0;
+                    }
+                }).orElse(0);
+
     }
+
 
     public void checkValidity() throws  Exception
     {

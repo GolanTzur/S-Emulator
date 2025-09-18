@@ -235,8 +235,10 @@ public class XMLHandler { // Singleton class to handle XML operations
                     ArrayList<AbstractInstruction> funcInstructions=loadInstructions(sfunc.getSInstructions(),sprogram,funcVars);
                     Function func=new Function(label,var,new Program(sfunc.getName(),funcInstructions,funcVars),sfunc.getUserString());
                     String args=lookforValue("functionArguments",sin.getSInstructionArguments().getSInstructionArgument());
-                    loadFuncArgs(args,progVars,func,sprogram);
+                    ArrayList<Variable>funcargs=loadFuncArgs(args,progVars,sprogram);
+                    putFuncArgs(func,funcargs);
                     instructions.add(func);
+
                     break;
                 case JUMP_EQUAL_FUNCTION:
                     String jef_funcName=sin.getSInstructionArguments().getSInstructionArgument().stream()
@@ -250,7 +252,7 @@ public class XMLHandler { // Singleton class to handle XML operations
                     ArrayList<AbstractInstruction> jef_funcInstructions=loadInstructions(jef_sfunc.getSInstructions(),sprogram,jef_funcVars);
                     Function jef_func=new Function(label,var,new Program(jef_sfunc.getName(),jef_funcInstructions,jef_funcVars),jef_sfunc.getUserString());
                     String jef_args=lookforValue("functionArguments",sin.getSInstructionArguments().getSInstructionArgument());
-                    loadFuncArgs(jef_args,progVars,jef_func,sprogram);
+                    loadFuncArgs(jef_args,progVars,sprogram);
                     String jef_label= lookforValue("JEFunctionLabel", sin.getSInstructionArguments().getSInstructionArgument());
                     HasLabel gotoLabel_jef = loadLabel(jef_label);
                     instructions.add(new JumpEqualFunction(label,var,jef_func, gotoLabel_jef));
@@ -321,20 +323,18 @@ public class XMLHandler { // Singleton class to handle XML operations
                 .orElseThrow(() -> new IllegalArgumentException("Function " + field + " not found in function list"));
     }
 
-    private void loadFuncArgs(String varNames,ProgramVars parentContext,Function func,SProgram sp) {
+    private ArrayList<Variable> loadFuncArgs(String varNames,ProgramVars parentContext,SProgram sp) {
         List<String> parts= splitTopLevel(varNames);
-        Map<Integer,Variable> inputVars = func.getProg().getVars().getInput();
+        ArrayList<Variable> result=new ArrayList<>();
+        /*Map<Integer,Variable> inputVars = func.getProg().getVars().getInput();
         List<Integer>keys=new ArrayList<>(inputVars.keySet());
         Collections.sort(keys,Integer::compareTo);
-        Iterator<Integer> keyIterator=keys.iterator();
+        Iterator<Integer> keyIterator=keys.iterator();*/
 
         for (String part:parts)
         {
-            if(!keyIterator.hasNext())
-                return ;
-
             if(isValidVariableName(part)) { //simple variable
-                inputVars.put(keyIterator.next(),loadVariable(part,parentContext));
+                result.add(loadVariable(part,parentContext));
             }
             else if(part.startsWith("(")) //nested function
             {
@@ -346,23 +346,50 @@ public class XMLHandler { // Singleton class to handle XML operations
                 SFunction sfunc= lookforFunction(split[0], sp.getSFunctions().getSFunction());
                 ProgramVars funcVars=new ProgramVars();
                 ArrayList<AbstractInstruction> funcInstructions=loadInstructions(sfunc.getSInstructions(),sp,funcVars);
-                Integer index=keyIterator.next();
-                Function subFunc=new Function(inputVars.get(index),new Program(sfunc.getName(),funcInstructions,funcVars),sfunc.getUserString());
-                subFunc.setSyntheticSource(func);
+                Function subFunc=new Function(Variable.createDummyVar(VariableType.WORK,1,0),new Program(sfunc.getName(),funcInstructions,funcVars),sfunc.getUserString());
                 if(split.length>1) {
                     String functionArgs = part.substring(part.indexOf(",") + 1);
-                    loadFuncArgs(functionArgs,parentContext,subFunc,sp);
+                    ArrayList<Variable> args=loadFuncArgs(functionArgs,parentContext,sp);
+                    putFuncArgs(subFunc,args);
                 }
-                inputVars.put(index, ResultVar.createDummyVar(VariableType.WORK,1,0,subFunc));
-                subFunc.setVar(inputVars.get(index));
+                result.add(ResultVar.createDummyVar(VariableType.WORK,1,0,subFunc));
+                subFunc.setVar(result.get(result.size()-1));
             }
             else
             {
                 throw new IllegalArgumentException("Invalid variable name in function arguments: " + part);
             }
         }
-
+        return result;
     }
+    public void putFuncArgs(Function func,ArrayList<Variable> args)
+    {
+        Map<Integer,Variable> inputVars = func.getProg().getVars().getInput();
+        List<Integer>keys=new ArrayList<>(inputVars.keySet());
+        Collections.sort(keys,Integer::compareTo);
+        Iterator<Integer> keyIterator=keys.iterator();
+
+        if(args.isEmpty())
+            return;
+
+        while(keyIterator.hasNext())
+        {
+            Variable currentInput=inputVars.get(keyIterator.next());
+            if(currentInput instanceof ResultVar)
+            {
+                putFuncArgs(((ResultVar)currentInput).getFunction(),args);
+            }
+            else
+            {
+               int pos=currentInput.getPosition();
+                if(pos<=args.size())
+                {
+                    inputVars.put(pos,args.get(pos-1));
+                }
+            }
+        }
+    }
+
 
     private List<String> splitTopLevel(String input) {
         List<String> result = new ArrayList<>();

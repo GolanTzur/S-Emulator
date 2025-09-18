@@ -38,7 +38,7 @@ public class ResultVar extends Variable {
     }
     @Override
     public String toString() {
-        return func.toString();
+        return func.getChildPart();
     }
     public void evaluate()
     {
