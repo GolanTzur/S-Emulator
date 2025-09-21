@@ -39,12 +39,16 @@ public class ResultVar extends Variable {
         return dummy;
     }
 
-    public ResultVar clone(ProgramVars pv,int pos) {
-        if(this.isClone) {
-            return this;
+    public ResultVar clone(ProgramVars pv, int pos) {
+        if (this.isClone) return this;
+        this.isClone = true;
+        try {
+            Function f = this.func.clone(pv);
+            ResultVar res = createOrGetNewResultVar(VariableType.INPUT, pos, pv, f);
+            return res;
+        } finally {
+            this.isClone = false;
         }
-        this.isClone=true;
-        return createOrGetNewResultVar(VariableType.INPUT,pos,pv,this.func.clone(pv));
     }
     @Override
     public String toString() {
@@ -56,6 +60,9 @@ public class ResultVar extends Variable {
             this.func.evaluate();
             this.setValue(this.func.getProg().getVars().getY().getValue());
         }
+    }
+    public void setClone(boolean b) {
+        this.isClone = b;
     }
 
 }

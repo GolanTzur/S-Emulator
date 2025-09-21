@@ -11,9 +11,12 @@ public class Variable implements Cloneable, Serializable {
     private int value;
     private final int position; //Position in the list of variables
 
-    protected Variable(VariableType type,int pos) {
+    protected Variable(VariableType type,int pos,int...value) {
         this.position = pos; //Constructor initializes position
-        this.value = 0; //Default value is 0
+        if(value.length==0)
+         this.value = 0; //Default value is 0
+        else
+            this.value = value[0];
         this.type = type; //Constructor initializes type
     }
 
@@ -35,13 +38,13 @@ public class Variable implements Cloneable, Serializable {
         return this.type.getRepresentation(position);
     }
 
-    public static Variable createOrGetNewVar(VariableType it,int pos,ProgramVars pv) { // Factory method to create or get an existing variable
+    public static Variable createOrGetNewVar(VariableType it,int pos,ProgramVars pv,int...val) { // Factory method to create or get an existing variable
         switch (it) {
             case INPUT:
-                pv.getInput().putIfAbsent(pos, new Variable(VariableType.INPUT, pos));
+                pv.getInput().putIfAbsent(pos, new Variable(VariableType.INPUT, pos,val));
                 return pv.getInput().get(pos);
             case WORK:
-                pv.getEnvvars().putIfAbsent(pos, new Variable(VariableType.WORK, pos));
+                pv.getEnvvars().putIfAbsent(pos, new Variable(VariableType.WORK, pos,val));
                 return pv.getEnvvars().get(pos);
             default:
                 return pv.getY()==null ?
@@ -53,6 +56,10 @@ public class Variable implements Cloneable, Serializable {
     public Variable clone(ProgramVars context) {
          return createOrGetNewVar(this.type,this.position,context);
     }
+    public Variable cloneWithValue(ProgramVars context) {
+        return createOrGetNewVar(this.type,this.position,context,this.value);
+    }
+
     public static Variable createDummyVar(VariableType it,int pos,int value) { // Factory method to create a new variable without checking existing ones
         Variable dummy =new Variable(it,pos);
         dummy.setValue(value);

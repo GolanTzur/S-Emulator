@@ -10,6 +10,7 @@ public class Function extends AbstractInstruction {
     Program prog;
     String displayName;
     boolean isEvaluated = false;
+    boolean isCloned=false;
 
     public Function(HasLabel label, Variable var, Program prog, String displayName) {
         super(label, SyntheticType.QUOTE, var);
@@ -330,12 +331,23 @@ public class Function extends AbstractInstruction {
         return prog.getVars().getInput().values();
     }
     @Override //Activate with null
-    public Function clone(ProgramVars context) {
-        if(!(this.var instanceof ResultVar))
-            return new Function(var.clone(context),prog.clone(),displayName);
-        else
-          return new Function(lab.myClone(),((ResultVar)var).clone(context, var.getPosition()),prog.clone(),displayName);
 
+    public Function clone(ProgramVars context) {
+        if (this.isCloned) return this;
+        this.isCloned = true;
+        try {
+            if (!(this.var instanceof ResultVar))
+                return new Function(var.clone(context), prog.clone(), displayName);
+            else {
+                Function f = new Function(lab.myClone(), ((ResultVar) var).clone(context, var.getPosition()), prog.clone(), displayName);
+                return f;
+            }
+        } finally {
+            this.isCloned = false;
+        }
+    }
+    public void setCloned(boolean b) {
+        this.isCloned = b;
     }
     public int getCycles() {
         return prog.getCycleCount(); // Function call overhead

@@ -171,6 +171,7 @@ public class MainController {
 
  @FXML
  void expandProgram(ActionEvent event) {
+
   if(currdegree.get() == maxdegree.get()) {
    Alert alert = new Alert(Alert.AlertType.ERROR);
    alert.setTitle("Expand Program Error");
@@ -178,12 +179,12 @@ public class MainController {
    alert.showAndWait();
    return;
   }
+
   currdegree.setValue(currdegree.getValue()+1);
   programcopy= program.clone();
   programcopy.deployToDegree(currdegree.getValue());
   instructionstable.setItems(getInstructions(programcopy));
   commandshistory.getItems().clear();
-
  }
 
  @FXML
@@ -295,7 +296,7 @@ public class MainController {
    return;
   }
   programcopy.execute();
-  Statistics stats=new Statistics(currdegree.getValue(),initialInputs,programcopy.getCycleCount(),programcopy.getVars().cloneWithValues());
+  Statistics stats=new Statistics(currdegree.getValue(),initialInputs,programcopy.getCycleCount(),programcopy.getVars().clone());
   stats.appendStatistics();
   programhistorytable.getItems().add(stats);
   showVariables();
@@ -312,7 +313,9 @@ public class MainController {
      alert.showAndWait();
      return;
     }
+
     ProgramState state=new ProgramState(program,programcopy);
+
     try {
      state.saveProgramState();
      Alert alert = new Alert(Alert.AlertType.INFORMATION);
