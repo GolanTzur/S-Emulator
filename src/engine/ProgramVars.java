@@ -99,12 +99,31 @@ public class ProgramVars implements Cloneable, Serializable {
         cloned = new ProgramVars();
 
         for (Map.Entry<Integer, Variable> entry : this.input.entrySet()) {
+            //if(!(entry.getValue() instanceof ResultVar))
+             cloned.input.put(entry.getKey(), entry.getValue()/*.clone(cloned)*/);
+            //else
+                //cloned.input.put(entry.getKey(), ((ResultVar)entry.getValue()).clone(cloned,entry.getKey()));
+            entry.getValue().setValue(0);
+        }
+        for (Map.Entry<Integer, Variable> entry : this.envvars.entrySet()) {
+            cloned.envvars.put(entry.getKey(), entry.getValue());
+            entry.getValue().setValue(0);
+        }
+        cloned.y.setValue(0);
+        return cloned;
+    }
+    public ProgramVars cloneWithValues() {
+        ProgramVars cloned;
+        cloned = new ProgramVars();
+
+        for (Map.Entry<Integer, Variable> entry : this.input.entrySet()) {
             cloned.input.put(entry.getKey(), entry.getValue());
         }
         for (Map.Entry<Integer, Variable> entry : this.envvars.entrySet()) {
             cloned.envvars.put(entry.getKey(), entry.getValue());
         }
-        cloned.y.setValue(y.getValue());
+        cloned.y.setValue(this.y.getValue());
         return cloned;
     }
+
 }

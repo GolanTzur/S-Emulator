@@ -63,7 +63,7 @@ public abstract class AbstractInstruction implements Evaluable,Cloneable, Serial
     public abstract AbstractInstruction clone(ProgramVars context);
     public abstract String getChildPart();
     public HasLabel evaluate(/*ProgramVars context*/) {
-        if (var instanceof ResultVar)
+        if (var instanceof ResultVar && !((ResultVar) var).getFunction().isEvaluated)
             ((ResultVar) var).evaluate();
 
         if (this instanceof HasExtraVar) {

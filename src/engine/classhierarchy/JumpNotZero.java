@@ -34,7 +34,10 @@ public class JumpNotZero extends Instruction implements HasGotoLabel {
     }
     @Override
     public JumpNotZero clone(ProgramVars context) {
+        if(!(this.var instanceof ResultVar))
         return new JumpNotZero(lab.myClone(),var.clone(context),gotoLabel.myClone());
+        else
+            return new JumpNotZero(lab.myClone(),((ResultVar)this.var).clone(context,this.var.getPosition()),gotoLabel.myClone());
     }
 
 }

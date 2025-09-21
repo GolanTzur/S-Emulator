@@ -5,6 +5,7 @@ import engine.Statistics;
 import engine.XMLHandler;
 import engine.basictypes.Variable;
 import engine.classhierarchy.AbstractInstruction;
+import engine.classhierarchy.Function;
 import engine.classhierarchy.SyntheticSugar;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -178,7 +179,8 @@ public class MainController {
    return;
   }
   currdegree.setValue(currdegree.getValue()+1);
-  programcopy.deployToDegree(1);
+  programcopy= program.clone();
+  programcopy.deployToDegree(currdegree.getValue());
   instructionstable.setItems(getInstructions(programcopy));
   commandshistory.getItems().clear();
 
@@ -200,6 +202,8 @@ public class MainController {
 
    program = xmlhandler.loadProgram(fileroute.getText());
    program.checkValidity();
+   program.getVars().getInput().get(1).setValue(7);
+   program.getVars().getInput().get(2).setValue(1);
    programcopy = program.clone();
 
    programLoaded();
@@ -292,10 +296,12 @@ public class MainController {
    return;
   }
   programcopy.execute();
-  Statistics stats=new Statistics(currdegree.getValue(),initialInputs,programcopy.getCycleCount(),programcopy.getVars().clone());
+  Statistics stats=new Statistics(currdegree.getValue(),initialInputs,programcopy.getCycleCount(),programcopy.getVars().cloneWithValues());
   stats.appendStatistics();
   programhistorytable.getItems().add(stats);
   showVariables();
+  programcopy=program.clone();
+  programcopy.deployToDegree(currdegree.getValue());
  }
 
  @FXML
@@ -355,7 +361,7 @@ public class MainController {
   );
 
   type.setCellValueFactory(cellData ->
-          new SimpleStringProperty(cellData.getValue() instanceof SyntheticSugar ? "S" : "B")
+          new SimpleStringProperty((cellData.getValue() instanceof SyntheticSugar || cellData.getValue() instanceof Function )? "S" : "B")
   );
   instr.setCellValueFactory(cellData ->
           new SimpleStringProperty(cellData.getValue().getChildPart())

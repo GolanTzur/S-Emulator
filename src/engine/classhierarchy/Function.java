@@ -9,14 +9,15 @@ import java.util.*;
 public class Function extends AbstractInstruction {
     Program prog;
     String displayName;
-    boolean isEvaluated=false;
+    boolean isEvaluated = false;
 
-    public Function(HasLabel label,Variable var ,Program prog, String displayName) {
+    public Function(HasLabel label, Variable var, Program prog, String displayName) {
         super(label, SyntheticType.QUOTE, var);
         this.prog = prog;
         this.displayName = displayName;
     }
-    public Function(Variable var,Program prog,String displayName) {
+
+    public Function(Variable var, Program prog, String displayName) {
         super(SyntheticType.QUOTE, var);
         this.prog = prog;
         this.displayName = displayName;
@@ -24,74 +25,86 @@ public class Function extends AbstractInstruction {
 
     @Override
     public String getChildPart() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(String.format("(%s", displayName));
-    Collection<Variable> inputs = prog.getVars().getInput().values();
-    inputs.forEach((input)-> sb.append(String.format(",%s", input)));
-    sb.append(")");
-    return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        if(!(var instanceof ResultVar))
+            sb.append(var.toString()+" <- ");
+        sb.append(String.format("(%s", displayName));
+        Collection<Variable> inputs = prog.getVars().getInput().values();
+        inputs.forEach((input) -> sb.append(String.format(",%s", input)));
+        sb.append(")");
+        return sb.toString();
     }
 
     public ArrayList<AbstractInstruction> expand(ProgramVars context, Set<HasLabel> progLabels) {
+        // ArrayList<Variable> newVars = ;
+        /*for (AbstractInstruction instr : prog.getInstructions()) {
+            if (instr instanceof ResultVar) {
+                ResultVar rv = (ResultVar) v;
+                //rv.evaluate();
+                rv.getFunction().refreshInputs();
+                //rv.getFunction().replaceResultVars(prog.getVars());
+                ArrayList<AbstractInstruction> commands = prog.getInstructions();
+                rv.getFunction().replaceVars(commands, context);
+                rv.getFunction().replaceLabels(commands, progLabels);
+
+            }
+        }*/
+        refreshInputs();
+        //replaceResultVars(prog.getVars());
         ArrayList<AbstractInstruction> commands = prog.getInstructions();
-        commands.add(0,new Neutral(lab,context.getY()));
         replaceVars(commands, context);
         replaceLabels(commands, progLabels);
+        commands.add(0, new Neutral(lab, context.getY()));
         return commands;
     }
 
-    private void replaceVars(ArrayList<AbstractInstruction> instructions, ProgramVars context) {
-        Map<Variable,Variable> varMap = new HashMap<>();
-        int sizeinnerinputs=0;
-        int indexAddassign=1;
+    private void replaceVars(ArrayList<AbstractInstruction> instructions,ProgramVars context) {
+        Map<Variable, Variable> varMap = new HashMap<>();
+        ArrayList<AbstractInstruction> newInstructions=replaceInputs(prog.getVars(),context,varMap);
+        instructions.addAll(0,newInstructions);
 
-        for(Variable v:prog.getVars().getInput().values()){
-            /*if(!(v instanceof ResultVar))*/{
-                sizeinnerinputs++;
-            }
-        }
-
-        int sizeZinputs=sizeinnerinputs+prog.getVars().getEnvvars().size()+1;
-        Collection<Variable> newVars = context.getZinputs(sizeZinputs);
-        Iterator<Variable> it = newVars.iterator();
-
-        for(Variable v:prog.getVars().getInput().values()){
-            Variable newVar = it.next();
-            if(v instanceof ResultVar)
-            {
-                ResultVar resultVar = (ResultVar)v;
-                varMap.put(v,newVar);
-                instructions.add(indexAddassign++,new Function(newVar,resultVar.getFunction().prog,resultVar.getFunction().displayName));
-            }
-            else {
-                varMap.put(v, newVar);
-                instructions.add(indexAddassign++, new Assignment(newVar, v));
-            }
-        }
-        for(Variable v:prog.getVars().getEnvvars().values()){
-            varMap.put(v,it.next());
-        }
-        varMap.put(prog.getVars().getY(),it.next());
-
-        // Find all variables to replace
-        for (int i=0; i < instructions.size(); i++) {
-
-                instructions.get(i).setVar(varMap.get(instructions.get(i).getVar()));
-                if(instructions.get(i) instanceof HasExtraVar) {
-                    HasExtraVar hasSecondVar = (HasExtraVar) instructions.get(i);
-                    hasSecondVar.setArg(varMap.get(hasSecondVar.getArg()));
+        for (int i= newInstructions.size();i<instructions.size();i++) {
+            if(!(instructions.get(i) instanceof GotoLabel)) {
+                if (!varMap.containsKey(instructions.get(i).getVar())) {
+                    varMap.put(instructions.get(i).getVar(), context.getZinputs(1).iterator().next());
+                    varMap.get(instructions.get(i).getVar()).setValue(instructions.get(i).getVar().getValue());
                 }
+                if (instructions.get(i) instanceof HasExtraVar) {
+                    HasExtraVar hev = (HasExtraVar) instructions.get(i);
+                    if (!varMap.containsKey(hev.getArg())) {
+                        varMap.put(hev.getArg(), context.getZinputs(1).iterator().next());
+                        varMap.get(hev.getArg()).setValue(hev.getArg().getValue());
+                    }
+                }
+            }
+        }
+        for (int i= newInstructions.size();i<instructions.size();i++) {
+            if(!(instructions.get(i) instanceof GotoLabel)) {
+                instructions.get(i).setVar(varMap.get(instructions.get(i).getVar()));
+                if (instructions.get(i) instanceof HasExtraVar) {
+                    HasExtraVar hev = (HasExtraVar) instructions.get(i);
+                    hev.setArg(varMap.get(hev.getArg()));
+                }
+            }
         }
 
+        Set<Variable> usedVars=varMap.keySet();
+        Optional<Variable> yvar=usedVars.stream().filter(v->v.getType()==VariableType.RESULT).findFirst();
+        yvar.ifPresent(v -> {
+            Variable mapped = varMap.get(v);
+            if (mapped != null) {
+                instructions.add(new Assignment(var, mapped));
+            }
+        });
     }
 
     private void replaceLabels(ArrayList<AbstractInstruction> instructions, Set<HasLabel> allprogramlabels) {
         Map<Label, Label> labelMap = new HashMap<>();
         int nextIndexLabel = 0;
-        boolean hasExit=false;
+        boolean hasExit = false;
 
         // Find all labels to replace
-        for (int i=1; i < instructions.size(); i++) {
+        for (int i = 1; i < instructions.size(); i++) {
             if (instructions.get(i).getLab() instanceof Label) {
                 Label label = (Label) instructions.get(i).getLab();
                 if (allprogramlabels.contains(label)) {
@@ -141,44 +154,149 @@ public class Function extends AbstractInstruction {
             }
         }
 
-        if(hasExit){
+        if (hasExit) {
             Label nextLabel;
             do {
                 nextLabel = new Label("L" + nextIndexLabel++);
             } while (allprogramlabels.contains(nextLabel));
             allprogramlabels.add(nextLabel);
-            for(int i=0;i<instructions.size();i++){
-                if(instructions.get(i) instanceof HasGotoLabel){
-                    HasGotoLabel gotoLabel=(HasGotoLabel) instructions.get(i);
-                    if(gotoLabel.getGotolabel()==FixedLabel.EXIT){
+            for (int i = 0; i < instructions.size(); i++) {
+                if (instructions.get(i) instanceof HasGotoLabel) {
+                    HasGotoLabel gotoLabel = (HasGotoLabel) instructions.get(i);
+                    if (gotoLabel.getGotolabel() == FixedLabel.EXIT) {
                         gotoLabel.setGotolabel(nextLabel.myClone());
                     }
                 }
             }
-            instructions.add(new Assignment(var,prog.getVars().getY()));
+            instructions.get(instructions.size()-1).setLab(nextLabel);
         }
-        else
-            instructions.add(new Neutral(prog.getVars().getY()));
 
     }
 
     @Override
     public HasLabel evaluate() {
-        super.evaluate(); //Calculate result vars if there are any
+        // ArrayList<Variable> newVars = ;
+        for (Variable v : prog.getVars().getInput().values()) {
+            if (v instanceof ResultVar) {
+                ResultVar rv = (ResultVar) v;
+                rv.evaluate();
+            }
+        }
+        refreshInputs();
+        isEvaluated = true;
+        replaceResultVars();
         prog.execute();
-        new Assignment(var, prog.getVars().getY()).evaluate();
-        isEvaluated=true;
+        this.getVar().setValue(prog.getVars().getY().getValue());
         return FixedLabel.EMPTY;
+    }
+    private void replaceResultVars(ProgramVars... progVars)
+    {
+        Map<ResultVar,Variable> map = new HashMap<>();
+        int numArgs=0;
+        ArrayList<AbstractInstruction> commands=prog.getInstructions();
+        for(int i=0;i<commands.size();i++)
+        {
+            AbstractInstruction inst=commands.get(i);
+            Variable var=inst.getVar();
+            if(var instanceof ResultVar) {
+                if (progVars.length == 1)
+                {
+                    map.put((ResultVar) var, progVars[0].getZinputs(1).iterator().next());
+                    map.get((ResultVar) var).setValue(var.getValue());
+                }
+                else
+                {
+                    map.put((ResultVar) var, Variable.createDummyVar(VariableType.WORK, ++numArgs, var.getValue()));
+                }
+            }
+            if(inst instanceof HasExtraVar&&((HasExtraVar) inst).getArg() instanceof ResultVar)
+            {
+                Variable extraVar=((HasExtraVar) inst).getArg();
+                if (progVars.length == 1)
+                {
+                    map.put((ResultVar) extraVar, progVars[0].getZinputs(1).iterator().next());
+                    map.get((ResultVar) extraVar).setValue(extraVar.getValue());
+                }
+                else
+                {
+                    map.put((ResultVar) extraVar, Variable.createDummyVar(VariableType.WORK, ++numArgs, extraVar.getValue()));
+                }
+            }
+
+        }
+        for(int i=0;i<commands.size();i++)
+        {
+            AbstractInstruction inst=commands.get(i);
+            Variable var=inst.getVar();
+            if(var instanceof ResultVar)
+            {
+                Variable newVar=map.get(var);
+                inst.setVar(newVar);
+            }
+            if(inst instanceof HasExtraVar)
+            {
+                Variable extraVar=((HasExtraVar) inst).getArg();
+                if(extraVar instanceof ResultVar)
+                {
+                    Variable newVar=map.get(extraVar);
+                    ((HasExtraVar) inst).setArg(newVar);
+                }
+            }
+
+        }
+    }
+
+    private ArrayList<AbstractInstruction> replaceInputs(ProgramVars progVars,ProgramVars context,Map<Variable,Variable> map)
+    {
+        ArrayList<AbstractInstruction> commands=new ArrayList<>();
+        for(Variable v : progVars.getInput().values())
+        {
+            if(map.containsKey(v))
+                continue;
+            if(v instanceof ResultVar)
+            {
+                ResultVar rv=(ResultVar) v;
+                map.put(rv,context.getZinputs(1).iterator().next());
+                rv.getFunction().setVar(map.get(rv));
+                commands.add(rv.getFunction());
+            }
+            else
+            {
+                map.put(v,context.getZinputs(1).iterator().next());
+                commands.add(new Assignment(map.get(v),v));
+            }
+        }
+        return commands;
     }
     public Variable getOutputVariable() {
         return prog.getVars().getY();
     }
+    public void refreshInputs()
+    {
+        for(AbstractInstruction instr:prog.getInstructions()){
+            if(instr.getVar().getType()==VariableType.INPUT){
+                instr.setVar(prog.getVars().getInput().get(instr.getVar().getPosition()));
+            }
+
+            if(instr instanceof HasExtraVar){
+                HasExtraVar hev=(HasExtraVar) instr;
+                if(hev.getArg().getType()==VariableType.INPUT){
+                    hev.setArg(prog.getVars().getInput().get(hev.getArg().getPosition()));
+                }
+            }
+        }
+    }
+
     public Collection<Variable> getUsedVariables() {
         return prog.getVars().getInput().values();
     }
     @Override //Activate with null
     public Function clone(ProgramVars context) {
-        return new Function(lab.myClone(),var.clone(context) ,prog.clone(), displayName);
+        if(!(this.var instanceof ResultVar))
+            return new Function(var.clone(context),prog.clone(),displayName);
+        else
+          return new Function(lab.myClone(),((ResultVar)var).clone(context, var.getPosition()),prog.clone(),displayName);
+
     }
     public int getCycles() {
         return prog.getCycleCount(); // Function call overhead

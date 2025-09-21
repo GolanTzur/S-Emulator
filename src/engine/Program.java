@@ -39,6 +39,10 @@ public class Program implements Serializable {
         return vars.getY();
     }
 
+    public void replaceProgramResultVars(){
+        Map<ResultVar,Variable> resultVarMap = new HashMap<>();
+    }
+
 
     private Set<HasLabel> getallprogramlabels()
     {
@@ -89,6 +93,7 @@ public class Program implements Serializable {
                 i+=expandedInstructions.size()-1; // Adjust index to account for the newly added instructions
             } else if (currentInstruction instanceof Function) {
                 AbstractInstruction source;
+
                 ArrayList<AbstractInstruction> expandedInstructions = ((Function) currentInstruction).expand(this.vars,allprogramlabels);
                 for(AbstractInstruction instruction:expandedInstructions){
                     instruction.setPos(++programCounter); // Set position for each expanded instruction
@@ -325,13 +330,36 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         }
         return initialVars;
     }
-    public Program clone() {
+    /*public Program clone() {
         ArrayList<AbstractInstruction> clonedInstructions = new ArrayList<>();
         ProgramVars vars = new ProgramVars();
+
         for (AbstractInstruction instruction : this.instructions) {
-            clonedInstructions.add(instruction.clone(vars));
+            if (instruction instanceof Function) {
+                Function func = (Function) instruction;
+                ArrayList<Variable> inputs = new ArrayList<>(func.getProg().getVars().getInput().values());
+                for (Variable var : inputs) {
+
+                }
+                clonedInstructions.add(instruction.clone(vars));
+            }
+
+            return new Program(this.name, clonedInstructions, vars);
+
         }
-        return new Program(this.name, clonedInstructions,vars);
+    }*/
+    @Override
+    public Program clone() {
+        // Deep copy of ProgramVars (implement clone if needed)
+        ProgramVars clonedVars = this.vars.clone();
+
+        // Deep copy of instructions
+        ArrayList<AbstractInstruction> clonedInstructions = new ArrayList<>();
+        for (AbstractInstruction instruction : this.instructions) {
+            clonedInstructions.add(instruction.clone(clonedVars));
+        }
+
+        return new Program(this.name, clonedInstructions, clonedVars);
     }
     public int getCycleCount() {
         return cycleCount;

@@ -29,6 +29,9 @@ public class Increase extends Instruction {
     }
     @Override
     public Increase clone(ProgramVars context) {
+        if(!(this.var instanceof ResultVar))
         return new Increase(lab.myClone(),this.var.clone(context));
+        else
+            return new Increase(lab.myClone(),((ResultVar)this.var).clone(context,this.var.getPosition()));
     }
 }

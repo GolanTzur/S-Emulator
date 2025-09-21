@@ -40,7 +40,10 @@ public class ConstAssignment extends SyntheticSugar {
     }
     @Override
     public ConstAssignment clone(ProgramVars context) {
+        if(!(this.var instanceof ResultVar))
         return new ConstAssignment(this.var.clone(context),this.arg);
+        else
+            return new ConstAssignment(this.lab.myClone(),((ResultVar)this.var).clone(context,this.var.getPosition()),this.arg);
     }
 
 }

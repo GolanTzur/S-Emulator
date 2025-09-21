@@ -88,6 +88,9 @@ public class JumpEqualConstant extends SyntheticSugar implements HasGotoLabel {
 
     @Override
     public JumpEqualConstant clone(ProgramVars context) {
+        if(var instanceof ResultVar)
+            return new JumpEqualConstant(lab.myClone(),((ResultVar)this.var).clone(context),arg,gotoLabel.myClone());
+        else
         return new JumpEqualConstant(lab.myClone(),var.clone(context),arg,gotoLabel.myClone());
     }
 }

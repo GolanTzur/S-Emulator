@@ -125,6 +125,16 @@ public class JumpEqualVariable extends SyntheticSugar implements HasGotoLabel,Ha
     }
     @Override
     public JumpEqualVariable clone(ProgramVars context) {
-        return new JumpEqualVariable(lab.myClone(),var.clone(context),arg,gotoLabel.myClone());
+        Variable clonedArg;
+        Variable clonedVar;
+        if(!(this.var instanceof ResultVar))
+            clonedVar=this.var.clone(context);
+        else
+            clonedVar=((ResultVar)this.var).clone(context);
+        if(!(this.arg instanceof ResultVar))
+            clonedArg=this.arg.clone(context);
+        else
+            clonedArg=((ResultVar)this.arg).clone(context);
+        return new JumpEqualVariable(lab.myClone(),clonedVar,clonedArg,gotoLabel.myClone());
     }
 }

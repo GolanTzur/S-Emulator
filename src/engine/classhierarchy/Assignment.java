@@ -98,7 +98,18 @@ public class Assignment extends SyntheticSugar implements  HasExtraVar {
         return String.format("%s <- %s", var, arg);
     }
     public Assignment clone(ProgramVars context) {
-         return new Assignment(this.var.clone(context),this.arg.clone(context));
+        Variable clonedArg;
+        Variable clonedVar;
+        if(!(this.var instanceof ResultVar))
+            clonedVar=this.var.clone(context);
+        else
+            clonedVar=((ResultVar)this.var).clone(context,this.var.getPosition());
+        if(!(this.arg instanceof ResultVar))
+            clonedArg=this.arg.clone(context);
+        else
+            clonedArg=((ResultVar)this.arg).clone(context,this.arg.getPosition());
+
+        return new Assignment(lab.myClone(),clonedVar,clonedArg);
     }
 
 }

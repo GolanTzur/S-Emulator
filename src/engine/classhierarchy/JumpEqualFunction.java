@@ -60,7 +60,10 @@ public class JumpEqualFunction extends SyntheticSugar implements HasGotoLabel {
         return commands;
     }
     public JumpEqualFunction clone(ProgramVars context) {
-        return new JumpEqualFunction(lab.myClone(),var.clone(context),func.clone(context),gotolabel.myClone());
+        if(!(this.var instanceof ResultVar))
+            return new JumpEqualFunction(var.clone(context),func.clone(context),gotolabel.myClone());
+        else
+        return new JumpEqualFunction(lab.myClone(),((ResultVar)var).clone(context),func.clone(context),gotolabel.myClone());
     }
 
 }

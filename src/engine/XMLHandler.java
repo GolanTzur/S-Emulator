@@ -237,6 +237,7 @@ public class XMLHandler { // Singleton class to handle XML operations
                     String args=lookforValue("functionArguments",sin.getSInstructionArguments().getSInstructionArgument());
                     ArrayList<Variable>funcargs=loadFuncArgs(args,progVars,sprogram);
                     putFuncArgs(func,funcargs);
+                    func.refreshInputs();
                     instructions.add(func);
 
                     break;
@@ -330,9 +331,10 @@ public class XMLHandler { // Singleton class to handle XML operations
         List<Integer>keys=new ArrayList<>(inputVars.keySet());
         Collections.sort(keys,Integer::compareTo);
         Iterator<Integer> keyIterator=keys.iterator();*/
-
+        int argNum=1;
         for (String part:parts)
         {
+
             if(isValidVariableName(part)) { //simple variable
                 result.add(loadVariable(part,parentContext));
             }
@@ -346,19 +348,20 @@ public class XMLHandler { // Singleton class to handle XML operations
                 SFunction sfunc= lookforFunction(split[0], sp.getSFunctions().getSFunction());
                 ProgramVars funcVars=new ProgramVars();
                 ArrayList<AbstractInstruction> funcInstructions=loadInstructions(sfunc.getSInstructions(),sp,funcVars);
-                Function subFunc=new Function(Variable.createDummyVar(VariableType.WORK,1,0),new Program(sfunc.getName(),funcInstructions,funcVars),sfunc.getUserString());
+                Function subFunc=new Function(Variable.createDummyVar(VariableType.INPUT,1,0),new Program(sfunc.getName(),funcInstructions,funcVars),sfunc.getUserString());
                 if(split.length>1) {
                     String functionArgs = part.substring(part.indexOf(",") + 1);
                     ArrayList<Variable> args=loadFuncArgs(functionArgs,parentContext,sp);
                     putFuncArgs(subFunc,args);
                 }
-                result.add(ResultVar.createDummyVar(VariableType.WORK,1,0,subFunc));
+                result.add(ResultVar.createDummyVar(VariableType.INPUT,argNum,0,subFunc));
                 subFunc.setVar(result.get(result.size()-1));
             }
             else
             {
                 throw new IllegalArgumentException("Invalid variable name in function arguments: " + part);
             }
+            argNum++;
         }
         return result;
     }
@@ -384,7 +387,8 @@ public class XMLHandler { // Singleton class to handle XML operations
                int pos=currentInput.getPosition();
                 if(pos<=args.size())
                 {
-                    inputVars.put(pos,args.get(pos-1));
+                       inputVars.put(pos,args.get(pos-1));
+                    // inputVars.get(pos).setValue(args.get(pos-1).getValue());
                 }
             }
         }

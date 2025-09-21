@@ -32,6 +32,9 @@ public class Decrease extends Instruction {
     }
     @Override
     public Decrease clone(ProgramVars context) {
+        if(!(this.var instanceof ResultVar))
         return new Decrease(lab.myClone(),this.var.clone(context));
+        else
+            return new Decrease(lab.myClone(),((ResultVar)this.var).clone(context));
     }
 }

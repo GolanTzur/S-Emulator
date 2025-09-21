@@ -39,7 +39,10 @@ public class ZeroVar extends SyntheticSugar{
         return String.format("%s <- 0", var);
     }
     public ZeroVar clone(ProgramVars context) {
+        if(!(this.var instanceof ResultVar))
         return new ZeroVar(lab.myClone(),var.clone(context));
+        else
+            return new ZeroVar(lab.myClone(),((ResultVar)this.var).clone(context));
     }
 
 }

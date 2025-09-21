@@ -63,6 +63,9 @@ public class JumpZero extends SyntheticSugar implements HasGotoLabel {
     }
     @Override
     public JumpZero clone(ProgramVars context) {
-        return new JumpZero(lab.myClone(),var.clone(context),gotoLabel.myClone());
+        if(!(this.var instanceof ResultVar))
+            return new JumpZero(var.clone(context),gotoLabel.myClone());
+        else
+        return new JumpZero(lab.myClone(),((ResultVar)var).clone(context,var.getPosition()),gotoLabel.myClone());
     }
 }
