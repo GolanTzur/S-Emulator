@@ -232,12 +232,16 @@ public class XMLHandler { // Singleton class to handle XML operations
 
                     SFunction sfunc= lookforFunction(funcName,sprogram.getSFunctions().getSFunction());
                     ProgramVars funcVars=new ProgramVars();
+
                     ArrayList<AbstractInstruction> funcInstructions=loadInstructions(sfunc.getSInstructions(),sprogram,funcVars);
                     Function func=new Function(label,var,new Program(sfunc.getName(),funcInstructions,funcVars),sfunc.getUserString());
                     String args=lookforValue("functionArguments",sin.getSInstructionArguments().getSInstructionArgument());
+
                     ArrayList<Variable>funcargs=loadFuncArgs(args,progVars,sprogram);
                     putFuncArgs(func,funcargs);
                     func.refreshInputs();
+                    //func.updateValues();
+
                     instructions.add(func);
 
                     break;
@@ -353,6 +357,7 @@ public class XMLHandler { // Singleton class to handle XML operations
                     String functionArgs = part.substring(part.indexOf(",") + 1);
                     ArrayList<Variable> args=loadFuncArgs(functionArgs,parentContext,sp);
                     putFuncArgs(subFunc,args);
+                    subFunc.refreshInputs();
                 }
                 result.add(ResultVar.createDummyVar(VariableType.INPUT,argNum,0,subFunc));
                 subFunc.setVar(result.get(result.size()-1));
@@ -380,7 +385,7 @@ public class XMLHandler { // Singleton class to handle XML operations
             Variable currentInput=inputVars.get(keyIterator.next());
             if(currentInput instanceof ResultVar)
             {
-                putFuncArgs(((ResultVar)currentInput).getFunction(),args);
+                //putFuncArgs(((ResultVar)currentInput).getFunction(),args);
             }
             else
             {

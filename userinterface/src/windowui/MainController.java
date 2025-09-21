@@ -202,8 +202,6 @@ public class MainController {
 
    program = xmlhandler.loadProgram(fileroute.getText());
    program.checkValidity();
-   program.getVars().getInput().get(1).setValue(7);
-   program.getVars().getInput().get(2).setValue(1);
    programcopy = program.clone();
 
    programLoaded();
@@ -287,6 +285,7 @@ public class MainController {
   Collection<Variable>initialInputs;
   try {
    initialInputs = loadVariablesToProgramCopy();
+   programcopy.updateValues();
   } catch (Exception e) {
    Alert alert = new Alert(Alert.AlertType.ERROR);
    alert.setTitle("Run Program Error");

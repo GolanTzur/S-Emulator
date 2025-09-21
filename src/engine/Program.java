@@ -361,6 +361,54 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
 
         return new Program(this.name, clonedInstructions, clonedVars);
     }
+
+
+    public void updateValues()
+    {
+         Map<Integer,Integer> values = new HashMap<>();
+        for(Map.Entry<Integer, Variable> entry : vars.getInput().entrySet())
+        {
+            if(!(entry.getValue() instanceof ResultVar))
+             values.put(entry.getKey(),entry.getValue().getValue());
+        }
+        for(AbstractInstruction instr: instructions){
+            if(instr.getVar() instanceof ResultVar){
+                ((ResultVar)instr.getVar()).getFunction().getProg().updateValuesRecursive(values);
+            }
+            if(instr instanceof HasExtraVar){
+                HasExtraVar hev=(HasExtraVar) instr;
+                if(hev.getArg() instanceof ResultVar){
+                    ((ResultVar)hev.getArg()).getFunction().getProg().updateValuesRecursive(values);
+                }
+            }
+            if(instr instanceof Function)
+            {
+                ((Function)instr).getProg().updateValuesRecursive(values);
+            }
+            if(instr instanceof JumpEqualFunction){
+                ((JumpEqualFunction)instr).getFunc().getProg().updateValuesRecursive(values);
+            }
+        }
+
+    }
+    private void updateValuesRecursive(Map<Integer,Integer> values)
+    {
+        for(Variable v : vars.getInput().values())
+        {
+            if(!(v instanceof ResultVar))
+            {
+                Optional<Integer> val= Optional.ofNullable(values.get(v.getPosition()));
+                val.ifPresent(v::setValue);
+            }
+            else
+            {
+                ((ResultVar)v).getFunction().getProg().updateValuesRecursive(values);
+            }
+        }
+        updateValues();
+
+    }
+
     public int getCycleCount() {
         return cycleCount;
     }

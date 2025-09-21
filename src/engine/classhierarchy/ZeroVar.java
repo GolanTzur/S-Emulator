@@ -42,7 +42,7 @@ public class ZeroVar extends SyntheticSugar{
         if(!(this.var instanceof ResultVar))
         return new ZeroVar(lab.myClone(),var.clone(context));
         else
-            return new ZeroVar(lab.myClone(),((ResultVar)this.var).clone(context));
+            return new ZeroVar(lab.myClone(),((ResultVar)this.var).clone(context, var.getPosition()));
     }
 
 }

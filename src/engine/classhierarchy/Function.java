@@ -286,6 +286,45 @@ public class Function extends AbstractInstruction {
             }
         }
     }
+    public void updateValues(ArrayList<Integer> values)
+    {
+        for(AbstractInstruction instr:prog.getInstructions()){
+            if(instr.getVar() instanceof ResultVar){
+                ((ResultVar)instr.getVar()).getFunction().updateValuesRecursive(values);
+            }
+            if(instr instanceof HasExtraVar){
+                HasExtraVar hev=(HasExtraVar) instr;
+                if(hev.getArg() instanceof ResultVar){
+                    ((ResultVar)hev.getArg()).getFunction().updateValuesRecursive(values);
+                }
+            }
+            if(instr instanceof Function)
+            {
+                ((Function)instr).updateValuesRecursive(values);
+            }
+            if(instr instanceof JumpEqualFunction){
+                ((JumpEqualFunction)instr).getFunc().updateValuesRecursive(values);
+            }
+        }
+
+    }
+    private void updateValuesRecursive(ArrayList<Integer> values)
+    {
+        for(Variable v : prog.getVars().getInput().values())
+        {
+            if(!(v instanceof ResultVar))
+            {
+                Optional<Integer> val= Optional.ofNullable(values.get(v.getPosition()-1));
+                if(val.isPresent())
+                  v.setValue(values.get(v.getPosition()-1));
+            }
+            else
+            {
+                ((ResultVar)v).getFunction().updateValuesRecursive(values);
+            }
+        }
+
+    }
 
     public Collection<Variable> getUsedVariables() {
         return prog.getVars().getInput().values();
