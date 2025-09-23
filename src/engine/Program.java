@@ -362,6 +362,107 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         return new Program(this.name, clonedInstructions, clonedVars);
     }
 
+    public  Set<Integer> findLabelsEquals(HasLabel label)
+    {
+        Set<Integer> positions = new HashSet<>();
+        if(label.equals(FixedLabel.EMPTY))
+            return positions;
+        for(int i=0;i<instructions.size();i++)
+        {
+            if(instructions.get(i).getLab().equals(label))
+            {
+                positions.add(instructions.get(i).getPos());
+            }
+            if(instructions.get(i) instanceof HasGotoLabel)
+            {
+                HasGotoLabel hgl = (HasGotoLabel) instructions.get(i);
+                if(hgl.getGotolabel().equals(label))
+                {
+                    positions.add(instructions.get(i).getPos());
+                }
+            }
+        }
+        return positions;
+    }
+
+    public Set<Integer> findVariableUsage(Variable var)
+    {
+        Set<Integer> positions = new HashSet<>();
+        for(int i=0;i<instructions.size();i++)
+        {
+            AbstractInstruction instr = instructions.get(i);
+            if(instr.getVar() instanceof ResultVar)
+            {
+                Function searchfunc = ((ResultVar) instr.getVar()).getFunction();
+
+                if((searchVariableRec(var,searchfunc)))
+                {
+                    positions.add(instr.getPos());
+                    continue;
+                }
+            }
+            else if(instr.getVar().toString().equals(var.toString()))
+            {
+                positions.add(instr.getPos());
+                continue;
+            }
+            if(instr instanceof HasExtraVar)
+            {
+                HasExtraVar hev = (HasExtraVar) instr;
+                if(hev.getArg() instanceof ResultVar)
+                {
+                    Function searchfunc = ((ResultVar) hev.getArg()).getFunction();
+                    if((searchVariableRec(var,searchfunc)))
+                    {
+                        positions.add(instr.getPos());
+                        continue;
+                    }
+                }
+                else if(hev.getArg().toString().equals(var.toString()))
+                {
+                    positions.add(instr.getPos());
+                    continue;
+                }
+            }
+            if(instr instanceof Function)
+            {
+                Function func = (Function) instr;
+                if(searchVariableRec(var,func))
+                {
+                    positions.add(instr.getPos());
+                    continue;
+                }
+            }
+            if(instr instanceof JumpEqualFunction)
+            {
+                JumpEqualFunction jef = (JumpEqualFunction) instr;
+                if(jef.getFunc()!=null)
+                {
+                    if(searchVariableRec(var,jef.getFunc()))
+                    {
+                        positions.add(instr.getPos());
+                    }
+                }
+            }
+        }
+        return positions;
+    }
+
+    private boolean searchVariableRec(Variable var,Function func)
+    {
+     for(Variable input : this.vars.getInput().values())
+     {
+         if(input instanceof ResultVar)
+         {
+             if(searchVariableRec(var,((ResultVar) input).getFunction()))
+                 return true;
+         }
+         else if(input.toString().equals(var.toString()))
+             return true;
+     }
+     return false;
+    }
+
 
     public void updateValues()
     {

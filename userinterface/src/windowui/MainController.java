@@ -3,27 +3,29 @@ import engine.Program;
 import engine.ProgramState;
 import engine.Statistics;
 import engine.XMLHandler;
+import engine.basictypes.HasLabel;
 import engine.basictypes.Variable;
-import engine.classhierarchy.AbstractInstruction;
-import engine.classhierarchy.Function;
-import engine.classhierarchy.SyntheticSugar;
+import engine.classhierarchy.*;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 public class MainController {
@@ -32,12 +34,39 @@ public class MainController {
  private Program programcopy;
  private final SimpleIntegerProperty currdegree = new SimpleIntegerProperty(0);
  private final SimpleIntegerProperty maxdegree = new SimpleIntegerProperty(0);
- private String currentFilePath ="";
  private boolean loadedFromFile;
  private Map<Integer, TextField> inputFields = new HashMap<>();
 
  @FXML
+ private HBox actionbuttonshbox;
+
+ @FXML
  private Button collapse;
+
+ @FXML
+ private Button selectdegree;
+
+ @FXML
+ private RadioButton bylabradio;
+
+ @FXML
+ private RadioButton byvarradio;
+
+ @FXML
+ private TextField degreetext1;
+
+ @FXML
+ private Menu file;
+
+ @FXML
+ private MenuItem load;
+
+ @FXML
+ private MenuItem loadsavedprogram;
+
+ @FXML
+ private MenuItem saveprogram;
+
 
  @FXML
  private Label currdeg;
@@ -74,12 +103,6 @@ public class MainController {
 
  @FXML
  private TableColumn<AbstractInstruction, String> instructiontabletype;
-
- @FXML
- private Button load;
-
- @FXML
- private Button loadsavedprogram;
 
  @FXML
  private Label maxdeg;
@@ -134,16 +157,20 @@ public class MainController {
  private VBox programvarsvbox;
 
  @FXML
- private Button rerun;
+ private HBox progcontrolhbox1;
 
  @FXML
- private Button resume;
+ private HBox progcontrolhbox2;
+
+ @FXML
+ private Button rerun;
 
  @FXML
  private Button run;
 
  @FXML
- private Button saveprogram;
+ private Button resume;
+
 
  @FXML
  private Button stop;
@@ -161,6 +188,7 @@ public class MainController {
   programcopy= program.clone();
   programcopy.deployToDegree(currdegree.getValue());
   instructionstable.setItems(getInstructions(programcopy));
+  clearTableSelection();
   commandshistory.getItems().clear();
  }
 
@@ -184,34 +212,105 @@ public class MainController {
   programcopy= program.clone();
   programcopy.deployToDegree(currdegree.getValue());
   instructionstable.setItems(getInstructions(programcopy));
+  clearTableSelection();
   commandshistory.getItems().clear();
  }
 
  @FXML
  void highlightSelection(ActionEvent event) {
 
+   if(!bylabradio.isSelected()&&!byvarradio.isSelected()) {
+    return;
+   }
+
+    AbstractInstruction selected = instructionstable.getSelectionModel().getSelectedItem();
+
+  if(selected==null) {
+   Alert alert = new Alert(Alert.AlertType.ERROR);
+   alert.setTitle("Highlight Selection Error");
+   alert.setHeaderText("No instruction selected");
+   alert.showAndWait();
+   return;
+  }
+  Set<Integer> labelPositions = new HashSet<>();
+  Set<Integer> varPositions = new HashSet<>();
+
+    if(bylabradio.isSelected()) {
+     HasLabel labelToHighlight = selected.getLab();
+     Set <Integer> positions=programcopy.findLabelsEquals(labelToHighlight);
+     Set <Integer> argpositions=new HashSet<>();
+
+     if(selected instanceof HasGotoLabel)
+        argpositions=programcopy.findLabelsEquals(((HasGotoLabel) selected).getGotolabel());
+
+         positions.addAll(argpositions);
+         labelPositions.addAll(positions);
+     }
+     if(byvarradio.isSelected()) {
+      if (!(selected instanceof GotoLabel)) {
+       Variable varToHighlight = selected.getVar();
+
+       Set<Integer> positions = programcopy.findVariableUsage(varToHighlight);
+       if (selected instanceof HasExtraVar)
+        positions.addAll(programcopy.findVariableUsage(((HasExtraVar) selected).getArg()));
+
+       varPositions.addAll(positions);
+      }
+     }
+
+     Set<Integer> allPositions = new HashSet<>();
+     allPositions.addAll(labelPositions);
+     allPositions.addAll(varPositions);
+
+  instructionstable.setRowFactory(tv -> new TableRow<AbstractInstruction>() {
+   @Override
+   protected void updateItem(AbstractInstruction instr, boolean empty) {
+    super.updateItem(instr, empty);
+    if (instr == null || empty) {
+     setStyle("");
+    } else if (allPositions.contains(instr.getPos())) {
+     setStyle("-fx-background-color: yellow;");
+    } else {
+     setStyle("");
+    }
+   }
+  });
+
  }
 
  @FXML
  void loadProgram(ActionEvent event) {
-  if(fileroute.getText().equals(currentFilePath)) {
-    return;
+
+  FileChooser fileChooser = new FileChooser();
+  fileChooser.setTitle("Open Program File");
+  File file = fileChooser.showOpenDialog(load.getParentPopup().getOwnerWindow());
+  // Check if a file was selected
+  if((!fileroute.getText().isEmpty())&&fileroute.getText().equals(file.getAbsolutePath())) {
+   return;
   }
 
   XMLHandler xmlhandler = XMLHandler.getInstance();
   try {
 
-   program = xmlhandler.loadProgram(fileroute.getText());
+   // Load the program from the selected file
+   program = xmlhandler.loadProgram(file.getAbsolutePath());
    program.checkValidity();
+
+    waitForLoadProgram();
+
    programcopy = program.clone();
 
    programLoaded();
    currdegree.set(0);
    maxdegree.set(program.getProgramDegree());
    setInputVariables(program);
-
+   fileroute.setText(file.getAbsolutePath());
    loadedFromFile=false;
-   currentFilePath=fileroute.getText();
+
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setTitle("Load Program");
+    alert.setHeaderText(String.format("Program %s loaded successfully.",program.getName()));
+    alert.showAndWait();
 
   } catch (Exception e) {
    Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -223,6 +322,45 @@ public class MainController {
 
  }
 
+ private void waitForLoadProgram() {
+  Alert loadalert = new Alert(Alert.AlertType.INFORMATION);
+  loadalert.setTitle("Load Program");
+  ProgressBar progressBar = new ProgressBar();
+  Label progressLabel = new Label("Steps: 0 of 5");
+
+  VBox vbox = new VBox(10, progressBar, progressLabel);
+  vbox.setPadding(new Insets(10));
+
+  loadalert.getDialogPane().setContent(vbox);
+  loadalert.setWidth(300);
+  loadalert.setHeaderText("Loading program, please wait...");
+  progressBar.setPrefWidth(250);
+
+  Task<Void> task = new Task<>() {
+   @Override
+   protected Void call() throws Exception {
+    // Simulate work
+    for (int i = 1; i <= 5; i++) {
+     Thread.sleep(500); // pretend to do work
+     updateProgress(i, 5);
+     updateMessage("Step " + i + " of 5");
+    }
+    return null;
+   }
+
+  };
+
+  progressBar.progressProperty().bind(task.progressProperty());
+  progressLabel.textProperty().bind(task.messageProperty());
+  task.setOnSucceeded(e -> loadalert.close());
+  task.setOnFailed(e -> loadalert.close());
+  task.setOnCancelled(e -> loadalert.close());
+
+  new Thread(task).start();
+  loadalert.showAndWait();
+
+ }
+
  @FXML
  public void initialize() {
   noLoadedProgram();
@@ -230,6 +368,12 @@ public class MainController {
   setInstructionsTableAddFormat(instructiontablelabel, instructiontablenumber, instructiontablecycles, instructiontabletype, instructiontableinstr);
   setProgramHistoryAddFormat(historytablenumber, historytabledegree, historytablecycles, historytableinput, historytableresult);
   setCommandshistoryListener();
+
+  degreetext1.textProperty().addListener((obs, oldValue, newValue) -> {
+   if (!newValue.matches("\\d*")) {
+    degreetext1.setText(newValue.replaceAll("[^\\d]", ""));
+   }
+   });
  }
 
  @FXML
@@ -245,6 +389,8 @@ public class MainController {
      ProgramState toLoad = ProgramState.loadProgramState();
      program = toLoad.getOrigin();
      programcopy = toLoad.getCopy();
+
+     waitForLoadProgram();
 
      commandshistory.getItems().clear();
      programhistorytable.getItems().clear();
@@ -263,7 +409,7 @@ public class MainController {
      alert.setTitle("Load Program from file");
      alert.setHeaderText(String.format("Program %s with degree %d/%d loaded successfully.",program.getName(),currdegree.getValue(),maxdegree.getValue()));
      alert.showAndWait();
-     currentFilePath="";
+
      fileroute.setText("");
 
     } catch (Exception e) {
@@ -329,6 +475,42 @@ public class MainController {
      alert.setContentText(e.getMessage()); // or a custom message
      alert.showAndWait();
     }
+ }
+
+ @FXML
+ void expandToDegree(ActionEvent event) {
+    if(degreetext1.getText().isEmpty()) {
+     Alert alert = new Alert(Alert.AlertType.ERROR);
+     alert.setTitle("Expand to Degree Error");
+     alert.setHeaderText("Degree field is empty");
+     alert.showAndWait();
+     return;
+    }
+    int targetDegree;
+    try {
+     targetDegree = Integer.parseInt(degreetext1.getText());
+    } catch (NumberFormatException e) {
+     Alert alert = new Alert(Alert.AlertType.ERROR);
+     alert.setTitle("Expand to Degree Error");
+     alert.setHeaderText("Degree field is not a valid integer");
+     alert.showAndWait();
+     return;
+    }
+
+    if(targetDegree < 0 || targetDegree > maxdegree.get()) {
+     Alert alert = new Alert(Alert.AlertType.ERROR);
+     alert.setTitle("Expand to Degree Error");
+     alert.setHeaderText(String.format("Degree must be between 0 and %d", maxdegree.get()));
+     alert.showAndWait();
+     return;
+    }
+
+    currdegree.setValue(targetDegree);
+    programcopy= program.clone();
+    programcopy.deployToDegree(currdegree.getValue());
+    clearTableSelection();
+    instructionstable.setItems(getInstructions(programcopy));
+    commandshistory.getItems().clear();
  }
 
  @FXML
@@ -401,6 +583,18 @@ public class MainController {
 
  }
 
+ private void clearTableSelection() {
+
+  instructionstable.setRowFactory(tv -> new TableRow<AbstractInstruction>() {
+   @Override
+   protected void updateItem(AbstractInstruction instr, boolean empty) {
+    super.updateItem(instr, empty);
+    setStyle("");
+   }
+  });
+
+ }
+
  public void setCommandshistoryListener() {
   instructionstable.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
    commandshistory.getItems().clear();
@@ -420,6 +614,8 @@ public class MainController {
   instructionstable.setPlaceholder(new Label("No program loaded"));
   commandshistory.setPlaceholder(new Label("No instruction selected"));
   programhistorytable.setPlaceholder(new Label("No program loaded"));
+
+  fileroute.setEditable(false);
   instructionstable.getItems().clear();
   commandshistory.getItems().clear();
   programhistorytable.getItems().clear();
@@ -427,16 +623,11 @@ public class MainController {
   loadedFromFile=false;
   program=null;
   programcopy=null;
-  expand.setVisible(false);
-  collapse.setVisible(false);
-  run.setVisible(false);
-  debug.setVisible(false);
-  stop.setVisible(false);
-  resume.setVisible(false);
+  progcontrolhbox1.setVisible(false);
+  progcontrolhbox2.setVisible(false);
+  actionbuttonshbox.setVisible(false);
   rerun.setVisible(false);
   saveprogram.setVisible(false);
-  functionselector.setVisible(false);
-  highlightselection.setVisible(false);
   currdeg.textProperty().unbind();
   maxdeg.textProperty().unbind();
   currdeg.setText("0");
@@ -444,18 +635,16 @@ public class MainController {
  }
  public void programLoaded()
  {
-  expand.setVisible(true);
-  collapse.setVisible(true);
-  run.setVisible(true);
-  debug.setVisible(true);
-  stop.setVisible(true);
-  resume.setVisible(true);
+
+  progcontrolhbox1.setVisible(true);
+  progcontrolhbox2.setVisible(true);
+  actionbuttonshbox.setVisible(true);
   rerun.setVisible(true);
   saveprogram.setVisible(true);
-  functionselector.setVisible(true);
-  highlightselection.setVisible(true);
+
   currdeg.textProperty().bind(currdegree.asString());
   maxdeg.textProperty().bind(maxdegree.asString());
+  clearTableSelection();
   instructionstable.setItems(getInstructions(program));
   commandshistory.getItems().clear();
   programhistorytable.getItems().clear();
@@ -514,6 +703,7 @@ public class MainController {
  public Collection<Variable> loadVariablesToProgramCopy() throws Exception {
     Collection<Variable> variables = new ArrayList<>();
     if(programcopy==null) return variables;
+
     for (Map.Entry<Integer, TextField> entry : inputFields.entrySet()) {
      Integer varPos = entry.getKey();
      TextField textField = entry.getValue();
