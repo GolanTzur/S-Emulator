@@ -7,9 +7,9 @@ import java.io.Serializable;
 import java.util.Optional;
 
 public class Variable implements Cloneable, Serializable {
-    private final VariableType type;
+    private VariableType type;
     private int value;
-    private final int position; //Position in the list of variables
+    private int position; //Position in the list of variables
 
     protected Variable(VariableType type,int pos,int...value) {
         this.position = pos; //Constructor initializes position
@@ -56,8 +56,26 @@ public class Variable implements Cloneable, Serializable {
     public Variable clone(ProgramVars context) {
          return createOrGetNewVar(this.type,this.position,context);
     }
-    public Variable cloneWithValue(ProgramVars context) {
-        return createOrGetNewVar(this.type,this.position,context,this.value);
+    /*public Variable cloneWithValue(ProgramVars context, int... pos) {
+        int targetPos = (pos.length == 0) ? this.position : pos[0];
+        Variable res = createOrGetNewVar(this.type, targetPos, context, this.value);
+        res.position = this.position; // Always assign original position
+        return res;
+    }*/
+
+    public Variable cloneWithValue(ProgramVars context, int... pos) {
+        return cloneWithValue(context, null, pos);
+    }
+
+    public Variable cloneWithValue(ProgramVars context, VariableType maybeType, int... pos) {
+        int targetPos = (pos.length == 0) ? this.position : pos[0];
+        VariableType targetType = (maybeType == null) ? this.type : maybeType;
+        Variable res = createOrGetNewVar(targetType, targetPos, context, this.value);
+        res.position = this.position;
+        if (maybeType != null) {
+            res.type = this.type;
+        }
+        return res;
     }
 
     public static Variable createDummyVar(VariableType it,int pos,int value) { // Factory method to create a new variable without checking existing ones

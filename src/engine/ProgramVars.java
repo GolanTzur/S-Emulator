@@ -100,7 +100,7 @@ public class ProgramVars implements Cloneable, Serializable {
 
         for (Map.Entry<Integer, Variable> entry : this.input.entrySet()) {
             if(!(entry.getValue() instanceof ResultVar))
-             cloned.input.put(entry.getKey().intValue(), entry.getValue().cloneWithValue(cloned));
+             cloned.input.put(entry.getKey().intValue(), entry.getValue().cloneWithValue(cloned,VariableType.INPUT,entry.getKey()));
             else
                 cloned.input.put(entry.getKey(), ((ResultVar)entry.getValue()).clone(cloned,entry.getKey()));
         }

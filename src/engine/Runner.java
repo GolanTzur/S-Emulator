@@ -15,12 +15,32 @@ import java.util.Optional;
 
 public class Runner {
     private ArrayList<AbstractInstruction> instructions;
-    //private ProgramVars context;
+
+    private int currIndexdebug = 0;
+    private Map<HasLabel,Integer> labelIndicesdebug;
+    private HasLabel nextLabeldebug = null;
+    private int cycleCountdebug = 0;
+    private boolean finisheddebug = false;
+
+
+    public void reset() {
+        this.currIndexdebug = 0;
+        this.cycleCountdebug = 0;
+        this.labelIndicesdebug = getIndices();
+        this.nextLabeldebug = null;
+        this.finisheddebug = false;
+    }
+
     private int cycleCount = 0;
 
     public Runner(ArrayList<AbstractInstruction> instructions/*, ProgramVars context*/) {
         this.instructions = instructions; // Initialize with the provided instructions
+        reset();
         //this.context = context;
+    }
+    public int getCurrIndexdebug()
+    {
+        return currIndexdebug;
     }
 
     public HasLabel run(boolean countCycles) {
@@ -50,6 +70,37 @@ public class Runner {
         }
         return nextLabel;
     }
+
+    public HasLabel step() {
+
+        if (currIndexdebug >= instructions.size() || instructions.get(currIndexdebug).getLab() == FixedLabel.EXIT) {
+            this.finisheddebug = true;
+            return nextLabeldebug;
+        }
+
+        AbstractInstruction currentInstruction = instructions.get(currIndexdebug);
+        this.cycleCountdebug += currentInstruction.getType().getCycles();
+        if (currentInstruction instanceof Function)
+            this.cycleCountdebug += ((Function) currentInstruction).getCycles();
+        else if (currentInstruction instanceof JumpEqualFunction)
+            this.cycleCountdebug += ((JumpEqualFunction) currentInstruction).getFunc().getCycles();
+
+        nextLabeldebug = currentInstruction.evaluate();
+        if (nextLabeldebug == FixedLabel.EMPTY) {
+            currIndexdebug++;
+        } else {
+            Optional<Integer> nextIdx = Optional.ofNullable(labelIndicesdebug.get(nextLabeldebug));
+            if (nextIdx.isPresent()) {
+                currIndexdebug = nextIdx.get();
+            } else {
+                this.finisheddebug = true;
+                return nextLabeldebug;
+            }
+        }
+        return nextLabeldebug;
+    }
+
+
 
     private Map<HasLabel, Integer> getIndices() {
         replaceDefaultVar(this.instructions);
@@ -84,6 +135,11 @@ public class Runner {
         }
 
     }
+
+    public boolean isFinisheddebug() {
+        return finisheddebug;
+    }
+
     public void replaceFirstLabelAndGoto(ArrayList<AbstractInstruction> instructions) {
         int nextIndex = 0;
         HasLabel newLabel = null;

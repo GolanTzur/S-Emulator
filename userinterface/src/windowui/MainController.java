@@ -1,8 +1,5 @@
 package windowui;
-import engine.Program;
-import engine.ProgramState;
-import engine.Statistics;
-import engine.XMLHandler;
+import engine.*;
 import engine.basictypes.HasLabel;
 import engine.basictypes.Variable;
 import engine.classhierarchy.*;
@@ -36,6 +33,8 @@ public class MainController {
  private final SimpleIntegerProperty maxdegree = new SimpleIntegerProperty(0);
  private boolean loadedFromFile;
  private Map<Integer, TextField> inputFields = new HashMap<>();
+ private Debugger debugger;
+
 
  @FXML
  private HBox actionbuttonshbox;
@@ -191,9 +190,72 @@ public class MainController {
   clearTableSelection();
   commandshistory.getItems().clear();
  }
+ private void startDebugging()
+ {
+  debug.setText("Step");
+  run.setVisible(false);
+
+  progcontrolhbox2.setVisible(false);
+  functionselector.setVisible(false);
+  programvarsvbox.getChildren().clear();
+  debugger=new Debugger(new Runner(programcopy.getInstructions()));
+  instructionstable.getSelectionModel().clearAndSelect(0);
+  debugger.setRunning(true);
+ }
+
+ private void stopDebugging()
+ {
+  debug.setText("Debug");
+  run.setVisible(true);
+  progcontrolhbox2.setVisible(true);
+  functionselector.setVisible(true);
+  //programvarsvbox.getChildren().clear();
+  debugger=null;
+  instructionstable.getSelectionModel().clearAndSelect(-1);
+  clearTableSelection();
+  programcopy= program.clone();
+  programcopy.deployToDegree(currdegree.getValue());
+ }
+
 
  @FXML
  void debugProgram(ActionEvent event) {
+
+  if(programcopy==null) {
+   Alert alert = new Alert(Alert.AlertType.ERROR);
+   alert.setTitle("Debug Program Error");
+   alert.setHeaderText("No program loaded");
+   alert.showAndWait();
+   return;
+  }
+
+  if(debugger!=null&&!debugger.isRunning())
+   return;
+
+  if(debugger==null) {
+   startDebugging();
+   try {
+    loadVariablesToProgramCopy();
+    programcopy.updateValues();
+   } catch (Exception e) {
+    Alert alert = new Alert(Alert.AlertType.ERROR);
+    alert.setTitle("Debug Program Error");
+    alert.setHeaderText("Could not load input variables");
+    alert.setContentText(e.getMessage()); // or a custom message
+    alert.showAndWait();
+   }
+  }
+  else
+  {
+   ProgramVars before=programcopy.getVars().clone();
+   debugger.step();
+   int nextIndex = debugger.getCurrentStep(); // Assumes this method exists
+   instructionstable.getSelectionModel().clearAndSelect(nextIndex);
+   showVariables(debugger.getCycleCount(),before);
+   if(!debugger.isRunning()) {
+    stopDebugging();
+   }
+  }
 
  }
 
@@ -242,41 +304,47 @@ public class MainController {
 
      if(selected instanceof HasGotoLabel)
         argpositions=programcopy.findLabelsEquals(((HasGotoLabel) selected).getGotolabel());
-
-         positions.addAll(argpositions);
-         labelPositions.addAll(positions);
+     positions.addAll(argpositions);
+     labelPositions.addAll(positions);
      }
      if(byvarradio.isSelected()) {
       if (!(selected instanceof GotoLabel)) {
-       Variable varToHighlight = selected.getVar();
+       Set<Variable> varsToHighlight = programcopy.getAllInvolvedVariables(selected);
+       for (Variable var : varsToHighlight) {
+        Set<Integer> positions = programcopy.findVariableUsage(var);
+        varPositions.addAll(positions);
+       }
 
+       /*
+       Variable varToHighlight = selected.getVar();
        Set<Integer> positions = programcopy.findVariableUsage(varToHighlight);
        if (selected instanceof HasExtraVar)
         positions.addAll(programcopy.findVariableUsage(((HasExtraVar) selected).getArg()));
 
-       varPositions.addAll(positions);
+       varPositions.addAll(positions);*/
+
       }
      }
+       Set<Integer> allPositions = new HashSet<>();
+       allPositions.addAll(labelPositions);
+       allPositions.addAll(varPositions);
 
-     Set<Integer> allPositions = new HashSet<>();
-     allPositions.addAll(labelPositions);
-     allPositions.addAll(varPositions);
+       instructionstable.setRowFactory(tv -> new TableRow<AbstractInstruction>() {
+        @Override
+        protected void updateItem(AbstractInstruction instr, boolean empty) {
+         super.updateItem(instr, empty);
+         if (instr == null || empty) {
+          setStyle("");
+         } else if (allPositions.contains(instr.getPos())) {
+          setStyle("-fx-background-color: yellow;");
+         } else {
+          setStyle("");
+         }
+        }
+       });
 
-  instructionstable.setRowFactory(tv -> new TableRow<AbstractInstruction>() {
-   @Override
-   protected void updateItem(AbstractInstruction instr, boolean empty) {
-    super.updateItem(instr, empty);
-    if (instr == null || empty) {
-     setStyle("");
-    } else if (allPositions.contains(instr.getPos())) {
-     setStyle("-fx-background-color: yellow;");
-    } else {
-     setStyle("");
-    }
-   }
-  });
+      }
 
- }
 
  @FXML
  void loadProgram(ActionEvent event) {
@@ -424,8 +492,21 @@ public class MainController {
 
  @FXML
  void resumeProgram(ActionEvent event) {
+    if(debugger==null||!debugger.isRunning())
+     return;
 
- }
+    ProgramVars before=programcopy.getVars().clone();
+    debugger.resume();
+    int nextIndex = debugger.getCurrentStep(); // Assumes this method exists
+    if(nextIndex>=0)
+     instructionstable.getSelectionModel().clearAndSelect(nextIndex);
+    else
+     instructionstable.getSelectionModel().clearAndSelect(-1);
+     showVariables(debugger.getCycleCount(),before);
+    if(!debugger.isRunning())
+     stopDebugging();
+    }
+
 
  @FXML
  void runProgram(ActionEvent event) {
@@ -445,7 +526,7 @@ public class MainController {
   Statistics stats=new Statistics(currdegree.getValue(),initialInputs,programcopy.getCycleCount(),programcopy.getVars().clone());
   stats.appendStatistics();
   programhistorytable.getItems().add(stats);
-  showVariables();
+  showVariables(programcopy.getCycleCount());
   programcopy=program.clone();
   programcopy.deployToDegree(currdegree.getValue());
  }
@@ -520,7 +601,10 @@ public class MainController {
 
  @FXML
  void stopdebug(ActionEvent event) {
-
+    if(debugger==null||!debugger.isRunning())
+     return;
+    stopDebugging();
+    programvarsvbox.getChildren().clear();
  }
 
  public ObservableList<AbstractInstruction> getInstructions(Program program) {
@@ -727,7 +811,7 @@ public class MainController {
     }
   return variables;
  }
- public void showVariables()
+ public void showVariables(int cycles,ProgramVars... compareTo)
  {
      HBox hBox = new HBox(10);// 10 is spacing between label and field
      VBox inputVars = new VBox();
@@ -737,19 +821,38 @@ public class MainController {
     for(Variable var:programcopy.getVars().getInput().values()) {
      Label label = new Label(var.toString()+" = "+var.getValue());
      inputVars.getChildren().add(label);
+     if(compareTo.length>0) {
+      Variable toCompare = compareTo[0].getInput().get(var.getPosition());
+      if(toCompare!=null && toCompare.getValue()!=var.getValue()) {
+       label.setStyle("-fx-text-fill: red;"); // Change text color to red
+      }
+     }
     }
+
     VBox workVars = new VBox();
     workVars.paddingProperty().set(insets);
 
     for (Variable var : programcopy.getVars().getEnvvars().values()) {
      Label label = new Label(var.toString()+" = "+var.getValue());
      workVars.getChildren().add(label);
+        if(compareTo.length>0) {
+        Variable toCompare = compareTo[0].getEnvvars().get(var.getPosition());
+        if(toCompare!=null && toCompare.getValue()!=var.getValue()) {
+        label.setStyle("-fx-text-fill: red;"); // Change text color to red
+        }
+        }
     }
 
     Label yLabel= new Label("y = "+programcopy.getVars().getY().getValue());
+    if(compareTo.length>0) {
+     Variable toCompare = compareTo[0].getY();
+     if(toCompare!=null && toCompare.getValue()!=programcopy.getVars().getY().getValue()) {
+      yLabel.setStyle("-fx-text-fill: red;"); // Change text color to red
+     }
+    }
     yLabel.paddingProperty().set(insets);
 
-    Label cyclesLabel= new Label("Cycles = "+programcopy.getCycleCount());
+    Label cyclesLabel= new Label("Cycles = "+cycles);
     cyclesLabel.paddingProperty().set(insets);
 
     hBox.getChildren().addAll(inputVars,workVars,yLabel,cyclesLabel);

@@ -385,6 +385,61 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         return positions;
     }
 
+    public Set<Variable> getAllInvolvedVariables(AbstractInstruction instruction)
+    {
+        Set<Variable> vars = new HashSet<>();
+        if(instruction.getVar() instanceof ResultVar)
+        {
+            getAllInvolvedVariablesRec(((ResultVar) instruction.getVar()).getFunction(),vars);
+        }
+        else
+        {
+            vars.add(instruction.getVar());
+        }
+        if(instruction instanceof HasExtraVar)
+        {
+            HasExtraVar hev = (HasExtraVar) instruction;
+            if(hev.getArg() instanceof ResultVar)
+            {
+                getAllInvolvedVariablesRec(((ResultVar) hev.getArg()).getFunction(),vars);
+            }
+            else
+            {
+                vars.add(hev.getArg());
+            }
+        }
+        if(instruction instanceof Function)
+        {
+            Function func = (Function) instruction;
+            getAllInvolvedVariablesRec(func,vars);
+        }
+        if(instruction instanceof JumpEqualFunction)
+        {
+            JumpEqualFunction jef = (JumpEqualFunction) instruction;
+            if(jef.getFunc()!=null)
+            {
+                getAllInvolvedVariablesRec(jef.getFunc(),vars);
+            }
+        }
+        return vars;
+    }
+
+    private void getAllInvolvedVariablesRec(Function func,Set<Variable> vars)
+    {
+        for(Variable input : func.getProg().getVars().getInput().values())
+        {
+            if(input instanceof ResultVar)
+            {
+                getAllInvolvedVariablesRec(((ResultVar) input).getFunction(),vars);
+            }
+            else
+            {
+                vars.add(input);
+            }
+        }
+    }
+
+
     public Set<Integer> findVariableUsage(Variable var)
     {
         Set<Integer> positions = new HashSet<>();
