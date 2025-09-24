@@ -333,10 +333,12 @@ public class XMLHandler { // Singleton class to handle XML operations
     private ArrayList<Variable> loadFuncArgs(String varNames,ProgramVars parentContext,SProgram sp) {
         List<String> parts= splitTopLevel(varNames);
         ArrayList<Variable> result=new ArrayList<>();
+
         /*Map<Integer,Variable> inputVars = func.getProg().getVars().getInput();
         List<Integer>keys=new ArrayList<>(inputVars.keySet());
         Collections.sort(keys,Integer::compareTo);
         Iterator<Integer> keyIterator=keys.iterator();*/
+
         int argNum=1;
         for (String part:parts)
         {

@@ -194,5 +194,8 @@ public class Runner {
     public int getCycleCount() {
         return cycleCount;
     }
+    public int getCycleCountdebug() {
+        return cycleCountdebug;
+    }
 }
 

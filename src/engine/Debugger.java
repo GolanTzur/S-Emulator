@@ -26,12 +26,14 @@ public class Debugger {
         return currentStep;
     }
     public int getCycleCount() {
-        return runner.getCycleCount();
+        return runner.getCycleCountdebug();
     }
 
     public void step() {
         if (!runner.isFinisheddebug()) {
             runner.step();
+            if(runner.isFinisheddebug())
+                this.running = false;
             this.currentStep=runner.getCurrIndexdebug();
         }
         else

@@ -431,6 +431,9 @@ public class MainController {
 
  @FXML
  public void initialize() {
+  functionselector.setVisible(false);
+  rerun.setVisible(false);
+
   noLoadedProgram();
   setInstructionsTableAddFormat(commandstablelabel, commandstablenumber, commandstablecycles, commandstabletype, commandstableinstr);
   setInstructionsTableAddFormat(instructiontablelabel, instructiontablenumber, instructiontablecycles, instructiontabletype, instructiontableinstr);
@@ -723,7 +726,7 @@ public class MainController {
   progcontrolhbox1.setVisible(true);
   progcontrolhbox2.setVisible(true);
   actionbuttonshbox.setVisible(true);
-  rerun.setVisible(true);
+ // rerun.setVisible(true);
   saveprogram.setVisible(true);
 
   currdeg.textProperty().bind(currdegree.asString());
