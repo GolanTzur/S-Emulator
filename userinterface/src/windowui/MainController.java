@@ -236,7 +236,7 @@ public class MainController {
    startDebugging();
    try {
     loadVariablesToProgramCopy();
-    programcopy.updateValues();
+    //programcopy.updateValues();
    } catch (Exception e) {
     Alert alert = new Alert(Alert.AlertType.ERROR);
     alert.setTitle("Debug Program Error");
@@ -385,6 +385,7 @@ public class MainController {
    alert.setTitle("Load Program Error");
    alert.setHeaderText("Could not load the program");
    alert.setContentText(e.getMessage()); // or a custom message
+   e.printStackTrace();
    alert.showAndWait();
   }
 
@@ -516,7 +517,7 @@ public class MainController {
   Collection<Variable>initialInputs;
   try {
    initialInputs = loadVariablesToProgramCopy();
-   programcopy.updateValues();
+   //programcopy.updateValues();
   } catch (Exception e) {
    Alert alert = new Alert(Alert.AlertType.ERROR);
    alert.setTitle("Run Program Error");

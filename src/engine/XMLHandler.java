@@ -170,7 +170,8 @@ public class XMLHandler { // Singleton class to handle XML operations
             {
                 case ASSIGNMENT:
                     String assign = lookforValue("assignedVariable", sin.getSInstructionArguments().getSInstructionArgument());
-                    Variable assignvar= loadVariable(assign,progVars);
+                    //Variable assignvar= loadVariable(assign,progVars);
+                    Variable assignvar=loadFuncArgs(assign,progVars,sprogram).get(0);
                     instructions.add(new Assignment(label,var, assignvar));
                     break;
                 case CONSTANT_ASSIGNMENT:
@@ -218,7 +219,8 @@ public class XMLHandler { // Singleton class to handle XML operations
                     break;
                 case JUMP_EQUAL_VARIABLE:
                     String jump_equal_var = lookforValue("variableName", sin.getSInstructionArguments().getSInstructionArgument());
-                    Variable jump_equal_var_var = loadVariable(jump_equal_var,progVars);
+                    //Variable jump_equal_var_var = loadVariable(jump_equal_var,progVars);
+                    Variable jump_equal_var_var=loadFuncArgs(jump_equal_var,progVars,sprogram).get(0);
                     String jumpequalvar_label= lookforValue("JEVariableLabel", sin.getSInstructionArguments().getSInstructionArgument());
                     HasLabel gotoLabel_je_var = loadLabel(jumpequalvar_label);
                     instructions.add(new JumpEqualVariable(label, var, jump_equal_var_var, gotoLabel_je_var));
@@ -238,9 +240,9 @@ public class XMLHandler { // Singleton class to handle XML operations
                     String args=lookforValue("functionArguments",sin.getSInstructionArguments().getSInstructionArgument());
 
                     ArrayList<Variable>funcargs=loadFuncArgs(args,progVars,sprogram);
-                    //func.setArguments(funcargs);
-                    putFuncArgs(func,funcargs);
-                    func.refreshInputs();
+                    func.setArguments(funcargs);
+                    //putFuncArgs(func,funcargs);
+                    //func.refreshInputs();
                     //func.updateValues();
 
                     instructions.add(func);
@@ -342,7 +344,6 @@ public class XMLHandler { // Singleton class to handle XML operations
         int argNum=1;
         for (String part:parts)
         {
-
             if(isValidVariableName(part)) { //simple variable
                 result.add(loadVariable(part,parentContext));
             }
@@ -360,10 +361,13 @@ public class XMLHandler { // Singleton class to handle XML operations
                 if(split.length>1) {
                     String functionArgs = part.substring(part.indexOf(",") + 1);
                     ArrayList<Variable> args=loadFuncArgs(functionArgs,parentContext,sp);
-                    putFuncArgs(subFunc,args);
-                    subFunc.refreshInputs();
-                    //subFunc.setArguments(args);
+                    //putFuncArgs(subFunc,args);
+                    //subFunc.refreshInputs();
+                    subFunc.setArguments(args);
                 }
+                else
+                    subFunc.setArguments(new ArrayList<>());
+
                 result.add(ResultVar.createDummyVar(VariableType.INPUT,argNum,0,subFunc));
                 subFunc.setVar(result.get(result.size()-1));
             }

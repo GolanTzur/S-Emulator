@@ -43,16 +43,17 @@ public class ResultVar extends Variable {
         if (this.isClone) return this;
         this.isClone = true;
         try {
-            if(pv.getInput().containsKey(pos)) {
+            /*if(pv.getInput().containsKey(pos)) {
                 Variable existingVar = pv.getInput().get(pos);
                 if (existingVar instanceof ResultVar) {
                     return (ResultVar) existingVar;
                 } else {
                     throw new IllegalStateException("Variable at position " + pos + " is not a ResultVar.");
                 }
-            }
+            }*/
             Function f = this.func.clone(pv);
-            ResultVar res = createOrGetNewResultVar(VariableType.INPUT, pos, pv, f);
+            //ResultVar res = createOrGetNewResultVar(VariableType.INPUT, pos, pv, f);
+            ResultVar res = createDummyVar(VariableType.INPUT, pos, 0, f);
             return res;
         } finally {
             this.isClone = false;

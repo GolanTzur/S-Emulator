@@ -19,6 +19,12 @@ public class Function extends AbstractInstruction {
         this.displayName = displayName;
         arguments=null;
     }
+    public Function(HasLabel label, Variable var, Program prog, String displayName,ArrayList <Variable> arguments) {
+        super(label, SyntheticType.QUOTE, var);
+        this.prog = prog;
+        this.displayName = displayName;
+        this.arguments=arguments;
+    }
     public void setArguments(ArrayList<Variable> args)
     {
         this.arguments=args;
@@ -30,6 +36,7 @@ public class Function extends AbstractInstruction {
         for(Variable var:prog.getVars().getInput().values())
         {
             if(i>=arguments.size()) break;
+            if(arguments.get(i) instanceof ResultVar) ((ResultVar)arguments.get(i)).evaluate();
             var.setValue(arguments.get(i++).getValue());
         }
     }
@@ -46,7 +53,7 @@ public class Function extends AbstractInstruction {
         if(!(var instanceof ResultVar))
             sb.append(var.toString()+" <- ");
         sb.append(String.format("(%s", displayName));
-        Collection<Variable> inputs = prog.getVars().getInput().values();
+        Collection<Variable> inputs = arguments;
         inputs.forEach((input) -> sb.append(String.format(",%s", input)));
         sb.append(")");
         return sb.toString();
@@ -193,15 +200,16 @@ public class Function extends AbstractInstruction {
     @Override
     public HasLabel evaluate() {
         // ArrayList<Variable> newVars = ;
-        for (Variable v : prog.getVars().getInput().values()) {
+        /*for (Variable v : prog.getVars().getInput().values()) {
             if (v instanceof ResultVar) {
                 ResultVar rv = (ResultVar) v;
                 rv.evaluate();
             }
-        }
-        refreshInputs();
+        }*/
+        copyArguments();
+        //refreshInputs();
         isEvaluated = true;
-        replaceResultVars();
+        //replaceResultVars();
         prog.execute();
         this.getVar().setValue(prog.getVars().getY().getValue());
         return FixedLabel.EMPTY;
@@ -352,10 +360,20 @@ public class Function extends AbstractInstruction {
         if (this.isCloned) return this;
         this.isCloned = true;
         try {
+            //Arg vars
+            ArrayList<Variable> argVars = new ArrayList<>();
+            for (Variable v : this.arguments) {
+                if (v instanceof ResultVar) {
+                    argVars.add(((ResultVar) v).clone(context, v.getPosition()));
+                } else {
+                    argVars.add(v.clone(context));
+                }
+            }
+
             if (!(this.var instanceof ResultVar))
-                return new Function(var.clone(context), prog.clone(), displayName);
+                return new Function(lab.myClone(),var.clone(context),prog.clone(), displayName,argVars);
             else {
-                Function f = new Function(lab.myClone(), ((ResultVar) var).clone(context, var.getPosition()), prog.clone(), displayName);
+                Function f = new Function(lab.myClone(), ((ResultVar) var).clone(context, var.getPosition()), prog.clone(), displayName,argVars);
                 return f;
             }
         } finally {
