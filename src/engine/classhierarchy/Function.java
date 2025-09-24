@@ -11,11 +11,27 @@ public class Function extends AbstractInstruction {
     String displayName;
     boolean isEvaluated = false;
     boolean isCloned=false;
+    ArrayList <Variable> arguments;
 
     public Function(HasLabel label, Variable var, Program prog, String displayName) {
         super(label, SyntheticType.QUOTE, var);
         this.prog = prog;
         this.displayName = displayName;
+        arguments=null;
+    }
+    public void setArguments(ArrayList<Variable> args)
+    {
+        this.arguments=args;
+    }
+    public void copyArguments()
+    {
+        if(arguments==null) return;
+        int i=0;
+        for(Variable var:prog.getVars().getInput().values())
+        {
+            if(i>=arguments.size()) break;
+            var.setValue(arguments.get(i++).getValue());
+        }
     }
 
     public Function(Variable var, Program prog, String displayName) {

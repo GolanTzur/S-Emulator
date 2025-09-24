@@ -238,6 +238,7 @@ public class XMLHandler { // Singleton class to handle XML operations
                     String args=lookforValue("functionArguments",sin.getSInstructionArguments().getSInstructionArgument());
 
                     ArrayList<Variable>funcargs=loadFuncArgs(args,progVars,sprogram);
+                    //func.setArguments(funcargs);
                     putFuncArgs(func,funcargs);
                     func.refreshInputs();
                     //func.updateValues();
@@ -257,7 +258,8 @@ public class XMLHandler { // Singleton class to handle XML operations
                     ArrayList<AbstractInstruction> jef_funcInstructions=loadInstructions(jef_sfunc.getSInstructions(),sprogram,jef_funcVars);
                     Function jef_func=new Function(label,var,new Program(jef_sfunc.getName(),jef_funcInstructions,jef_funcVars),jef_sfunc.getUserString());
                     String jef_args=lookforValue("functionArguments",sin.getSInstructionArguments().getSInstructionArgument());
-                    loadFuncArgs(jef_args,progVars,sprogram);
+                    ArrayList<Variable>jefargs= loadFuncArgs(jef_args,progVars,sprogram);
+                    jef_func.setArguments(jefargs);
                     String jef_label= lookforValue("JEFunctionLabel", sin.getSInstructionArguments().getSInstructionArgument());
                     HasLabel gotoLabel_jef = loadLabel(jef_label);
                     instructions.add(new JumpEqualFunction(label,var,jef_func, gotoLabel_jef));
@@ -358,6 +360,7 @@ public class XMLHandler { // Singleton class to handle XML operations
                     ArrayList<Variable> args=loadFuncArgs(functionArgs,parentContext,sp);
                     putFuncArgs(subFunc,args);
                     subFunc.refreshInputs();
+                    //subFunc.setArguments(args);
                 }
                 result.add(ResultVar.createDummyVar(VariableType.INPUT,argNum,0,subFunc));
                 subFunc.setVar(result.get(result.size()-1));
