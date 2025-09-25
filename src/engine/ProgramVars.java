@@ -110,6 +110,9 @@ public class ProgramVars implements Cloneable, Serializable {
         cloned.y.setValue(this.y.getValue());
         return cloned;
     }
+    public void setY(Variable y) {
+        this.y = y;
+    }
     /*public ProgramVars cloneWithValues() {
         ProgramVars cloned;
         cloned = new ProgramVars();

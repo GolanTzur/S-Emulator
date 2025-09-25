@@ -73,12 +73,19 @@ public class Function extends AbstractInstruction {
 
             }
         }*/
-        refreshInputs();
+        //
         //replaceResultVars(prog.getVars());
         ArrayList<AbstractInstruction> commands = prog.getInstructions();
-        replaceVars(commands, context);
+
+        replaceVars(context);
+        refreshInputs();
+        ArrayList<AbstractInstruction> commandsToadd = inputsAssignments();
+        commands.addAll(0, commandsToadd);
+        commands.add(new Assignment(var, prog.getVars().getY()));
         replaceLabels(commands, progLabels);
-        commands.add(0, new Neutral(lab, context.getY()));
+        if(lab instanceof Label)
+            commands.add(0, new Neutral(lab, context.getY()));
+
         return commands;
     }
 
@@ -293,20 +300,100 @@ public class Function extends AbstractInstruction {
         }
         return commands;
     }
+    private void replaceVars(ProgramVars context)
+    {
+        for(Map.Entry<Integer,Variable> entry:prog.getVars().getInput().entrySet())
+        {
+            entry.setValue(context.getZinputs(1).iterator().next());
+        }
+        for(Map.Entry<Integer,Variable> entry:prog.getVars().getEnvvars().entrySet())
+        {
+            entry.setValue(context.getZinputs(1).iterator().next());
+        }
+        prog.getVars().setY(context.getZinputs(1).iterator().next());
+
+    }
+    private ArrayList<AbstractInstruction> inputsAssignments()
+    {
+        ArrayList<AbstractInstruction> commands=new ArrayList<>();
+        int i=0;
+        for(Variable v : prog.getVars().getInput().values())
+        {
+            if(i>=arguments.size()) break;
+            if(arguments.get(i) instanceof ResultVar)
+            {
+                Function func=((ResultVar) arguments.get(i)).getFunction();
+                func.setVar(v);
+                commands.add(func);
+                i++;
+            }
+            else
+            {
+                commands.add(new Assignment(v,arguments.get(i++)));
+            }
+        }
+        return commands;
+    }
     public Variable getOutputVariable() {
         return prog.getVars().getY();
     }
     public void refreshInputs()
     {
         for(AbstractInstruction instr:prog.getInstructions()){
-            if(instr.getVar().getType()==VariableType.INPUT){
-                instr.setVar(prog.getVars().getInput().get(instr.getVar().getPosition()));
+            if(instr instanceof GotoLabel) continue;
+            switch(instr.getVar().getType())
+            {
+                case  INPUT:
+                    instr.setVar(prog.getVars().getInput().get(instr.getVar().getPosition()));
+                    break;
+                case WORK:
+                    instr.setVar(prog.getVars().getEnvvars().get(instr.getVar().getPosition()));
+                    break;
+                case RESULT:
+                    instr.setVar(prog.getVars().getY());
+                    break;
             }
-
-            if(instr instanceof HasExtraVar){
+            if(instr instanceof Function)
+            {
+                ((Function)instr).refreshInputsRecursive(prog.getVars());
+            }
+            else if(instr instanceof HasExtraVar){
                 HasExtraVar hev=(HasExtraVar) instr;
-                if(hev.getArg().getType()==VariableType.INPUT){
-                    hev.setArg(prog.getVars().getInput().get(hev.getArg().getPosition()));
+                if(hev.getArg() instanceof ResultVar) {
+                    ((ResultVar)hev).getFunction().refreshInputsRecursive(prog.getVars());
+                }
+                else {
+                    switch (hev.getArg().getType()) {
+                        case INPUT:
+                            hev.setArg(prog.getVars().getInput().get(hev.getArg().getPosition()));
+                            break;
+                        case WORK:
+                            hev.setArg(prog.getVars().getEnvvars().get(hev.getArg().getPosition()));
+                            break;
+                        case RESULT:
+                            hev.setArg(prog.getVars().getY());
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    private void refreshInputsRecursive(ProgramVars context) {
+        for (int i = 0; i < arguments.size(); i++) {
+            Variable v = arguments.get(i);
+            if (v instanceof ResultVar) {
+                ((ResultVar) v).getFunction().refreshInputsRecursive(context);
+            } else {
+                switch (v.getType()) {
+                    case INPUT:
+                        arguments.set(i, context.getInput().get(v.getPosition()));
+                        break;
+                    case WORK:
+                        arguments.set(i, context.getEnvvars().get(v.getPosition()));
+                        break;
+                    case RESULT:
+                        arguments.set(i, context.getY());
+                        break;
                 }
             }
         }
@@ -354,6 +441,15 @@ public class Function extends AbstractInstruction {
     public Collection<Variable> getUsedVariables() {
         return prog.getVars().getInput().values();
     }
+
+    public int getDegree()
+    {
+        int argDegree=arguments.stream()
+                .filter(arg->(arg instanceof ResultVar))
+                .mapToInt((arg)->((ResultVar)arg).getFunction().getDegree()+1)
+                .max().orElse(0);
+        return Math.max(argDegree,prog.getProgramDegree());
+    }
     @Override //Activate with null
 
     public Function clone(ProgramVars context) {
@@ -386,9 +482,7 @@ public class Function extends AbstractInstruction {
     public int getCycles() {
         return prog.getCycleCount(); // Function call overhead
     }
-    public int getDegree(){
-        return prog.getProgramDegree()+SyntheticType.QUOTE.getDegree();
-    }
+
 
     public Program getProg() {
         return prog;

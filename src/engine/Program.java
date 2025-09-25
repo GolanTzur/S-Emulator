@@ -229,7 +229,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         return instructions; // Getter for instructions
     }
     public int getProgramDegree(){
-        return this.instructions.stream()
+       /* return this.instructions.stream()
                 .max((a,b)->{
                     AbstractInstruction instr = a;
                     int adeg=0,bdeg=0;
@@ -275,8 +275,33 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
                     } else {
                         return 0;
                     }
-                }).orElse(0);
+                }).orElse(0);*/
 
+      int maxDegree=0;
+      for(AbstractInstruction instruction : instructions)
+      {
+            int degree=0;
+            if (instruction instanceof Function) {
+                degree = 1 + ((Function) instruction).getDegree();
+            } else if (instruction instanceof JumpEqualFunction) {
+                degree=Math.max(1+((JumpEqualFunction)instruction).getFunc().getDegree(), SyntheticType.JUMP_EQUAL_FUNCTION.getDegree());
+            } else if (instruction instanceof SyntheticSugar) {
+                degree = ((SyntheticType) ((SyntheticSugar) instruction).getType()).getDegree();
+                if(instruction instanceof HasExtraVar) {
+                    HasExtraVar hev = (HasExtraVar) instruction;
+                    if(hev.getArg() instanceof ResultVar)
+                    {
+                        degree=Math.max(degree,((ResultVar) hev.getArg()).getFunction().getDegree());
+                    }
+                }
+
+            } else {
+                degree = 0;
+            }
+            if(degree>maxDegree)
+                maxDegree=degree;
+      }
+      return maxDegree;
     }
 
 
