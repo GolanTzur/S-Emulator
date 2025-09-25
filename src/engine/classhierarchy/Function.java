@@ -9,7 +9,7 @@ import java.util.*;
 public class Function extends AbstractInstruction {
     Program prog;
     String displayName;
-    boolean isEvaluated = false;
+    //boolean isEvaluated = false;
     boolean isCloned=false;
     ArrayList <Variable> arguments;
 
@@ -215,7 +215,7 @@ public class Function extends AbstractInstruction {
         }*/
         copyArguments();
         //refreshInputs();
-        isEvaluated = true;
+        //isEvaluated = true;
         //replaceResultVars();
         prog.execute();
         this.getVar().setValue(prog.getVars().getY().getValue());
@@ -448,7 +448,9 @@ public class Function extends AbstractInstruction {
                 .filter(arg->(arg instanceof ResultVar))
                 .mapToInt((arg)->((ResultVar)arg).getFunction().getDegree()+1)
                 .max().orElse(0);
-        return Math.max(argDegree,prog.getProgramDegree());
+        int a= Math.max(argDegree,prog.getProgramDegree()+1);
+        int b= Math.max(a,SyntheticType.ASSIGNMENT.getDegree()+1);
+        return b; // Every expanded function contains at least one assignment
     }
     @Override //Activate with null
 
@@ -483,13 +485,8 @@ public class Function extends AbstractInstruction {
         return prog.getCycleCount(); // Function call overhead
     }
 
-
     public Program getProg() {
         return prog;
     }
-    public boolean isEvaluated() {
-        return isEvaluated;
-    }
-
 
 }

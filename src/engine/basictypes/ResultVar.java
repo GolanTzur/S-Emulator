@@ -65,10 +65,8 @@ public class ResultVar extends Variable {
     }
     public void evaluate()
     {
-        if(!this.func.isEvaluated()) {
             this.func.evaluate();
             this.setValue(this.func.getProg().getVars().getY().getValue());
-        }
     }
     public void setClone(boolean b) {
         this.isClone = b;

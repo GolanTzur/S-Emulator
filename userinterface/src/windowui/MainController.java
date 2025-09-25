@@ -208,7 +208,7 @@ public class MainController {
   debug.setText("Debug");
   run.setVisible(true);
   progcontrolhbox2.setVisible(true);
-  functionselector.setVisible(true);
+  //functionselector.setVisible(true);
   //programvarsvbox.getChildren().clear();
   debugger=null;
   instructionstable.getSelectionModel().clearAndSelect(-1);

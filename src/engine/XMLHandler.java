@@ -259,6 +259,7 @@ public class XMLHandler { // Singleton class to handle XML operations
                     ProgramVars jef_funcVars=new ProgramVars();
                     ArrayList<AbstractInstruction> jef_funcInstructions=loadInstructions(jef_sfunc.getSInstructions(),sprogram,jef_funcVars);
                     Function jef_func=new Function(label,var,new Program(jef_sfunc.getName(),jef_funcInstructions,jef_funcVars),jef_sfunc.getUserString());
+                    jef_func.setVar(ResultVar.createDummyVar(VariableType.INPUT,1,0,jef_func));
                     String jef_args=lookforValue("functionArguments",sin.getSInstructionArguments().getSInstructionArgument());
                     ArrayList<Variable>jefargs= loadFuncArgs(jef_args,progVars,sprogram);
                     jef_func.setArguments(jefargs);
@@ -335,6 +336,8 @@ public class XMLHandler { // Singleton class to handle XML operations
     private ArrayList<Variable> loadFuncArgs(String varNames,ProgramVars parentContext,SProgram sp) {
         List<String> parts= splitTopLevel(varNames);
         ArrayList<Variable> result=new ArrayList<>();
+        if(parts.isEmpty())
+            return result;
 
         /*Map<Integer,Variable> inputVars = func.getProg().getVars().getInput();
         List<Integer>keys=new ArrayList<>(inputVars.keySet());
@@ -411,6 +414,9 @@ public class XMLHandler { // Singleton class to handle XML operations
 
     private List<String> splitTopLevel(String input) {
         List<String> result = new ArrayList<>();
+        if(input == null || input.isEmpty()) {
+            return result;
+        }
         int depth = 0, last = 0;
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
