@@ -51,12 +51,14 @@ public class Runner {
             AbstractInstruction currentInstruction = instructions.get(currIndex);
             if(countCycles){
                 this.cycleCount+=currentInstruction.getType().getCycles();
-                if(currentInstruction instanceof Function)
-                    this.cycleCount+=((Function) currentInstruction).getCycles();
-                else if(currentInstruction instanceof JumpEqualFunction)
-                    this.cycleCount+=((JumpEqualFunction) currentInstruction).getFunc().getCycles();
             }
             nextLabel = currentInstruction.evaluate(/*context*/); // Evaluate the current instruction
+            if(countCycles) {
+                if (currentInstruction instanceof Function)
+                    this.cycleCount += ((Function) currentInstruction).getCycles();
+                else if (currentInstruction instanceof JumpEqualFunction)
+                    this.cycleCount += ((JumpEqualFunction) currentInstruction).getFunc().getCycles();
+            }
             if (nextLabel == FixedLabel.EMPTY) {
                 currIndex++; // Move to the next instruction if no label is returned
             } else {
@@ -80,12 +82,14 @@ public class Runner {
 
         AbstractInstruction currentInstruction = instructions.get(currIndexdebug);
         this.cycleCountdebug += currentInstruction.getType().getCycles();
+
+        nextLabeldebug = currentInstruction.evaluate();
+
         if (currentInstruction instanceof Function)
             this.cycleCountdebug += ((Function) currentInstruction).getCycles();
         else if (currentInstruction instanceof JumpEqualFunction)
             this.cycleCountdebug += ((JumpEqualFunction) currentInstruction).getFunc().getCycles();
 
-        nextLabeldebug = currentInstruction.evaluate();
         if (nextLabeldebug == FixedLabel.EMPTY) {
             currIndexdebug++;
         } else {

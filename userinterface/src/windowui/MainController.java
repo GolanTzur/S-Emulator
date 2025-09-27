@@ -3,6 +3,7 @@ import engine.*;
 import engine.basictypes.HasLabel;
 import engine.basictypes.Variable;
 import engine.classhierarchy.*;
+import engine.jaxbclasses.SInstructions;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -343,6 +344,8 @@ public class MainController {
         }
        });
 
+       instructionstable.refresh();
+
       }
 
 
@@ -679,8 +682,9 @@ public class MainController {
     super.updateItem(instr, empty);
     setStyle("");
    }
-  });
 
+  });
+   instructionstable.refresh();
  }
 
  public void setCommandshistoryListener() {

@@ -438,6 +438,10 @@ public class Function extends AbstractInstruction {
 
     }
 
+    public ArrayList<Variable> getArguments() {
+        return arguments;
+    }
+
     public Collection<Variable> getUsedVariables() {
         return prog.getVars().getInput().values();
     }

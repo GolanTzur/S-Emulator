@@ -451,7 +451,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
 
     private void getAllInvolvedVariablesRec(Function func,Set<Variable> vars)
     {
-        for(Variable input : func.getProg().getVars().getInput().values())
+        for(Variable input : func.getArguments())
         {
             if(input instanceof ResultVar)
             {
@@ -530,7 +530,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
 
     private boolean searchVariableRec(Variable var,Function func)
     {
-     for(Variable input : this.vars.getInput().values())
+     for(Variable input : func.getArguments())
      {
          if(input instanceof ResultVar)
          {
