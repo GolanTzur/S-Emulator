@@ -230,7 +230,7 @@
                   </Label>
                   <ScrollPane maxWidth="-Infinity" prefHeight="110.0" prefWidth="245.0" VBox.vgrow="ALWAYS">
                      <content>
-                        <VBox id="programinputsvbox" fx:id="programinputsvbox" fillWidth="false" prefHeight="114.0" prefWidth="301.0" />
+                        <VBox id="programinputsvbox" fx:id="programinputsvbox" fillWidth="false" prefHeight="114.0" prefWidth="259.0" />
                      </content>
                   </ScrollPane>
                </children>
@@ -247,7 +247,7 @@
                   </Label>
                   <ScrollPane maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="87.0" prefWidth="266.0" VBox.vgrow="ALWAYS">
                      <content>
-                        <VBox id="programvarsvbox" fx:id="programvarsvbox" fillWidth="false" prefHeight="82.0" prefWidth="277.0">
+                        <VBox id="programvarsvbox" fx:id="programvarsvbox" fillWidth="false" prefHeight="82.0" prefWidth="265.0">
                            <padding>
                               <Insets bottom="5.0" />
                            </padding>
@@ -262,10 +262,7 @@
                         <Button id="debug" fx:id="debug" mnemonicParsing="false" onAction="#debugProgram" text="Debug" />
                         <Button id="resume" fx:id="resume" mnemonicParsing="false" onAction="#resumeProgram" text="Resume" />
                         <Button id="stop" fx:id="stop" mnemonicParsing="false" onAction="#stopdebug" prefHeight="25.0" prefWidth="41.0" text="Stop" />
-                        <Button id="run" fx:id="run" mnemonicParsing="false" onAction="#runProgram" prefHeight="9.0" prefWidth="53.0" styleClass="main-buttons" text="Run">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
+                        <Button id="run" fx:id="run" minHeight="-Infinity" mnemonicParsing="false" onAction="#runProgram" prefHeight="25.0" prefWidth="43.0" styleClass="main-buttons" text="Run">
                            <HBox.margin>
                               <Insets />
                            </HBox.margin>
@@ -279,29 +276,39 @@
             </VBox>
             <VBox alignment="TOP_CENTER" prefHeight="192.0" prefWidth="348.0" spacing="3.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.rowSpan="3">
                <children>
-                  <Label alignment="CENTER" prefHeight="29.0" prefWidth="203.0" text="Program's History">
+                  <Label alignment="CENTER" prefHeight="29.0" prefWidth="347.0" text="Program's History">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
                   <AnchorPane prefHeight="117.0" prefWidth="269.0">
                      <children>
-                        <TableView id="programhistorytable" fx:id="programhistorytable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="117.0" prefWidth="317.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="30.666666666666686" AnchorPane.topAnchor="0.0">
+                        <TableView id="programhistorytable" fx:id="programhistorytable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="117.0" prefWidth="351.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-3.0" AnchorPane.topAnchor="0.0">
                           <columns>
                             <TableColumn id="historytablenumber" fx:id="historytablenumber" maxWidth="25.333373427391052" minWidth="25.333373427391052" prefWidth="25.333373427391052" resizable="false" text="#" />
                             <TableColumn id="historytabledegree" fx:id="historytabledegree" maxWidth="48.66668510437012" minWidth="48.66668510437012" prefWidth="48.66668510437012" resizable="false" text="Degree" />
-                              <TableColumn id="historytableinput" fx:id="historytableinput" maxWidth="1.7976931348623157E308" prefWidth="120.00003051757812" text="Input" />
-                              <TableColumn id="historytableresult" fx:id="historytableresult" maxWidth="64.0" minWidth="64.0" prefWidth="64.0" resizable="false" text="Result" />
-                              <TableColumn id="historytablecycles" fx:id="historytablecycles" maxWidth="55.999959309895814" minWidth="55.999959309895814" prefWidth="55.999959309895814" resizable="false" text="Cycles" />
+                              <TableColumn id="historytableinput" fx:id="historytableinput" maxWidth="1.7976931348623157E308" minWidth="20.0" prefWidth="164.00000762939453" text="Input" />
+                              <TableColumn id="historytableresult" fx:id="historytableresult" maxWidth="107.33329772949219" minWidth="30.0" prefWidth="63.99998474121094" text="Result" />
+                              <TableColumn id="historytablecycles" fx:id="historytablecycles" maxWidth="46.0" minWidth="46.0" prefWidth="46.0" resizable="false" text="Cycles" />
                           </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
                         </TableView>
                      </children>
                   </AnchorPane>
-                  <Button id="rerun" fx:id="rerun" alignment="CENTER" mnemonicParsing="false" text="Rerun">
+                  <HBox alignment="TOP_CENTER" prefHeight="25.0" prefWidth="350.0" spacing="10.0">
                      <VBox.margin>
                         <Insets bottom="15.0" />
                      </VBox.margin>
-                  </Button>
+                     <children>
+                        <Button id="showstatus" fx:id="showstatus" mnemonicParsing="false" onAction="#showStatus" text="Show Status" />
+                        <Button id="reload" fx:id="reload" alignment="CENTER" mnemonicParsing="false" onAction="#reloadFromHistory" text="Reload" />
+                     </children>
+                     <padding>
+                        <Insets top="5.0" />
+                     </padding>
+                  </HBox>
                </children>
                <GridPane.margin>
                   <Insets left="10.0" right="10.0" />
