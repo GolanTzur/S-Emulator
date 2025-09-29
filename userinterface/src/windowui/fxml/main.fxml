@@ -109,7 +109,7 @@
                         <Font size="10.0" />
                      </font>
                   </Button>
-                  <Button mnemonicParsing="false" prefHeight="37.0" prefWidth="52.0" text="Previous Function" textAlignment="CENTER" wrapText="true">
+                  <Button id="prevFunction" fx:id="prevFunction" mnemonicParsing="false" onAction="#selectPrevFunction" prefHeight="37.0" prefWidth="52.0" text="Previous Function" textAlignment="CENTER" wrapText="true">
                      <font>
                         <Font size="10.0" />
                      </font>

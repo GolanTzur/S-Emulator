@@ -10,21 +10,16 @@ import java.util.Collection;
 
 public class Statistics /*implements Serializable*/ {
     //private static String sourceFile="data\\statistics\\statistics.bin";
-    private static int runCounter = 1;
     private final int degree;
-
     private final Collection<Variable> variables;
     private final ProgramVars results;
-
     private final int cycles;
-    private final int id;
 
     public Statistics(int degree,Collection<Variable> variables,int cycles,ProgramVars results) {
         this.degree = degree;
         this.variables = variables;
         this.results = results;
         this.cycles = cycles;
-        this.id=runCounter++;
     }
     /*// Java
     public void appendStatistics() {
@@ -65,17 +60,17 @@ public class Statistics /*implements Serializable*/ {
         return stats;
     }*/
 
-    public static void reset()
+    /*public static void reset()
     {
         runCounter=1;
-       /* Path path = Paths.get(sourceFile);
+        Path path = Paths.get(sourceFile);
         if (path.toFile().exists()) {
             path.toFile().delete();
-        }*/
-    }
+        }
+    }*/
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Run #").append(id).append("\n");
+        //sb.append("Run #").append(id).append("\n");
         sb.append("Degree: ").append(degree).append("\n");
         sb.append("Variables: ");
         for (Variable var : variables) {
@@ -87,9 +82,9 @@ public class Statistics /*implements Serializable*/ {
         sb.append("Cycles: ").append(cycles).append("\n");
         return sb.toString();
     }
-    public int getId() {
+    /*public int getId() {
         return id;
-    }
+    }*/
     public final Collection<Variable> getVariables() {
         return variables;
     }

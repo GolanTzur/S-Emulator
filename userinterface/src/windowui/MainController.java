@@ -30,11 +30,16 @@ public class MainController {
 
  private Program program;
  private Program programcopy;
+
  private final SimpleIntegerProperty currdegree = new SimpleIntegerProperty(0);
  private final SimpleIntegerProperty maxdegree = new SimpleIntegerProperty(0);
+
  private boolean loadedFromFile;
  private Map<Integer, TextField> inputFields = new HashMap<>();
  private Debugger debugger;
+
+ private Map<String,Collection<Statistics>> allStats = new HashMap<>();
+ private List<Program> allFuncs = new ArrayList<>();
 
 
  @FXML
@@ -169,6 +174,9 @@ public class MainController {
  private Button showstatus;
 
  @FXML
+ private Button prevFunction;
+
+ @FXML
  private Button run;
 
  @FXML
@@ -201,6 +209,7 @@ public class MainController {
   reload.setVisible(false);
   progcontrolhbox2.setVisible(false);
   functionselector.setVisible(false);
+  prevFunction.setVisible(false);
   programvarsvbox.getChildren().clear();
   debugger = new Debugger(new Runner(programcopy.getInstructions()));
   instructionstable.getSelectionModel().clearAndSelect(0);
@@ -212,7 +221,9 @@ public class MainController {
   run.setVisible(true);
   reload.setVisible(true);
   progcontrolhbox2.setVisible(true);
-  //functionselector.setVisible(true);
+  functionselector.setVisible(true);
+    if(!allFuncs.isEmpty())
+        prevFunction.setVisible(true);
   //programvarsvbox.getChildren().clear();
   debugger = null;
   instructionstable.getSelectionModel().clearAndSelect(-1);
@@ -297,6 +308,7 @@ public class MainController {
    alert.showAndWait();
    return;
   }
+
   Set<Integer> labelPositions = new HashSet<>();
   Set<Integer> varPositions = new HashSet<>();
 
@@ -310,6 +322,7 @@ public class MainController {
    positions.addAll(argpositions);
    labelPositions.addAll(positions);
   }
+
   if (byvarradio.isSelected()) {
    if (!(selected instanceof GotoLabel)) {
     Set<Variable> varsToHighlight = programcopy.getAllInvolvedVariables(selected);
@@ -358,6 +371,9 @@ public class MainController {
   fileChooser.setTitle("Open Program File");
   File file = fileChooser.showOpenDialog(load.getParentPopup().getOwnerWindow());
   // Check if a file was selected
+    if (file == null) {
+     return; // User cancelled the file chooser
+    }
   if ((!fileroute.getText().isEmpty()) && fileroute.getText().equals(file.getAbsolutePath())) {
    return;
   }
@@ -374,6 +390,11 @@ public class MainController {
    programcopy = program.clone();
 
    programLoaded();
+
+   allStats.clear();
+   allFuncs.clear();
+   prevFunction.setVisible(false);
+
    currdegree.set(0);
    maxdegree.set(program.getProgramDegree());
    setInputVariables(program);
@@ -437,9 +458,6 @@ public class MainController {
 
  @FXML
  public void initialize() {
-  functionselector.setVisible(false);
-  reload.setVisible(false);
-  showstatus.setVisible(false);
 
   noLoadedProgram();
   setInstructionsTableAddFormat(commandstablelabel, commandstablenumber, commandstablecycles, commandstabletype, commandstableinstr);
@@ -473,6 +491,10 @@ public class MainController {
    commandshistory.getItems().clear();
    programhistorytable.getItems().clear();
    programLoaded();
+
+   allStats.clear();
+   allFuncs.clear();
+   prevFunction.setVisible(false);
 
    instructionstable.getItems().clear();
    instructionstable.setItems(getInstructions(programcopy));
@@ -539,6 +561,7 @@ public class MainController {
   showVariables(programcopy.getCycleCount());
   programcopy = program.clone();
   programcopy.deployToDegree(currdegree.getValue());
+
  }
 
  @FXML
@@ -606,6 +629,75 @@ public class MainController {
 
  @FXML
  void selectFunction(ActionEvent event) {
+  AbstractInstruction selected = instructionstable.getSelectionModel().getSelectedItem();
+  if (selected == null || !(selected instanceof Function)) {
+   Alert alert = new Alert(Alert.AlertType.ERROR);
+   alert.setTitle("Select Function Error");
+   alert.setHeaderText("No function instruction selected");
+   alert.showAndWait();
+   return;
+  }
+
+  //Store current program
+  allFuncs.add(program);
+
+  //Store current stats
+  storeStats();
+
+  //Load function program
+    Function func = (Function) selected;
+    program = func.getProg();
+    programcopy = program.clone();
+    programLoaded();
+    currdegree.set(0);
+    maxdegree.set(program.getProgramDegree());
+    setInputVariables(program);
+
+    String progName = program.getName();
+    if (allStats.containsKey(progName)) {
+     programhistorytable.getItems().clear();
+     programhistorytable.getItems().addAll(allStats.get(progName));
+    } else {
+     programhistorytable.getItems().clear();
+    }
+
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setTitle("Function Loaded");
+    alert.setHeaderText(String.format("Function %s loaded successfully.", program.getName()));
+    alert.showAndWait();
+
+    prevFunction.setVisible(true);
+ }
+
+
+
+ @FXML
+ void selectPrevFunction(ActionEvent event) {
+  //Store current stats
+  storeStats();
+
+  //Load previous program
+  program=allFuncs.removeLast();
+  programcopy = program.clone();
+  programLoaded();
+    currdegree.set(0);
+    maxdegree.set(program.getProgramDegree());
+    setInputVariables(program);
+    String progName = program.getName();
+    if (allStats.containsKey(progName)) {
+     programhistorytable.getItems().clear();
+     programhistorytable.getItems().addAll(allStats.get(progName));
+    } else {
+     programhistorytable.getItems().clear();
+    }
+
+  Alert alert = new Alert(Alert.AlertType.INFORMATION);
+  alert.setTitle("Function Loaded");
+  alert.setHeaderText(String.format("Function %s loaded successfully.", program.getName()));
+  alert.showAndWait();
+
+    if(allFuncs.isEmpty())
+        prevFunction.setVisible(false);
 
  }
 
@@ -651,7 +743,7 @@ public class MainController {
   // Define how each column gets its value
 
   number.setCellValueFactory(cellData ->
-          new SimpleIntegerProperty(cellData.getValue().getId()).asObject()
+          new SimpleIntegerProperty(programhistorytable.getItems().indexOf(cellData.getValue()) + 1).asObject()
   );
 
   degree.setCellValueFactory(cellData ->
@@ -711,6 +803,8 @@ public class MainController {
   commandshistory.setPlaceholder(new Label("No instruction selected"));
   programhistorytable.setPlaceholder(new Label("No program loaded"));
 
+  prevFunction.setVisible(false);
+
   fileroute.setEditable(false);
   instructionstable.getItems().clear();
   commandshistory.getItems().clear();
@@ -748,7 +842,7 @@ public class MainController {
   programhistorytable.getItems().clear();
   inputFields.clear();
   programvarsvbox.getChildren().clear();
-  Statistics.reset();
+  //Statistics.reset();
  }
 
  public void setInputVariables(Program program) {
@@ -918,4 +1012,26 @@ public class MainController {
   alert.setHeaderText("Program Variables: \n"+stats.getResults().toString());
   alert.showAndWait();
  }
+ private void storeStats()
+ {
+  if(!programhistorytable.getItems().isEmpty()) {
+   if (allStats.containsKey(program.getName())) {
+    int currSize= allStats.get(program.getName()).size();
+    Iterator<Statistics> it= programhistorytable.getItems().iterator();
+
+    for (int i = 0; i < currSize; i++) {
+     it.next();
+    }
+    while (it.hasNext()) {
+     allStats.get(program.getName()).add(it.next());
+    }
+
+   } else {
+    allStats.put(program.getName(), new ArrayList<>(programhistorytable.getItems()));
+   }
+  }
+ }
+
 }
+
+

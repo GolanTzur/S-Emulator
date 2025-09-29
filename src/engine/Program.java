@@ -160,6 +160,10 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
                     labelMap.put(label, nextLabel);
                     allprogramlabels.add(nextLabel);
                 }
+                else
+                {
+                    allprogramlabels.add(label);
+                }
             }
         }
         // Assign new labels to instructions with default labels
@@ -471,6 +475,9 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         for(int i=0;i<instructions.size();i++)
         {
             AbstractInstruction instr = instructions.get(i);
+            if(instr instanceof GotoLabel)
+                continue;
+
             if(instr.getVar() instanceof ResultVar)
             {
                 Function searchfunc = ((ResultVar) instr.getVar()).getFunction();

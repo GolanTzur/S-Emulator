@@ -37,7 +37,7 @@ public class ConsoleUI {
                         program.checkValidity();
                         programCopy = program.clone();
                         System.out.println("Program loaded successfully.");
-                        Statistics.reset();
+                        //Statistics.reset();
                         currentStats= new LinkedList<>();
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
@@ -142,7 +142,7 @@ public class ConsoleUI {
                         ProgramState toLoad=ProgramState.loadProgramState();
                         program=toLoad.getOrigin();
                         programCopy=toLoad.getCopy();
-                        Statistics.reset();
+                        //Statistics.reset();
                         System.out.println("Program state loaded successfully.");
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
