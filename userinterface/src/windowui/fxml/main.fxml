@@ -89,7 +89,7 @@
                   <Insets />
                </opaqueInsets>
             </HBox>
-            <HBox id="progcontrolhbox1" fx:id="progcontrolhbox1" alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="397.0" spacing="20.0" GridPane.columnSpan="2" GridPane.rowIndex="2">
+            <HBox id="progcontrolhbox1" fx:id="progcontrolhbox1" alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="397.0" spacing="10.0" GridPane.columnSpan="2" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets left="20.0" />
                </GridPane.margin>
@@ -101,10 +101,15 @@
                   </Button>
                   <RadioButton id="bylabradio" fx:id="bylabradio" mnemonicParsing="false" text="By Label" />
                   <RadioButton id="byvarradio" fx:id="byvarradio" mnemonicParsing="false" text="By Variables" />
-                  <Button id="functionselector" fx:id="functionselector" alignment="CENTER" mnemonicParsing="false" onAction="#selectFunction" prefHeight="38.0" prefWidth="59.0" styleClass="vice-buttons" text="Function Selector" textAlignment="CENTER" wrapText="true" HBox.hgrow="ALWAYS">
+                  <Button id="functionselector" fx:id="functionselector" alignment="CENTER" mnemonicParsing="false" onAction="#selectFunction" prefHeight="38.0" prefWidth="54.0" styleClass="vice-buttons" text="Select Function" textAlignment="CENTER" wrapText="true" HBox.hgrow="ALWAYS">
                      <HBox.margin>
-                        <Insets />
+                        <Insets left="10.0" />
                      </HBox.margin>
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Button>
+                  <Button mnemonicParsing="false" prefHeight="37.0" prefWidth="52.0" text="Previous Function" textAlignment="CENTER" wrapText="true">
                      <font>
                         <Font size="10.0" />
                      </font>
@@ -223,7 +228,7 @@
             </AnchorPane>
             <VBox id="programinputsvbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="141.0" prefWidth="181.0" GridPane.columnIndex="2" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.vgrow="ALWAYS">
                <children>
-                  <Label id="programinputs" fx:id="programinputs" alignment="CENTER" prefHeight="31.0" prefWidth="246.0" text="Program Inputs">
+                  <Label id="programinputs" fx:id="programinputs" alignment="BOTTOM_CENTER" prefHeight="31.0" prefWidth="246.0" text="Program Inputs">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -276,9 +281,9 @@
             </VBox>
             <VBox alignment="TOP_CENTER" prefHeight="192.0" prefWidth="348.0" spacing="3.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.rowSpan="3">
                <children>
-                  <Label alignment="CENTER" prefHeight="29.0" prefWidth="347.0" text="Program's History">
+                  <Label alignment="BOTTOM_CENTER" prefHeight="33.0" prefWidth="347.0" text="Program's History">
                      <font>
-                        <Font size="17.0" />
+                        <Font size="16.0" />
                      </font>
                   </Label>
                   <AnchorPane prefHeight="117.0" prefWidth="269.0">
