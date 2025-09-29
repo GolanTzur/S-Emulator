@@ -143,7 +143,7 @@ public class ConsoleUI {
                         program=toLoad.getOrigin();
                         programCopy=toLoad.getCopy();
                         //Statistics.reset();
-                        System.out.println("Program state loaded successfully.");
+                        System.out.println("Program state loaded successfully");
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
