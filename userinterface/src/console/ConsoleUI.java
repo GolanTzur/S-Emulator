@@ -6,6 +6,7 @@ import engine.basictypes.Variable;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 public class ConsoleUI {
@@ -13,6 +14,7 @@ public class ConsoleUI {
         Program program=null;
         Program programCopy = null;
         XMLHandler xmlHandler = XMLHandler.getInstance();
+        LinkedList<Statistics> currentStats=null;
         System.out.println("Welcome to S-Emulator IDE");
         boolean exit = false;
 
@@ -36,6 +38,7 @@ public class ConsoleUI {
                         programCopy = program.clone();
                         System.out.println("Program loaded successfully.");
                         Statistics.reset();
+                        currentStats= new LinkedList<>();
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -86,7 +89,6 @@ public class ConsoleUI {
                             selectedDegree = new Scanner(System.in).nextInt();
                         }catch (Exception e) {
                             System.out.println("Invalid input. Please enter a number.");
-                            continue;
                         }
                     } while(selectedDegree < 0  || selectedDegree > degree);
 
@@ -101,7 +103,7 @@ public class ConsoleUI {
                     int cycles= programCopy.getCycleCount();
 
                     try {
-                        new Statistics(selectedDegree,initVars,cycles,results).appendStatistics();
+                        currentStats.add(new Statistics(selectedDegree,initVars,cycles,results));
                     }catch (Exception e) {
                         System.out.println("Error writing statistics: " + e.getMessage());
                     }
@@ -114,12 +116,12 @@ public class ConsoleUI {
                     break;
                 case 5:
                     try {
-                        Collection<Statistics> programStats = Statistics.loadStatisticsIndividually();
-                        for(Statistics stats: programStats){
+                        //Collection<Statistics> programStats = Statistics.loadStatisticsIndividually();
+                        for(Statistics stats: currentStats){
                             System.out.println(stats);
                         }
                     } catch (Exception e) {
-                        System.out.println("Error loading statistics: " + e.getMessage());
+                        System.out.println("No Statistics Loaded " + e.getMessage());
                     }
                     break;
                 case 6:

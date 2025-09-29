@@ -213,7 +213,7 @@ public class MainController {
   reload.setVisible(true);
   progcontrolhbox2.setVisible(true);
   //functionselector.setVisible(true);
-  programvarsvbox.getChildren().clear();
+  //programvarsvbox.getChildren().clear();
   debugger = null;
   instructionstable.getSelectionModel().clearAndSelect(-1);
   clearTableSelection();
@@ -256,6 +256,7 @@ public class MainController {
    showVariables(debugger.getCycleCount(), before);
    if (!debugger.isRunning()) {
     stopDebugging();
+    programvarsvbox.getChildren().clear();
    }
   }
 
@@ -533,7 +534,7 @@ public class MainController {
   }
   programcopy.execute();
   Statistics stats = new Statistics(currdegree.getValue(), initialInputs, programcopy.getCycleCount(), programcopy.getVars().clone());
-  stats.appendStatistics();
+  //stats.appendStatistics();
   programhistorytable.getItems().add(stats);
   showVariables(programcopy.getCycleCount());
   programcopy = program.clone();
@@ -613,7 +614,7 @@ public class MainController {
   if (debugger == null || !debugger.isRunning())
    return;
   stopDebugging();
-  //programvarsvbox.getChildren().clear();
+  programvarsvbox.getChildren().clear();
  }
 
  public ObservableList<AbstractInstruction> getInstructions(Program program) {

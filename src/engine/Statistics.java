@@ -8,8 +8,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Statistics implements Serializable {
-    private static String sourceFile="data\\statistics\\statistics.bin";
+public class Statistics /*implements Serializable*/ {
+    //private static String sourceFile="data\\statistics\\statistics.bin";
     private static int runCounter = 1;
     private final int degree;
 
@@ -26,7 +26,7 @@ public class Statistics implements Serializable {
         this.cycles = cycles;
         this.id=runCounter++;
     }
-    // Java
+    /*// Java
     public void appendStatistics() {
         Path path = Paths.get(sourceFile);
         Collection<Statistics> stats=null;
@@ -63,15 +63,15 @@ public class Statistics implements Serializable {
                 e.printStackTrace();
         }
         return stats;
-    }
+    }*/
 
     public static void reset()
     {
         runCounter=1;
-        Path path = Paths.get(sourceFile);
+       /* Path path = Paths.get(sourceFile);
         if (path.toFile().exists()) {
             path.toFile().delete();
-        }
+        }*/
     }
     public String toString() {
         StringBuilder sb = new StringBuilder();
