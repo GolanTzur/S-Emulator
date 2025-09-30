@@ -1,0 +1,76 @@
+/* Dark Theme */
+.root, .scroll-pane, .grid-pane, .anchor-pane, .border-pane, .vbox, .hbox {
+    -fx-background-color: #23272e;
+}
+
+.leftSideLabels {
+    -fx-text-fill: #e0e0e0;
+}
+
+.menu-bar, .menu, .menu-item {
+    -fx-background-color: #2c313c;
+    /*-fx-text-fill: #e0e0e0;
+    -fx-text-fill: #90caf9;*/
+}
+
+.menu-bar .label, .menu .label, .menu-item .label {
+    -fx-text-fill: #e0e0e0;
+}
+
+.button, .leftSideButtons, .rightSideButtons {
+    -fx-background-color: #394150;
+    -fx-text-fill: #e0e0e0;
+    -fx-border-color: #555;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.text-field {
+    -fx-background-color: #2c313c;
+    -fx-text-fill: #e0e0e0;
+    -fx-border-color: #555;
+}
+
+.table-view {
+    -fx-background-color: #23272e;
+    -fx-table-cell-border-color: #444;
+}
+
+/*.table-column {
+    -fx-background-color: #2c313c;
+    -fx-text-fill: #e0e0e0;
+}*/
+
+.radio-button {
+    -fx-text-fill: #e0e0e0;
+}
+
+#headline {
+    -fx-text-fill: #90caf9;
+}
+
+#filepath {
+    -fx-text-fill: #b0b0b0;
+}
+
+.headers{
+-fx-text-fill: #90caf9;
+}
+
+#maingrid{
+-fx-background-color: black;
+}
+
+
+
+/* Dark Theme Hover */
+.button:hover, .leftSideButtons:hover, .rightSideButtons:hover {
+    -fx-background-color: #263238;
+    -fx-text-fill: #90caf9;
+    -fx-border-color: #90caf9;
+}
+
+.menu-bar .menu:hover, .menu-item:hover {
+    -fx-background-color: #37474f;
+    -fx-text-fill: #90caf9;
+}

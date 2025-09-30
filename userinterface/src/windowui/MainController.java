@@ -92,6 +92,12 @@ public class MainController {
  private Button highlightselection;
 
  @FXML
+ private RadioMenuItem lightMenuitem;
+
+ @FXML
+ private RadioMenuItem darkMenuitem;
+
+ @FXML
  private TableView<AbstractInstruction> instructionstable;
 
  @FXML
@@ -187,6 +193,23 @@ public class MainController {
  private Button stop;
 
  @FXML
+ void changeTheme(ActionEvent event) {
+    RadioMenuItem selected = (RadioMenuItem) event.getSource();
+    if (selected == lightMenuitem) {
+     lightMenuitem.setSelected(true);
+     darkMenuitem.setSelected(false);
+     fileroute.getScene().getStylesheets().clear();
+     fileroute.getScene().getStylesheets().add(getClass().getResource("/windowui/fxml/light-theme.css").toExternalForm());
+    } else if (selected == darkMenuitem) {
+     darkMenuitem.setSelected(true);
+     lightMenuitem.setSelected(false);
+     fileroute.getScene().getStylesheets().clear();
+     fileroute.getScene().getStylesheets().add(getClass().getResource("/windowui/fxml/dark-theme.css").toExternalForm());
+    }
+ }
+
+
+ @FXML
  void collapseProgram(ActionEvent event) {
   if (currdegree.get() == 0) {
    Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -243,6 +266,7 @@ public class MainController {
    alert.showAndWait();
    return;
   }
+  System.out.println(event.getSource().toString());
 
   if (debugger != null && !debugger.isRunning())
    return;
@@ -465,6 +489,13 @@ public class MainController {
   setProgramHistoryAddFormat(historytablenumber, historytabledegree, historytablecycles, historytableinput, historytableresult);
   setCommandshistoryListener();
 
+  lightMenuitem.setSelected(true);
+  fileroute.sceneProperty().addListener((obs, oldScene, newScene) -> {
+   if (newScene != null) {
+    newScene.getStylesheets().clear();
+    newScene.getStylesheets().add(getClass().getResource("/windowui/fxml/light-theme.css").toExternalForm());
+   }
+  });
   degreetext1.textProperty().addListener((obs, oldValue, newValue) -> {
    if (!newValue.matches("\\d*")) {
     degreetext1.setText(newValue.replaceAll("[^\\d]", ""));
@@ -850,10 +881,6 @@ public class MainController {
   if (program == null) return;
 
   Collection<Variable> inputs = program.getVars().getInput().values();
-  if (inputs.isEmpty()) {
-   programinputs.setText("No input variables");
-   return;
-  }
 
   boolean fill = false;
   Label previousLabel = null;

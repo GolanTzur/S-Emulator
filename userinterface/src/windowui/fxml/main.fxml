@@ -8,6 +8,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -21,13 +22,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" minHeight="538.6666870117188" minWidth="756.6666870117188" prefHeight="530.0" prefWidth="788.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="windowui.MainController">
+<ScrollPane fitToHeight="true" fitToWidth="true" maxWidth="1.7976931348623157E308" minHeight="538.6666870117188" minWidth="756.6666870117188" prefHeight="530.0" prefWidth="788.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="windowui.MainController">
    <content>
-      <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="479.3333435058594" minWidth="565.3333129882812" prefHeight="515.0" prefWidth="608.0" style="-fx-background-color: white;">
+      <GridPane id="maingrid" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="479.3333435058594" minWidth="565.3333129882812" prefHeight="515.0" prefWidth="608.0">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="308.0" minWidth="10.0" prefWidth="249.33331298828125" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="367.3333740234375" minWidth="10.0" prefWidth="154.0000203450521" />
-            <ColumnConstraints hgrow="ALWAYS" maxWidth="367.3333740234375" minWidth="10.0" prefWidth="197.99997965494794" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="243.33333333333331" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="174.66666666666666" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="450.0" minWidth="10.0" prefWidth="367.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints maxHeight="128.66668701171875" minHeight="0.0" prefHeight="45.333343505859375" vgrow="SOMETIMES" />
@@ -43,7 +44,7 @@
          <children>
             <BorderPane prefHeight="31.0" prefWidth="785.0" GridPane.columnSpan="3">
                <center>
-                  <Label alignment="BOTTOM_CENTER" prefHeight="3.0" prefWidth="370.0" text="S-Emulator IDE" BorderPane.alignment="TOP_CENTER">
+                  <Label id="headline" alignment="BOTTOM_CENTER" prefHeight="3.0" prefWidth="370.0" text="S-Emulator IDE" BorderPane.alignment="TOP_CENTER">
                      <font>
                         <Font name="System Bold" size="28.0" />
                      </font>
@@ -59,6 +60,12 @@
                               <MenuItem id="loadsavedprogram" fx:id="loadsavedprogram" mnemonicParsing="false" onAction="#loadSavedProgram" text="Load Saved Program" />
                         </items>
                       </Menu>
+                        <Menu mnemonicParsing="false" text="Theme">
+                          <items>
+                              <RadioMenuItem id="lightMenuitem" fx:id="lightMenuitem" mnemonicParsing="false" onAction="#changeTheme" text="Light" />
+                              <RadioMenuItem id="darkMenuitem" fx:id="darkMenuitem" mnemonicParsing="false" onAction="#changeTheme" text="Dark" />
+                          </items>
+                        </Menu>
                     </menus>
                      <padding>
                         <Insets top="10.0" />
@@ -94,24 +101,24 @@
                   <Insets left="20.0" />
                </GridPane.margin>
                <children>
-                  <Button id="highlightselection" fx:id="highlightselection" mnemonicParsing="false" onAction="#highlightSelection" prefHeight="37.0" prefWidth="67.0" styleClass="vice-buttons" text="Highlight Selection" textAlignment="CENTER" wrapText="true">
+                  <Button id="highlightselection" fx:id="highlightselection" mnemonicParsing="false" onAction="#highlightSelection" prefHeight="37.0" prefWidth="61.0" styleClass="leftSideButtons" text="Highlight Selection" textAlignment="CENTER" wrapText="true">
                      <font>
-                        <Font size="10.0" />
+                        <Font size="8.0" />
                      </font>
                   </Button>
-                  <RadioButton id="bylabradio" fx:id="bylabradio" mnemonicParsing="false" text="By Label" />
-                  <RadioButton id="byvarradio" fx:id="byvarradio" mnemonicParsing="false" text="By Variables" />
-                  <Button id="functionselector" fx:id="functionselector" alignment="CENTER" mnemonicParsing="false" onAction="#selectFunction" prefHeight="38.0" prefWidth="54.0" styleClass="vice-buttons" text="Select Function" textAlignment="CENTER" wrapText="true" HBox.hgrow="ALWAYS">
+                  <RadioButton id="bylabradio" fx:id="bylabradio" mnemonicParsing="false" styleClass="leftSideLabels" text="By Label" />
+                  <RadioButton id="byvarradio" fx:id="byvarradio" mnemonicParsing="false" styleClass="leftSideLabels" text="By Variables" />
+                  <Button id="functionselector" fx:id="functionselector" alignment="CENTER" mnemonicParsing="false" onAction="#selectFunction" prefHeight="38.0" prefWidth="54.0" styleClass="leftSideButtons" text="Select Function" textAlignment="CENTER" wrapText="true" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
                      <font>
-                        <Font size="10.0" />
+                        <Font size="9.0" />
                      </font>
                   </Button>
-                  <Button id="prevFunction" fx:id="prevFunction" mnemonicParsing="false" onAction="#selectPrevFunction" prefHeight="37.0" prefWidth="52.0" text="Previous Function" textAlignment="CENTER" wrapText="true">
+                  <Button id="prevFunction" fx:id="prevFunction" mnemonicParsing="false" onAction="#selectPrevFunction" prefHeight="37.0" prefWidth="52.0" styleClass="leftSideButtons" text="Previous Function" textAlignment="CENTER" wrapText="true">
                      <font>
-                        <Font size="10.0" />
+                        <Font size="9.0" />
                      </font>
                   </Button>
                </children>
@@ -121,12 +128,12 @@
                   <Insets left="20.0" />
                </GridPane.margin>
                <children>
-                  <Button id="expand" fx:id="expand" mnemonicParsing="false" onAction="#expandProgram" prefHeight="41.0" prefWidth="52.0" styleClass="vice-buttons" text="Expand">
+                  <Button id="expand" fx:id="expand" mnemonicParsing="false" onAction="#expandProgram" prefHeight="41.0" prefWidth="52.0" styleClass="leftSideButtons" text="Expand">
                      <font>
                         <Font size="10.0" />
                      </font>
                   </Button>
-                  <Label id="currdeg" fx:id="currdeg" text="1">
+                  <Label id="currdeg" fx:id="currdeg" styleClass="leftSideLabels" text="1">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
@@ -134,7 +141,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Label text="/">
+                  <Label styleClass="leftSideLabels" text="/">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
@@ -142,25 +149,25 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Label id="maxdeg" fx:id="maxdeg" text="2">
+                  <Label id="maxdeg" fx:id="maxdeg" styleClass="leftSideLabels" text="2">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Label text="Degrees">
+                  <Label prefHeight="20.0" prefWidth="58.0" styleClass="leftSideLabels" text="Degrees">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Button id="collapse" fx:id="collapse" mnemonicParsing="false" onAction="#collapseProgram" prefHeight="41.0" prefWidth="51.0" styleClass="vice-buttons" text="Collapse">
+                  <Button id="collapse" fx:id="collapse" mnemonicParsing="false" onAction="#collapseProgram" prefHeight="41.0" prefWidth="51.0" styleClass="leftSideButtons" text="Collapse">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
                      <font>
-                        <Font size="10.0" />
+                        <Font size="9.0" />
                      </font>
                   </Button>
-                  <Label id="selectdegreetext" fx:id="selectdegreetext" prefHeight="41.0" prefWidth="50.0" text="Select Degree" textAlignment="CENTER" wrapText="true">
+                  <Label id="selectdegreetext" fx:id="selectdegreetext" prefHeight="41.0" prefWidth="50.0" styleClass="leftSideLabels" text="Select Degree" textAlignment="CENTER" wrapText="true">
                      <font>
                         <Font size="13.0" />
                      </font>
@@ -169,7 +176,7 @@
                      </HBox.margin>
                   </Label>
                   <TextField id="degreetext1" fx:id="degreetext1" prefHeight="25.0" prefWidth="36.0" />
-                  <Button id="selectdegree" fx:id="selectdegree" mnemonicParsing="false" onAction="#expandToDegree" text="Select">
+                  <Button id="selectdegree" fx:id="selectdegree" mnemonicParsing="false" onAction="#expandToDegree" styleClass="leftSideButtons" text="Select">
                      <HBox.margin>
                         <Insets left="5.0" />
                      </HBox.margin>
@@ -183,7 +190,7 @@
                       <TableColumn id="instructiontablenumber" fx:id="instructiontablenumber" maxWidth="44.0" minWidth="44.0" prefWidth="44.0" resizable="false" text="#" />
                       <TableColumn id="instructiontablelabel" fx:id="instructiontablelabel" maxWidth="52.666656494140625" minWidth="52.666656494140625" prefWidth="52.666656494140625" resizable="false" text="Label" />
                         <TableColumn id="instructiontabletype" fx:id="instructiontabletype" maxWidth="48.666656494140625" minWidth="48.666656494140625" prefWidth="48.666656494140625" resizable="false" text="Type" />
-                        <TableColumn id="instructiontableinstr" fx:id="instructiontableinstr" prefWidth="189.33334350585938" text="Instruction" />
+                        <TableColumn id="instructiontableinstr" fx:id="instructiontableinstr" maxWidth="1.7976931348623157E308" prefWidth="189.33334350585938" text="Instruction" />
                         <TableColumn id="instructiontablecycles" fx:id="instructiontablecycles" maxWidth="58.0" minWidth="58.0" prefWidth="58.0" resizable="false" text="Cycles" />
                     </columns>
                      <columnResizePolicy>
@@ -205,12 +212,12 @@
                <children>
                   <VBox alignment="TOP_CENTER" layoutX="-2.0" layoutY="-17.0" maxHeight="-Infinity" prefHeight="25.0" prefWidth="401.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0">
                      <children>
-                        <Label alignment="CENTER" contentDisplay="TOP" prefHeight="26.0" prefWidth="400.0" text="Command's History">
+                        <Label alignment="CENTER" contentDisplay="TOP" prefHeight="26.0" prefWidth="400.0" styleClass="headers" text="Command's History">
                            <font>
                               <Font size="17.0" />
                            </font>
                         </Label>
-                        <TableView id="commandshistory" fx:id="commandshistory" editable="true" minHeight="-Infinity" prefHeight="102.0" prefWidth="395.0">
+                        <TableView id="commandshistory" fx:id="commandshistory" editable="true" minHeight="-Infinity" prefHeight="102.0" prefWidth="392.0">
                            <columns>
                               <TableColumn id="commandstablenumber" fx:id="commandstablenumber" maxWidth="45.33334481716156" minWidth="45.33334481716156" prefWidth="45.33334481716156" resizable="false" text="#" />
                               <TableColumn id="commandstablelabel" fx:id="commandstablelabel" maxWidth="49.333309173583984" minWidth="49.333309173583984" prefWidth="49.333309173583984" resizable="false" text="Label" />
@@ -228,7 +235,7 @@
             </AnchorPane>
             <VBox id="programinputsvbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="141.0" prefWidth="181.0" GridPane.columnIndex="2" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.vgrow="ALWAYS">
                <children>
-                  <Label id="programinputs" fx:id="programinputs" alignment="BOTTOM_CENTER" prefHeight="31.0" prefWidth="246.0" text="Program Inputs">
+                  <Label id="programinputs" fx:id="programinputs" alignment="BOTTOM_CENTER" prefHeight="31.0" prefWidth="246.0" styleClass="headers" text="Program Inputs">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -245,7 +252,7 @@
             </VBox>
             <VBox id="programinputsvbox" prefHeight="149.0" prefWidth="331.0" GridPane.columnIndex="2" GridPane.rowIndex="4" GridPane.rowSpan="2">
                <children>
-                  <Label id="programinputs" fx:id="programinputs1" alignment="CENTER" prefHeight="27.0" prefWidth="247.0" text="Program Variables">
+                  <Label id="programinputs" fx:id="programinputs1" alignment="CENTER" prefHeight="27.0" prefWidth="247.0" styleClass="headers" text="Program Variables">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -264,10 +271,13 @@
                   </ScrollPane>
                   <HBox id="actionbuttonshbox" fx:id="actionbuttonshbox" alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="348.0" spacing="20.0">
                      <children>
-                        <Button id="debug" fx:id="debug" mnemonicParsing="false" onAction="#debugProgram" text="Debug" />
-                        <Button id="resume" fx:id="resume" mnemonicParsing="false" onAction="#resumeProgram" text="Resume" />
-                        <Button id="stop" fx:id="stop" mnemonicParsing="false" onAction="#stopdebug" prefHeight="25.0" prefWidth="41.0" text="Stop" />
-                        <Button id="run" fx:id="run" minHeight="-Infinity" mnemonicParsing="false" onAction="#runProgram" prefHeight="25.0" prefWidth="43.0" styleClass="main-buttons" text="Run">
+                        <Button id="debug" fx:id="debug" mnemonicParsing="false" onAction="#debugProgram" styleClass="rightSideButtons" text="Debug" />
+                        <Button id="resume" fx:id="resume" mnemonicParsing="false" onAction="#resumeProgram" styleClass="rightSideButtons" text="Resume" />
+                        <Button id="stop" fx:id="stop" mnemonicParsing="false" onAction="#stopdebug" prefHeight="25.0" prefWidth="41.0" styleClass="rightSideButtons" text="Stop">
+                           <font>
+                              <Font size="11.0" />
+                           </font></Button>
+                        <Button id="run" fx:id="run" minHeight="-Infinity" mnemonicParsing="false" onAction="#runProgram" prefHeight="25.0" prefWidth="43.0" styleClass="rightSideButtons" text="Run">
                            <HBox.margin>
                               <Insets />
                            </HBox.margin>
@@ -281,20 +291,20 @@
             </VBox>
             <VBox alignment="TOP_CENTER" prefHeight="192.0" prefWidth="348.0" spacing="3.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.rowSpan="3">
                <children>
-                  <Label alignment="BOTTOM_CENTER" prefHeight="33.0" prefWidth="347.0" text="Program's History">
+                  <Label alignment="BOTTOM_CENTER" prefHeight="33.0" prefWidth="347.0" styleClass="headers" text="Program's History">
                      <font>
                         <Font size="16.0" />
                      </font>
                   </Label>
                   <AnchorPane prefHeight="117.0" prefWidth="269.0">
                      <children>
-                        <TableView id="programhistorytable" fx:id="programhistorytable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="117.0" prefWidth="351.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-3.0" AnchorPane.topAnchor="0.0">
+                        <TableView id="programhistorytable" fx:id="programhistorytable" minHeight="-Infinity" prefHeight="117.0" prefWidth="348.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-3.0" AnchorPane.topAnchor="0.0">
                           <columns>
                             <TableColumn id="historytablenumber" fx:id="historytablenumber" maxWidth="25.333373427391052" minWidth="25.333373427391052" prefWidth="25.333373427391052" resizable="false" text="#" />
                             <TableColumn id="historytabledegree" fx:id="historytabledegree" maxWidth="48.66668510437012" minWidth="48.66668510437012" prefWidth="48.66668510437012" resizable="false" text="Degree" />
-                              <TableColumn id="historytableinput" fx:id="historytableinput" maxWidth="1.7976931348623157E308" minWidth="20.0" prefWidth="164.00000762939453" text="Input" />
-                              <TableColumn id="historytableresult" fx:id="historytableresult" maxWidth="107.33329772949219" minWidth="30.0" prefWidth="63.99998474121094" text="Result" />
-                              <TableColumn id="historytablecycles" fx:id="historytablecycles" maxWidth="46.0" minWidth="46.0" prefWidth="46.0" resizable="false" text="Cycles" />
+                              <TableColumn id="historytableinput" fx:id="historytableinput" maxWidth="200.0" minWidth="20.0" prefWidth="137.3333740234375" text="Input" />
+                              <TableColumn id="historytableresult" fx:id="historytableresult" maxWidth="107.33329772949219" minWidth="30.0" prefWidth="56.0" text="Result" />
+                              <TableColumn id="historytablecycles" fx:id="historytablecycles" maxWidth="78.0" minWidth="64.0" prefWidth="78.0" text="Cycles" />
                           </columns>
                            <columnResizePolicy>
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -307,8 +317,8 @@
                         <Insets bottom="15.0" />
                      </VBox.margin>
                      <children>
-                        <Button id="showstatus" fx:id="showstatus" mnemonicParsing="false" onAction="#showStatus" text="Show Status" />
-                        <Button id="reload" fx:id="reload" alignment="CENTER" mnemonicParsing="false" onAction="#reloadFromHistory" text="Reload" />
+                        <Button id="showstatus" fx:id="showstatus" mnemonicParsing="false" onAction="#showStatus" styleClass="rightSideButtons" text="Show Status" />
+                        <Button id="reload" fx:id="reload" alignment="CENTER" mnemonicParsing="false" onAction="#reloadFromHistory" styleClass="rightSideButtons" text="Reload" />
                      </children>
                      <padding>
                         <Insets top="5.0" />
