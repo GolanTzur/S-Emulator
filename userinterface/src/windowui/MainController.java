@@ -40,6 +40,7 @@ public class MainController {
 
  private Map<String,Collection<Statistics>> allStats = new HashMap<>();
  private List<Program> allFuncs = new ArrayList<>();
+ private Collection<Variable> initialVariables;
 
 
  @FXML
@@ -245,9 +246,11 @@ public class MainController {
   reload.setVisible(true);
   progcontrolhbox2.setVisible(true);
   functionselector.setVisible(true);
+
     if(!allFuncs.isEmpty())
         prevFunction.setVisible(true);
-  //programvarsvbox.getChildren().clear();
+
+  addCurrentStats();
   debugger = null;
   instructionstable.getSelectionModel().clearAndSelect(-1);
   clearTableSelection();
@@ -266,7 +269,7 @@ public class MainController {
    alert.showAndWait();
    return;
   }
-  System.out.println(event.getSource().toString());
+
 
   if (debugger != null && !debugger.isRunning())
    return;
@@ -274,7 +277,7 @@ public class MainController {
   if (debugger == null) {
    startDebugging();
    try {
-    loadVariablesToProgramCopy();
+    initialVariables=loadVariablesToProgramCopy();
     //programcopy.updateValues();
    } catch (Exception e) {
     Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -573,9 +576,9 @@ public class MainController {
 
  @FXML
  void runProgram(ActionEvent event) {
-  Collection<Variable> initialInputs;
+  //Collection<Variable> initialInputs;
   try {
-   initialInputs = loadVariablesToProgramCopy();
+   initialVariables = loadVariablesToProgramCopy();
    //programcopy.updateValues();
   } catch (Exception e) {
    Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -586,13 +589,17 @@ public class MainController {
    return;
   }
   programcopy.execute();
-  Statistics stats = new Statistics(currdegree.getValue(), initialInputs, programcopy.getCycleCount(), programcopy.getVars().clone());
+  Statistics stats = new Statistics(currdegree.getValue(), /*initialInputs*/ initialVariables, programcopy.getCycleCount(), programcopy.getVars().clone());
   //stats.appendStatistics();
   programhistorytable.getItems().add(stats);
   showVariables(programcopy.getCycleCount());
   programcopy = program.clone();
   programcopy.deployToDegree(currdegree.getValue());
 
+ }
+ private void addCurrentStats() {
+  Statistics stats = new Statistics(currdegree.getValue(), initialVariables, debugger.getCycleCount(), programcopy.getVars().clone());
+  programhistorytable.getItems().add(stats);
  }
 
  @FXML

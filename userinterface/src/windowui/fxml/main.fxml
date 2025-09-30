@@ -123,7 +123,7 @@
                   </Button>
                </children>
             </HBox>
-            <HBox id="progcontrolhbox2" fx:id="progcontrolhbox2" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnSpan="2" GridPane.rowIndex="3">
+            <HBox id="progcontrolhbox2" fx:id="progcontrolhbox2" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="3.0" GridPane.columnSpan="2" GridPane.rowIndex="3">
                <GridPane.margin>
                   <Insets left="20.0" />
                </GridPane.margin>
@@ -133,9 +133,9 @@
                         <Font size="10.0" />
                      </font>
                   </Button>
-                  <Label id="currdeg" fx:id="currdeg" styleClass="leftSideLabels" text="1">
+                  <Label id="currdeg" fx:id="currdeg" alignment="CENTER" contentDisplay="RIGHT" prefHeight="20.0" prefWidth="17.0" styleClass="leftSideLabels" text="11" textAlignment="CENTER">
                      <HBox.margin>
-                        <Insets left="10.0" />
+                        <Insets left="5.0" />
                      </HBox.margin>
                      <font>
                         <Font size="14.0" />
@@ -149,19 +149,25 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Label id="maxdeg" fx:id="maxdeg" styleClass="leftSideLabels" text="2">
+                  <Label id="maxdeg" fx:id="maxdeg" prefHeight="20.0" prefWidth="20.0" styleClass="leftSideLabels" text="22">
                      <font>
                         <Font size="14.0" />
                      </font>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
                   </Label>
                   <Label prefHeight="20.0" prefWidth="58.0" styleClass="leftSideLabels" text="Degrees">
                      <font>
                         <Font size="14.0" />
                      </font>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
                   </Label>
                   <Button id="collapse" fx:id="collapse" mnemonicParsing="false" onAction="#collapseProgram" prefHeight="41.0" prefWidth="51.0" styleClass="leftSideButtons" text="Collapse">
                      <HBox.margin>
-                        <Insets left="10.0" />
+                        <Insets />
                      </HBox.margin>
                      <font>
                         <Font size="9.0" />
