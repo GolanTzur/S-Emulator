@@ -18,7 +18,7 @@ public class FunctionsManager {
 
     public boolean functionExists(String functionName) {
         for (FunctionInfo fi : functions) {
-            if (fi.func().equals(functionName)) {
+            if (fi.func().getProg().getName().equals(functionName)) {
                 return true;
             }
         }
@@ -26,7 +26,7 @@ public class FunctionsManager {
     }
     public FunctionInfo getFunction(String functionName) {
         for (FunctionInfo fi : functions) {
-            if (fi.func().equals(functionName)) {
+            if (fi.func().getProg().getName().equals(functionName)) {
                 return fi;
             }
         }

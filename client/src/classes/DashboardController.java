@@ -15,14 +15,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import okhttp3.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
@@ -640,14 +643,72 @@ public class DashboardController {
     }
 
 
+        private void moveToExecutionScene(String progname) {
+            OkHttpClient client = HttpClientSingleton.getInstance();
+            RequestBody body = RequestBody.create(null, new byte[0]);
+            try {
+            String encodedProgname = URLEncoder.encode(progname, "UTF-8");
+            Request request = new Request.Builder()
+                    .url("http://localhost:8080/server_war/users?programname=" + encodedProgname)
+                    .method("POST", body)
+                    .build();
+
+                Response response = client.newCall(request).execute();
+                if (!response.isSuccessful()) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText("Could not set program for execution");
+                    alert.setContentText("Please try again later");
+                    alert.showAndWait();
+                    return;
+                }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        try {
+            FXMLLoader executionpane = new FXMLLoader(getClass().getResource("/fxml/execution.fxml"));
+            Node executionpaneNode = executionpane.load();
+            ExecutionController executionController = executionpane.getController();
+            executionController.setInitialInfo(usernameproperty.get(), progname, Integer.parseInt(creditsproperty.get()));
+            this.maingrid.getScene().getWindow().hide();
+            Stage stage = new Stage();
+            stage.setTitle("Execution - S-Emulator");
+            stage.setScene(new Scene((Parent) executionpaneNode));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     @FXML
     void selectFunctionPressed(ActionEvent event) {
-
+        ObservableFunctionInfo selectedFunction = allfunctions.getSelectionModel().getSelectedItem();
+        if (selectedFunction == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("No function selected");
+            alert.setContentText("Please select a function from the list");
+            alert.showAndWait();
+            return;
+        }
+        moveToExecutionScene(selectedFunction.funcname());
     }
 
     @FXML
     void selectProgramPressed(ActionEvent event) {
+        ObservableProgramInfo selectedProgram = allprograms.getSelectionModel().getSelectedItem();
+        if (selectedProgram == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("No program selected");
+            alert.setContentText("Please select a program from the list");
+            alert.showAndWait();
+            return;
+        }
+        moveToExecutionScene(selectedProgram.programname());
 
     }
 

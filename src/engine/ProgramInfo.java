@@ -30,6 +30,9 @@ public class ProgramInfo {
     public int getNumRuns() {
         return numRuns;
     }
+    public Program getProgram() {
+        return program;
+    }
     public void updateAvgCreditsPrice(int newPrice) {
         avgCreditsPrice = (avgCreditsPrice * numRuns + newPrice) / (numRuns + 1);
         numRuns++;

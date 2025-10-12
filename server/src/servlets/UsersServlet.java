@@ -10,6 +10,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -31,22 +32,20 @@ public class UsersServlet extends HttpServlet {
                 synchronized (usersManager) {
                     UserInfo userInfo;
                     UserInfo userToCheck;
-                    if ((userInfo=usersManager.lookForUser(user)) == null) {
+                    if ((userInfo = usersManager.lookForUser(user)) == null) {
                         userToCheck = new UserInfo(user);
                         usersManager.addUser(userToCheck);
-                    }
-                    else
-                        userToCheck=userInfo;
+                    } else
+                        userToCheck = userInfo;
                     response.setStatus(HttpServletResponse.SC_OK);
-                    response.getWriter().print(user+","+userToCheck.getCreditsLeft());
+                    response.getWriter().print(user + "," + userToCheck.getCreditsLeft());
                 }
 
             } else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().println("Missing 'username' parameter");
             }
-        }
-        else if (action != null && action.equals("showusers")) {
+        } else if (action != null && action.equals("showusers")) {
             UsersManager usersManager = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
             if (usersManager == null) {
                 usersManager = UsersManager.getInstance();
@@ -64,7 +63,7 @@ public class UsersServlet extends HttpServlet {
                     sb.append("\"numruns\":\"").append(ui.getRunInfos().size()).append("\"},");
                 }
             }
-            if(sb.length()==1)
+            if (sb.length() == 1)
                 sb.deleteCharAt(0);
             else if (sb.charAt(sb.length() - 1) == ',') {
                 sb.deleteCharAt(sb.length() - 1);
@@ -73,8 +72,7 @@ public class UsersServlet extends HttpServlet {
 
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().println(sb.toString());
-        }
-        else {
+        } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Invalid 'action' parameter");
         }
@@ -111,76 +109,52 @@ public class UsersServlet extends HttpServlet {
     }
 
 
-    //When pressing Load button in client
+    //Set Client Session with the program selected
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Properties prop = new Properties();
-        prop.load(req.getInputStream());
-        String action = prop.getProperty("action");
 
-        //In case request comes from a RequestDispatcher.forward() call
-        String otherAttribute=null;
-        if((otherAttribute=(String)req.getAttribute("action"))!=null){
-            otherAttribute=(String)req.getAttribute("action");
-            if(otherAttribute.equals("increaseprograms")){
-                action="increaseprograms";
+        String functionname = req.getParameter("programname");
+        if (functionname == null) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().println("Missing 'username' or 'functionname' parameter");
+            return;
+        }
+
+        FunctionsManager functionsManager = (FunctionsManager) getServletContext().getAttribute(ContextAttributes.FUNCTIONS.getAttributeName());
+        if (functionsManager == null) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().println("FunctionsManager not initialized");
+            return;
+        }
+        ProgramsManager programsManager = (ProgramsManager) getServletContext().getAttribute(ContextAttributes.PROGRAMS.getAttributeName());
+        if (programsManager == null) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().println("FunctionsManager not initialized");
+            return;
+        }
+        Program programToSet = null;
+        synchronized (functionsManager) {
+            FunctionInfo functionToSet = null;
+
+            if (functionsManager.functionExists(functionname)) {
+                functionToSet = functionsManager.getFunction(functionname);
+                programToSet = functionToSet.func().getProg();
             }
         }
-
-        switch (action) {
-            case "increaseprograms":
-                String user = req.getParameter("username");
-                String funcsToAdd =(String) req.getAttribute("functions");
-                String programsToAdd = (String) req.getAttribute("program");
-                if (user != null && funcsToAdd != null && programsToAdd != null) {
-                    UserInfo userToUpdate = null;
-                    UsersManager usersManager = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
-                    synchronized (usersManager) {
-                        if ((userToUpdate = usersManager.lookForUser(user)) == null) {
-                            usersManager.addUser(new UserInfo(user));
-                        }
-                        ProgramsManager pm=ProgramsManager.getInstance();
-                        userToUpdate.addProgram(pm.programExists(programsToAdd));
-                        String[] funcs=funcsToAdd.split(",");
-                        FunctionsManager fm=FunctionsManager.getInstance();
-                        for(String f:funcs){
-                            userToUpdate.addFunction(fm.getFunction(f));
-                        }
-                    }
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    resp.getWriter().println("User programs and functions updated successfully");
-
+        if (programToSet == null) {
+            synchronized (programsManager) {
+                ProgramInfo programInfoToSet = null;
+                if ((programInfoToSet = programsManager.programExists(functionname)) != null) {
+                    programToSet = programInfoToSet.getProgram();
                 } else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    resp.getWriter().println("Missing 'username' or 'credits' parameter");
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    resp.getWriter().println("Function/Program not found");
+                    return;
                 }
-                break;
-            case "increaseruns":
-                user = prop.getProperty("username");
-                String cresditsToReduce = prop.getProperty("credits");
-                if (user != null && cresditsToReduce != null) {
-                    UserInfo userToUpdate = null;
-                    UsersManager usersManager = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
-                    synchronized (usersManager) {
-                        if ((userToUpdate = usersManager.lookForUser(user)) == null) {
-                            usersManager.addUser(new UserInfo(user));
-                        }
-                        try {
-                            userToUpdate.spendCredits(Integer.parseInt(cresditsToReduce));
-                            resp.setStatus(HttpServletResponse.SC_OK);
-                            resp.getWriter().println(userToUpdate.getCreditsLeft());
-                        } catch (NumberFormatException e) {
-                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                            resp.getWriter().println("Invalid 'credits' parameter");
-                        }
-                    }
-                }
-                break;
-            default:
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().println("Invalid 'action' parameter");
-                break;
-
+            }
         }
+                HttpSession session = req.getSession(true);
+                session.setAttribute("currentprogram", programToSet.clone());
+                resp.setStatus(HttpServletResponse.SC_OK);
     }
 }
