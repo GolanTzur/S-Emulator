@@ -604,4 +604,32 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         this.cycleCount = cycleCount;
     }
 
+    public Set<String> getAllFunctionsUsed()
+    {
+        Set<String> functions = new HashSet<>();
+        for(AbstractInstruction instr: instructions){
+            if(instr instanceof Function)
+            {
+                functions.add(((Function)instr).getProg().getName());
+                functions.addAll(((Function)instr).getProg().getAllFunctionsUsed());
+            }
+            if(instr instanceof JumpEqualFunction){
+                functions.add(((JumpEqualFunction)instr).getFunc().getProg().getName());
+                functions.addAll(((JumpEqualFunction)instr).getFunc().getProg().getAllFunctionsUsed());
+            }
+            if(instr.getVar() instanceof ResultVar){
+                functions.add(((ResultVar)instr.getVar()).getFunction().getProg().getName());
+                functions.addAll(((ResultVar)instr.getVar()).getFunction().getProg().getAllFunctionsUsed());
+            }
+            if(instr instanceof HasExtraVar){
+                HasExtraVar hev=(HasExtraVar) instr;
+                if(hev.getArg() instanceof ResultVar){
+                    functions.add(((ResultVar)hev.getArg()).getFunction().getProg().getName());
+                    functions.addAll(((ResultVar)hev.getArg()).getFunction().getProg().getAllFunctionsUsed());
+                }
+            }
+        }
+        return functions;
+    }
+
 }

@@ -8,12 +8,14 @@ public class RunInfo {
     private final Architecture arch;
     private final int result;
     private final int cycles;
-    public RunInfo(boolean isMain, String name, Architecture arch, int result, int cycles) {
+    private final int degree;
+    public RunInfo(boolean isMain, String name, Architecture arch, int result, int cycles,int degree) {
         this.isMain = isMain;
         this.name = name;
         this.arch = arch;
         this.result = result;
         this.cycles = cycles;
+        this.degree = degree;
     }
     public boolean isMain() {
         return isMain;
@@ -29,5 +31,8 @@ public class RunInfo {
     }
     public int getCycles() {
         return cycles;
+    }
+    public int getDegree() {
+        return degree;
     }
 }

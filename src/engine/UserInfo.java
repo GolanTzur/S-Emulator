@@ -7,8 +7,8 @@ import java.util.List;
 
 public class UserInfo {
     private final String name;
-    private final List<Program> programsUploaded;
-    private final List<Function> functionsUploaded;
+    private final List<ProgramInfo> programsUploaded;
+    private final List<FunctionInfo> functionsUploaded;
     private final List<RunInfo> runInfos;
     private int creditsLeft;
     private int creditsSpent;
@@ -25,10 +25,10 @@ public class UserInfo {
     public String getName() {
         return name;
     }
-    public List<Program> getProgramsUploaded() {
+    public List<ProgramInfo> getProgramsUploaded() {
         return programsUploaded;
     }
-    public List<Function> getFunctionsUploaded() {
+    public List<FunctionInfo> getFunctionsUploaded() {
         return functionsUploaded;
     }
     public List<RunInfo> getRunInfos() {
@@ -40,10 +40,10 @@ public class UserInfo {
     public int getCreditsSpent() {
         return creditsSpent;
     }
-    public void addProgram(Program p) {
+    public void addProgram(ProgramInfo p) {
         programsUploaded.add(p);
     }
-    public void addFunction(Function f) {
+    public void addFunction(FunctionInfo f) {
         functionsUploaded.add(f);
     }
     public void addRunInfo(RunInfo r) {

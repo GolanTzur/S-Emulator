@@ -64,7 +64,7 @@ public class XMLHandler { // Singleton class to handle XML operations
             return null; // Handle JAXBException
         }
     }
-    public Program convertToProgram(SProgram sprogram) throws Exception {
+    public Program convertToProgram(SProgram sprogram,AddFuncDetails... recordFuncs) throws Exception {
         if (sprogram == null) {
             return null; // Converts SProgram to Program object
         }
@@ -74,7 +74,7 @@ public class XMLHandler { // Singleton class to handle XML operations
         String name = sprogram.getName();
         ProgramVars progVars = new ProgramVars();
         SInstructions sinstructions = sprogram.getSInstructions();
-        ArrayList<AbstractInstruction> instructions = loadInstructions(sinstructions,sprogram,progVars);
+        ArrayList<AbstractInstruction> instructions = loadInstructions(sinstructions,sprogram,progVars,recordFuncs);
 
         /*List<SInstruction> sInstructions = sinstructions.getSInstruction();
         ArrayList<AbstractInstruction> instructions = new ArrayList<AbstractInstruction>();
@@ -155,7 +155,7 @@ public class XMLHandler { // Singleton class to handle XML operations
         }*/
         return new Program(name,instructions,progVars); // Returns a new Program object with the given name and instructions
     }
-    private ArrayList<AbstractInstruction> loadInstructions(SInstructions inputinstructions,SProgram sprogram,ProgramVars progVars) throws IllegalArgumentException {
+    private ArrayList<AbstractInstruction> loadInstructions(SInstructions inputinstructions,SProgram sprogram,ProgramVars progVars,AddFuncDetails... recordFuncs) throws IllegalArgumentException {
         List<SInstruction> sInstructions = inputinstructions.getSInstruction();
         ArrayList<AbstractInstruction> instructions = new ArrayList<AbstractInstruction>();
 
@@ -171,7 +171,7 @@ public class XMLHandler { // Singleton class to handle XML operations
                 case ASSIGNMENT:
                     String assign = lookforValue("assignedVariable", sin.getSInstructionArguments().getSInstructionArgument());
                     //Variable assignvar= loadVariable(assign,progVars);
-                    Variable assignvar=loadFuncArgs(assign,progVars,sprogram).get(0);
+                    Variable assignvar=loadFuncArgs(assign,progVars,sprogram,recordFuncs).get(0);
                     instructions.add(new Assignment(label,var, assignvar));
                     break;
                 case CONSTANT_ASSIGNMENT:
@@ -220,7 +220,7 @@ public class XMLHandler { // Singleton class to handle XML operations
                 case JUMP_EQUAL_VARIABLE:
                     String jump_equal_var = lookforValue("variableName", sin.getSInstructionArguments().getSInstructionArgument());
                     //Variable jump_equal_var_var = loadVariable(jump_equal_var,progVars);
-                    Variable jump_equal_var_var=loadFuncArgs(jump_equal_var,progVars,sprogram).get(0);
+                    Variable jump_equal_var_var=loadFuncArgs(jump_equal_var,progVars,sprogram,recordFuncs).get(0);
                     String jumpequalvar_label= lookforValue("JEVariableLabel", sin.getSInstructionArguments().getSInstructionArgument());
                     HasLabel gotoLabel_je_var = loadLabel(jumpequalvar_label);
                     instructions.add(new JumpEqualVariable(label, var, jump_equal_var_var, gotoLabel_je_var));
@@ -233,13 +233,36 @@ public class XMLHandler { // Singleton class to handle XML operations
                             .orElseThrow(()-> new IllegalArgumentException("Function name not found in function call)"));
 
                     SFunction sfunc= lookforFunction(funcName,sprogram.getSFunctions().getSFunction());
-                    ProgramVars funcVars=new ProgramVars();
+                    Function func = null;
+                    if(sfunc==null)
+                    {
+                        if(recordFuncs.length>0&& recordFuncs[0]!=null)
+                        {
+                            if(recordFuncs[0].functionExists(funcName))
+                            {
+                                ProgramVars funcVars = new ProgramVars();
+                                func=recordFuncs[0].getFunctionInfo(funcName).func().clone(funcVars);
+                                func.setVar(var);
+                                func.setLab(label);
+                            }
 
-                    ArrayList<AbstractInstruction> funcInstructions=loadInstructions(sfunc.getSInstructions(),sprogram,funcVars);
-                    Function func=new Function(label,var,new Program(sfunc.getName(),funcInstructions,funcVars),sfunc.getUserString());
+                            if(func==null)
+                                throw new IllegalArgumentException("Function "+funcName+" not found in function list or in recorded functions");
+                        }
+                    }
+                    else {
+                        ProgramVars funcVars = new ProgramVars();
+                        ArrayList<AbstractInstruction> funcInstructions = loadInstructions(sfunc.getSInstructions(), sprogram, funcVars, recordFuncs);
+                        func = new Function(label, var, new Program(sfunc.getName(), funcInstructions, funcVars), sfunc.getUserString());
+                    }
+                    if(recordFuncs.length>0&&recordFuncs[0]!=null)
+                    {
+                        if(!recordFuncs[0].functionExists(func.getProg().getName()))
+                            recordFuncs[0].addFunction(func);
+                    }
                     String args=lookforValue("functionArguments",sin.getSInstructionArguments().getSInstructionArgument());
 
-                    ArrayList<Variable>funcargs=loadFuncArgs(args,progVars,sprogram);
+                    ArrayList<Variable>funcargs=loadFuncArgs(args,progVars,sprogram,recordFuncs);
                     func.setArguments(funcargs);
                     //putFuncArgs(func,funcargs);
                     //func.refreshInputs();
@@ -256,12 +279,36 @@ public class XMLHandler { // Singleton class to handle XML operations
                             .orElseThrow(()-> new IllegalArgumentException("Function name not found in function call)"));
 
                     SFunction jef_sfunc= lookforFunction(jef_funcName,sprogram.getSFunctions().getSFunction());
-                    ProgramVars jef_funcVars=new ProgramVars();
-                    ArrayList<AbstractInstruction> jef_funcInstructions=loadInstructions(jef_sfunc.getSInstructions(),sprogram,jef_funcVars);
-                    Function jef_func=new Function(label,var,new Program(jef_sfunc.getName(),jef_funcInstructions,jef_funcVars),jef_sfunc.getUserString());
+                    Function jef_func = null;
+                    if(jef_sfunc==null)
+                    {
+                        if(recordFuncs.length>0&& recordFuncs[0]!=null)
+                        {
+                            if(recordFuncs[0].functionExists(jef_funcName)) {
+                                ProgramVars jef_funcVars = new ProgramVars();
+                                jef_func = recordFuncs[0].getFunctionInfo(jef_funcName).func().clone(jef_funcVars);
+                                jef_func.setVar(var);
+                                jef_func.setLab(label);
+                            }
+                            if(jef_func==null)
+                                throw new IllegalArgumentException("Function "+jef_funcName+" not found in function list or in recorded functions");
+                        }
+                        else
+                            throw new IllegalArgumentException("Function "+jef_funcName+" not found in function list");
+                    }
+                    else {
+                        ProgramVars jef_funcVars = new ProgramVars();
+                        ArrayList<AbstractInstruction> jef_funcInstructions = loadInstructions(jef_sfunc.getSInstructions(), sprogram, jef_funcVars, recordFuncs);
+                        jef_func = new Function(label, var, new Program(jef_sfunc.getName(), jef_funcInstructions, jef_funcVars), jef_sfunc.getUserString());
+                    }
+                    if(recordFuncs.length>0&& recordFuncs[0]!=null)
+                    {
+                        if(!recordFuncs[0].functionExists(jef_func.getProg().getName()))
+                            recordFuncs[0].addFunction(jef_func);
+                    }
                     jef_func.setVar(ResultVar.createDummyVar(VariableType.INPUT,1,0,jef_func));
                     String jef_args=lookforValue("functionArguments",sin.getSInstructionArguments().getSInstructionArgument());
-                    ArrayList<Variable>jefargs= loadFuncArgs(jef_args,progVars,sprogram);
+                    ArrayList<Variable>jefargs= loadFuncArgs(jef_args,progVars,sprogram,recordFuncs);
                     jef_func.setArguments(jefargs);
                     String jef_label= lookforValue("JEFunctionLabel", sin.getSInstructionArguments().getSInstructionArgument());
                     HasLabel gotoLabel_jef = loadLabel(jef_label);
@@ -330,10 +377,10 @@ public class XMLHandler { // Singleton class to handle XML operations
     private SFunction lookforFunction(String field,List<SFunction> functions) { // Looks for a specific field in the instruction arguments
         return functions.stream().filter((func) -> func.getName().equals(field))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Function " + field + " not found in function list"));
+                .orElse(null);
     }
 
-    private ArrayList<Variable> loadFuncArgs(String varNames,ProgramVars parentContext,SProgram sp) {
+    private ArrayList<Variable> loadFuncArgs(String varNames,ProgramVars parentContext,SProgram sp,AddFuncDetails... recordFuncs) throws IllegalArgumentException {
         List<String> parts= splitTopLevel(varNames);
         ArrayList<Variable> result=new ArrayList<>();
         if(parts.isEmpty())
@@ -357,22 +404,49 @@ public class XMLHandler { // Singleton class to handle XML operations
 
                 part=part.substring(1,part.length()-1);
                 String[] split = part.split(",");
-                SFunction sfunc= lookforFunction(split[0], sp.getSFunctions().getSFunction());
-                ProgramVars funcVars=new ProgramVars();
-                ArrayList<AbstractInstruction> funcInstructions=loadInstructions(sfunc.getSInstructions(),sp,funcVars);
-                Function subFunc=new Function(Variable.createDummyVar(VariableType.INPUT,1,0),new Program(sfunc.getName(),funcInstructions,funcVars),sfunc.getUserString());
-                if(split.length>1) {
-                    String functionArgs = part.substring(part.indexOf(",") + 1);
-                    ArrayList<Variable> args=loadFuncArgs(functionArgs,parentContext,sp);
-                    //putFuncArgs(subFunc,args);
-                    //subFunc.refreshInputs();
-                    subFunc.setArguments(args);
-                }
-                else
-                    subFunc.setArguments(new ArrayList<>());
+                try {
+                    SFunction sfunc = lookforFunction(split[0], sp.getSFunctions().getSFunction());
+                    Function subFunc=null;
+                    if(sfunc==null)
+                    {
+                        if(recordFuncs.length>0 && recordFuncs[0]!=null)
+                        {
+                            if(recordFuncs[0].functionExists(split[0])) {
+                                ProgramVars funcVars = new ProgramVars();
+                                subFunc = recordFuncs[0].getFunctionInfo(split[0]).func().clone(funcVars);
+                                subFunc.setVar(ResultVar.createDummyVar(VariableType.INPUT, argNum, 0, subFunc));
+                                subFunc.setLab(FixedLabel.EMPTY);
+                            }
+                           else
+                                throw new IllegalArgumentException("Function "+split[0]+" not found in function list or in recorded functions");
+                        }
+                        else
+                            throw new IllegalArgumentException("Function "+split[0]+" not found in function list");
+                    }
+                    else {
+                        ProgramVars funcVars = new ProgramVars();
+                        ArrayList<AbstractInstruction> funcInstructions = loadInstructions(sfunc.getSInstructions(), sp, funcVars,recordFuncs);
+                        subFunc = new Function(Variable.createDummyVar(VariableType.INPUT, 1, 0), new Program(sfunc.getName(), funcInstructions, funcVars), sfunc.getUserString());
+                    }
 
-                result.add(ResultVar.createDummyVar(VariableType.INPUT,argNum,0,subFunc));
-                subFunc.setVar(result.get(result.size()-1));
+                    if (recordFuncs.length > 0 && recordFuncs[0] != null) {
+                        if (!recordFuncs[0].functionExists(subFunc.getProg().getName()))
+                            recordFuncs[0].addFunction(subFunc);
+                    }
+                    if (split.length > 1) {
+                        String functionArgs = part.substring(part.indexOf(",") + 1);
+                        ArrayList<Variable> args = loadFuncArgs(functionArgs, parentContext,sp,recordFuncs);
+                        //putFuncArgs(subFunc,args);
+                        //subFunc.refreshInputs();
+                        subFunc.setArguments(args);
+                    } else
+                        subFunc.setArguments(new ArrayList<>());
+
+                    result.add(ResultVar.createDummyVar(VariableType.INPUT, argNum, 0, subFunc));
+                    subFunc.setVar(result.get(result.size() - 1));
+                } catch (IllegalArgumentException e) {//look for function/program inServletContext
+
+                }
             }
             else
             {
