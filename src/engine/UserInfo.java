@@ -52,6 +52,12 @@ public class UserInfo {
     public void addCredits(int c) {
         creditsLeft += c;
     }
+    public void subtractCredits(int c) {
+        if (c > creditsLeft) {
+            throw new RuntimeException("Not enough credits");
+        }
+        creditsLeft -= c;
+    }
     public void spendCredits(int c) {
         if (c > creditsLeft) {
             throw new RuntimeException("Not enough credits");

@@ -18,148 +18,143 @@ public class ProgramContextServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws jakarta.servlet.ServletException, java.io.IOException {
-        HttpSession session = request.getSession();
 
-        Program program=(Program)request.getSession(false).getAttribute("currentprogram");
 
-        String info=request.getParameter("info");
-        if(info!=null && info.equals("degree")){
+        Program program = (Program) request.getSession(false).getAttribute("currentprogram");
+
+        String info = request.getParameter("info");
+        if (info != null && info.equals("degree")) {
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().print(program.getProgramDegree());
             return;
-        }
-        else if(info!=null && info.equals("instructions")){
-            StringBuilder builder=new StringBuilder();
+        } else if (info != null && info.equals("instructions")) {
+            StringBuilder builder = new StringBuilder();
             builder.append("[");
-            for(AbstractInstruction instr:program.getInstructions()){
-                    builder.append("{\"pos\":\"").append(instr.getPos()).append("\",");
-                    builder.append("\"label\":\"").append(instr.getLab()).append("\",");
-                    builder.append("\"type\":\"");
-                    if(instr.getType() instanceof InstructionType)
-                        builder.append("B");
-                    else
-                        builder.append("S");
-                    builder.append("\",");
-                    builder.append("\"instruction\":\"").append(instr.getChildPart()).append("\",");
-                    builder.append("\"cycles\":\"").append(instr.getType().getCycles()).append("\"},");
-                }
-            if(builder.length()==1){
-                builder.deleteCharAt(0);
+            for (AbstractInstruction instr : program.getInstructions()) {
+                builder.append("{\"pos\":\"").append(instr.getPos()).append("\",");
+                builder.append("\"label\":\"").append(instr.getLab()).append("\",");
+                builder.append("\"type\":\"");
+                if (instr.getType() instanceof InstructionType)
+                    builder.append("B");
+                else
+                    builder.append("S");
+                builder.append("\",");
+                builder.append("\"instruction\":\"").append(instr.getChildPart()).append("\",");
+                builder.append("\"cycles\":\"").append(instr.getType().getCycles()).append("\"},");
             }
-            else{
-                builder.deleteCharAt(builder.length()-1);
+            if (builder.length() == 1) {
+                builder.deleteCharAt(0);
+            } else {
+                builder.deleteCharAt(builder.length() - 1);
                 builder.append("]");
             }
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().print(builder.toString());
             return;
-        }
-        else if(info!=null && info.equals("instructionhistory")){
-            String indexsearch=request.getParameter("pos");
-            if(indexsearch==null){
+        } else if (info != null && info.equals("instructionhistory")) {
+            String indexsearch = request.getParameter("pos");
+            if (indexsearch == null) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().println("Missing 'index' parameter");
                 return;
             }
             int pos;
-            try{
-                pos=Integer.parseInt(indexsearch);
-            }
-            catch (NumberFormatException e){
+            try {
+                pos = Integer.parseInt(indexsearch);
+            } catch (NumberFormatException e) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().println("Invalid 'index' parameter");
                 return;
             }
 
 
-            AbstractInstruction source=null;
-            for(AbstractInstruction instr:program.getInstructions()){
-                if(instr.getPos()==pos){
-                    source=instr;
-                    break;
-                }
-            }
+            AbstractInstruction source = null;
+            source = program.getInstructionAt(pos);
 
-            if(source==null){
+            if (source == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 response.getWriter().println("Instruction not found");
                 return;
             }
-            source=source.getSource();
+            source = source.getSource();
 
-            StringBuilder builder=new StringBuilder();
+            StringBuilder builder = new StringBuilder();
             builder.append("[");
-            while (source!=null){
+            while (source != null) {
                 builder.append("{\"pos\":\"").append(source.getPos()).append("\",");
                 builder.append("\"label\":\"").append(source.getLab()).append("\",");
                 builder.append("\"type\":\"");
-                if(source.getType() instanceof InstructionType)
+                if (source.getType() instanceof InstructionType)
                     builder.append("B");
                 else
                     builder.append("S");
                 builder.append("\",");
                 builder.append("\"instruction\":\"").append(source.getChildPart()).append("\",");
                 builder.append("\"cycles\":\"").append(source.getType().getCycles()).append("\"},");
-                source=source.getSource();
+                source = source.getSource();
             }
-            if(builder.length()==1){
+            if (builder.length() == 1) {
                 builder.deleteCharAt(0);
-            }
-            else{
-                builder.deleteCharAt(builder.length()-1);
+            } else {
+                builder.deleteCharAt(builder.length() - 1);
                 builder.append("]");
             }
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().print(builder.toString());
             return;
-        }
-        else if(info!=null && info.equals("programvars"))
-        {
-            StringBuilder builder=new StringBuilder();
-            builder.append("{");
-            builder.append("\"inputVarsNames\":[");
-            for(Integer pos:program.getVars().getInput().keySet()){
-                builder.append("\"x").append(pos).append("\",");
-            }
-            if(builder.charAt(builder.length()-1)==','){
-                builder.deleteCharAt(builder.length()-1);
-            }
-            builder.append("],");
-            builder.append("\"inputVarsValues\":[");
-            for(Variable var:program.getVars().getInput().values()){
-                builder.append(var.getValue()).append(",");
-            }
-            if(builder.charAt(builder.length()-1)==','){
-                builder.deleteCharAt(builder.length()-1);
-            }
-            builder.append("],");
-            builder.append("\"workVarsNames\":[");
-            for(Integer pos:program.getVars().getEnvvars().keySet()){
-                builder.append("\"z").append(pos).append("\",");
-            }
-            if(builder.charAt(builder.length()-1)==','){
-                builder.deleteCharAt(builder.length()-1);
-            }
-            builder.append("],");
-            builder.append("\"workVarsValues\":[");
-            for(Variable var:program.getVars().getEnvvars().values()){
-                builder.append(var.getValue()).append(",");
-            }
-            if(builder.charAt(builder.length()-1)==','){
-                builder.deleteCharAt(builder.length()-1);
-            }
-            builder.append("],");
-            builder.append("\"result\":"+program.getVars().getY().getValue());
-            builder.append("}");
-
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().print(builder.toString());
-            return;
-        }
-        else{
+        }else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Invalid 'info' parameter");
             return;
         }
     }
-}
+
+    //program vars will be accessed with post method
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws jakarta.servlet.ServletException, java.io.IOException {
+        Program program = (Program) request.getSession(false).getAttribute("currentprogram");
+        StringBuilder builder = new StringBuilder();
+        builder.append("{");
+        builder.append("\"inputVarsNames\":[");
+        for (Integer pos : program.getVars().getInput().keySet()) {
+            builder.append("\"x").append(pos).append("\",");
+        }
+        if (builder.charAt(builder.length() - 1) == ',') {
+            builder.deleteCharAt(builder.length() - 1);
+        }
+        builder.append("],");
+        builder.append("\"inputVarsValues\":[");
+        for (Variable var : program.getVars().getInput().values()) {
+            builder.append(var.getValue()).append(",");
+        }
+        if (builder.charAt(builder.length() - 1) == ',') {
+            builder.deleteCharAt(builder.length() - 1);
+        }
+        builder.append("],");
+        builder.append("\"workVarsNames\":[");
+        for (Integer pos : program.getVars().getEnvvars().keySet()) {
+            builder.append("\"z").append(pos).append("\",");
+        }
+        if (builder.charAt(builder.length() - 1) == ',') {
+            builder.deleteCharAt(builder.length() - 1);
+        }
+        builder.append("],");
+        builder.append("\"workVarsValues\":[");
+        for (Variable var : program.getVars().getEnvvars().values()) {
+            builder.append(var.getValue()).append(",");
+        }
+        if (builder.charAt(builder.length() - 1) == ',') {
+            builder.deleteCharAt(builder.length() - 1);
+        }
+        builder.append("],");
+        builder.append("\"result\":" + program.getVars().getY().getValue());
+        builder.append("}");
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().print(builder.toString());
+        return;
+
+        }
+    }
+
+
+

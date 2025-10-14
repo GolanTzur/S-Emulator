@@ -556,7 +556,7 @@ public class DashboardController {
             OkHttpClient client = new OkHttpClient().newBuilder()
                     .build();
             MediaType mediaType = MediaType.parse("text/plain");
-            String json = "username=" + user + "\n"+"credits=" + creditsToAdd;
+            String json = "username=" + user + "\n"+"credits=" + creditsToAdd + "\n"+"action=add";
             RequestBody jsonBody = RequestBody.create(json, mediaType);
             Request request = new Request.Builder()
                     .url("http://localhost:8080/server_war/users")
@@ -643,13 +643,13 @@ public class DashboardController {
     }
 
 
-        private void moveToExecutionScene(String progname) {
+        private void moveToExecutionScene(String progname,boolean isMainProgram) {
             OkHttpClient client = HttpClientSingleton.getInstance();
             RequestBody body = RequestBody.create(null, new byte[0]);
             try {
             String encodedProgname = URLEncoder.encode(progname, "UTF-8");
             Request request = new Request.Builder()
-                    .url("http://localhost:8080/server_war/users?programname=" + encodedProgname)
+                    .url("http://localhost:8080/server_war/users?programname=" + encodedProgname+"&username="+usernameproperty.get())
                     .method("POST", body)
                     .build();
 
@@ -670,7 +670,7 @@ public class DashboardController {
             FXMLLoader executionpane = new FXMLLoader(getClass().getResource("/fxml/execution.fxml"));
             Node executionpaneNode = executionpane.load();
             ExecutionController executionController = executionpane.getController();
-            executionController.setInitialInfo(usernameproperty.get(), progname, Integer.parseInt(creditsproperty.get()));
+            executionController.setInitialInfo(usernameproperty.get(), progname, Integer.parseInt(creditsproperty.get()),isMainProgram);
             this.maingrid.getScene().getWindow().hide();
             Stage stage = new Stage();
             stage.setTitle("Execution - S-Emulator");
@@ -694,7 +694,7 @@ public class DashboardController {
             alert.showAndWait();
             return;
         }
-        moveToExecutionScene(selectedFunction.funcname());
+        moveToExecutionScene(selectedFunction.funcname(),false);
     }
 
     @FXML
@@ -708,7 +708,7 @@ public class DashboardController {
             alert.showAndWait();
             return;
         }
-        moveToExecutionScene(selectedProgram.programname());
+        moveToExecutionScene(selectedProgram.programname(),true);
 
     }
 

@@ -19,13 +19,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" maxWidth="1.7976931348623157E308" minHeight="538.6666870117188" minWidth="756.6666870117188" prefHeight="530.0" prefWidth="788.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="classes.ExecutionController">
+<ScrollPane fitToHeight="true" fitToWidth="true" maxWidth="1.7976931348623157E308" minHeight="538.6666870117188" minWidth="756.6666870117188" prefHeight="539.0" prefWidth="787.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="classes.ExecutionController">
    <content>
-      <GridPane id="maingrid" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="479.3333435058594" minWidth="565.3333129882812" prefHeight="515.0" prefWidth="608.0">
+      <GridPane id="maingrid" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="479.3333435058594" minWidth="565.3333129882812" prefHeight="537.0" prefWidth="786.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="243.33333333333331" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="174.66666666666666" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="10.0" prefWidth="367.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="198.66666666666666" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="10.0" prefWidth="343.33333333333326" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints maxHeight="128.66668701171875" minHeight="0.0" prefHeight="45.333343505859375" vgrow="SOMETIMES" />
@@ -41,7 +41,7 @@
          <children>
             <BorderPane prefHeight="31.0" prefWidth="785.0" GridPane.columnSpan="3">
                <center>
-                  <Label id="headline" alignment="BOTTOM_CENTER" prefHeight="40.0" prefWidth="253.0" text="Execution" BorderPane.alignment="TOP_CENTER">
+                  <Label id="headline" prefHeight="40.0" prefWidth="180.0" text="Execution" BorderPane.alignment="TOP_CENTER">
                      <font>
                         <Font name="System Bold" size="28.0" />
                      </font>
@@ -70,7 +70,7 @@
                   <Insets left="20.0" />
                </GridPane.margin>
                <right>
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                  <HBox alignment="CENTER_LEFT" prefHeight="45.0" prefWidth="189.0" BorderPane.alignment="CENTER">
                      <children>
                         <Label text="Credits :">
                            <font>
@@ -239,7 +239,7 @@
                   </VBox>
                </children>
             </AnchorPane>
-            <VBox id="programinputsvbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="141.0" prefWidth="181.0" GridPane.columnIndex="2" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.vgrow="ALWAYS">
+            <VBox id="programinputsvbox" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="141.0" prefWidth="327.0" GridPane.columnIndex="2" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.vgrow="ALWAYS">
                <children>
                   <Label id="programinputs" fx:id="programinputs" alignment="BOTTOM_CENTER" prefHeight="31.0" prefWidth="246.0" styleClass="headers" text="Program Inputs">
                      <font>
@@ -256,16 +256,16 @@
                   <Insets left="10.0" right="10.0" />
                </GridPane.margin>
             </VBox>
-            <VBox id="programinputsvbox" prefHeight="149.0" prefWidth="331.0" GridPane.columnIndex="2" GridPane.rowIndex="4" GridPane.rowSpan="3">
+            <VBox id="programinputsvbox" alignment="TOP_CENTER" prefHeight="149.0" prefWidth="331.0" GridPane.columnIndex="2" GridPane.rowIndex="4" GridPane.rowSpan="3">
                <children>
-                  <HBox alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="347.0" spacing="10.0">
+                  <HBox alignment="CENTER" prefHeight="33.0" prefWidth="347.0" spacing="10.0">
                      <children>
                         <Label text="Architecture:">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <ComboBox id="architectureoptions" fx:id="architectureoptions" prefHeight="25.0" prefWidth="61.0" promptText="IV" visibleRowCount="4" />
+                        <ComboBox id="architectureoptions" fx:id="architectureoptions" onAction="#selectarchitecture" prefHeight="25.0" prefWidth="61.0" visibleRowCount="4" />
                      </children>
                   </HBox>
                   <Label id="programinputs" fx:id="programinputs1" alignment="CENTER" prefHeight="27.0" prefWidth="247.0" styleClass="headers" text="Program Variables">
@@ -285,7 +285,7 @@
                         <Insets bottom="5.0" />
                      </VBox.margin>
                   </ScrollPane>
-                  <HBox id="actionbuttonshbox" fx:id="actionbuttonshbox" alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="348.0" spacing="20.0">
+                  <HBox id="actionbuttonshbox" fx:id="actionbuttonshbox" alignment="CENTER" prefHeight="29.0" prefWidth="348.0" spacing="20.0">
                      <children>
                         <Button id="debug" fx:id="debug" mnemonicParsing="false" onAction="#debugProgram" styleClass="rightSideButtons" text="Debug" />
                         <Button id="resume" fx:id="resume" mnemonicParsing="false" onAction="#resumeProgram" styleClass="rightSideButtons" text="Resume" />
@@ -305,7 +305,7 @@
                   <Insets left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
             </VBox>
-            <Button id="back" fx:id="back" mnemonicParsing="false" onAction="#backToDashboard" prefHeight="29.0" prefWidth="122.0" text="Back to dashboard" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
+            <Button id="back" fx:id="back" mnemonicParsing="false" onAction="#backToDashboard" prefHeight="29.0" prefWidth="125.0" text="Back to dashboard" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
          </children>
       </GridPane>
    </content>

@@ -21,7 +21,8 @@ public class Runner {
     private HasLabel nextLabeldebug = null;
     private int cycleCountdebug = 0;
     private boolean finisheddebug = false;
-
+    private int cycleCount = 0;
+    private int creditsLeft;
 
     public void reset() {
         this.currIndexdebug = 0;
@@ -31,11 +32,13 @@ public class Runner {
         this.finisheddebug = false;
     }
 
-    private int cycleCount = 0;
-
-    public Runner(ArrayList<AbstractInstruction> instructions/*, ProgramVars context*/) {
+    public Runner(ArrayList<AbstractInstruction> instructions,int... creditsLeft) {
         this.instructions = instructions; // Initialize with the provided instructions
         reset();
+        if(creditsLeft.length>0)
+            this.creditsLeft=creditsLeft[0];
+        else
+            this.creditsLeft=-1;
         //this.context = context;
     }
     public int getCurrIndexdebug()
@@ -43,22 +46,32 @@ public class Runner {
         return currIndexdebug;
     }
 
-    public HasLabel run(boolean countCycles) {
+    public HasLabel run(boolean countCycles) throws RuntimeException {
         Map<HasLabel, Integer> labelIndices = getIndices();
         int currIndex = 0;// Get the indices of labels
         HasLabel nextLabel = null;
         while (currIndex < instructions.size() && instructions.get(currIndex).getLab() != FixedLabel.EXIT) {
             AbstractInstruction currentInstruction = instructions.get(currIndex);
+            int currCycleCount=0;
             if(countCycles){
-                this.cycleCount+=currentInstruction.getType().getCycles();
+                currCycleCount+=currentInstruction.getType().getCycles();
             }
-            nextLabel = currentInstruction.evaluate(/*context*/); // Evaluate the current instruction
+            nextLabel = currentInstruction.evaluate(); // Evaluate the current instruction
             if(countCycles) {
                 if (currentInstruction instanceof Function)
-                    this.cycleCount += ((Function) currentInstruction).getCycles();
+                    currCycleCount += ((Function) currentInstruction).getCycles();
                 else if (currentInstruction instanceof JumpEqualFunction)
-                    this.cycleCount += ((JumpEqualFunction) currentInstruction).getFunc().getCycles();
+                    currCycleCount += ((JumpEqualFunction) currentInstruction).getFunc().getCycles();
+
+                this.cycleCount += currCycleCount;
             }
+            if(creditsLeft > 0) //Credit Limit applied
+            {
+                creditsLeft -= currCycleCount;
+                if(creditsLeft < 0)
+                    throw new RuntimeException("Credit limit exceeded");
+            }
+
             if (nextLabel == FixedLabel.EMPTY) {
                 currIndex++; // Move to the next instruction if no label is returned
             } else {
@@ -73,22 +86,31 @@ public class Runner {
         return nextLabel;
     }
 
-    public HasLabel step() {
+    public HasLabel step() throws RuntimeException {
 
         if (currIndexdebug >= instructions.size() || instructions.get(currIndexdebug).getLab() == FixedLabel.EXIT) {
             this.finisheddebug = true;
             return nextLabeldebug;
         }
-
+        int currCycleCount=0;
         AbstractInstruction currentInstruction = instructions.get(currIndexdebug);
-        this.cycleCountdebug += currentInstruction.getType().getCycles();
+        currCycleCount += currentInstruction.getType().getCycles();
 
         nextLabeldebug = currentInstruction.evaluate();
 
         if (currentInstruction instanceof Function)
-            this.cycleCountdebug += ((Function) currentInstruction).getCycles();
+            currCycleCount += ((Function) currentInstruction).getCycles();
         else if (currentInstruction instanceof JumpEqualFunction)
-            this.cycleCountdebug += ((JumpEqualFunction) currentInstruction).getFunc().getCycles();
+            currCycleCount += ((JumpEqualFunction) currentInstruction).getFunc().getCycles();
+        this.cycleCountdebug += currCycleCount;
+        if(creditsLeft > 0) //Credit Limit applied
+        {
+            creditsLeft -= currCycleCount;
+            if(creditsLeft < 0) {
+                this.finisheddebug = true;
+                throw new RuntimeException("Credit limit exceeded");
+            }
+        }
 
         if (nextLabeldebug == FixedLabel.EMPTY) {
             currIndexdebug++;

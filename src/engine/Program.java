@@ -32,8 +32,8 @@ public class Program implements Serializable {
     }
 
 
-    public Variable execute() {
-        Runner runner= new Runner(instructions/*,vars*/);
+    public Variable execute(int ... creditLimit) {
+        Runner runner= new Runner(instructions,creditLimit);
         runner.run(true);
         this.cycleCount=runner.getCycleCount();
         return vars.getY();
@@ -421,7 +421,7 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         {
             getAllInvolvedVariablesRec(((ResultVar) instruction.getVar()).getFunction(),vars);
         }
-        else
+        else if(!(instruction instanceof GotoLabel))
         {
             vars.add(instruction.getVar());
         }
@@ -466,6 +466,15 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
                 vars.add(input);
             }
         }
+    }
+    public AbstractInstruction getInstructionAt(int pos)
+    {
+        for(AbstractInstruction instr : instructions)
+        {
+            if(instr.getPos()==pos)
+                return instr;
+        }
+        return null;
     }
 
 

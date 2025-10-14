@@ -84,25 +84,39 @@ public class UsersServlet extends HttpServlet {
         prop.load(req.getInputStream());
         String credits = prop.getProperty("credits");
         String user = prop.getProperty("username");
-        if (user != null && credits != null) {
+        String action = prop.getProperty("action");
+        if (user != null && credits != null && action != null) {
             UserInfo userToUpdate = null;
             UsersManager usersManager = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
             synchronized (usersManager) {
                 if ((userToUpdate = usersManager.lookForUser(user)) == null) {
                     usersManager.addUser(new UserInfo(user));
                 }
-                try {
-                    userToUpdate.addCredits(Integer.parseInt(credits));
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    resp.getWriter().print(userToUpdate.getCreditsLeft());
-                    return;
-                } catch (NumberFormatException e) {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    resp.getWriter().println("Invalid 'credits' parameter");
-                }
-            }
 
-        } else {
+                switch (action) {
+                    case "add":
+                        userToUpdate.addCredits(Integer.parseInt(credits));
+                        break;
+                    case "subtract":
+                        try {
+                            userToUpdate.subtractCredits(Integer.parseInt(credits));
+                        } catch (Exception e) {
+                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            resp.getWriter().println("Error updating credits: " + e.getMessage());
+                            return;
+                        }
+                        break;
+                    default:
+                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        resp.getWriter().println("Invalid 'action' parameter");
+                        return;
+                }
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().print(userToUpdate.getCreditsLeft());
+                return;
+            }
+        }
+        else {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().println("Missing 'username' or 'credits' parameter");
         }
@@ -114,6 +128,7 @@ public class UsersServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         String functionname = req.getParameter("programname");
+        String user = req.getParameter("username");
         if (functionname == null) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().println("Missing 'username' or 'functionname' parameter");
@@ -155,6 +170,20 @@ public class UsersServlet extends HttpServlet {
         }
                 HttpSession session = req.getSession(true);
                 session.setAttribute("currentprogram", programToSet.clone());
-                resp.setStatus(HttpServletResponse.SC_OK);
+
+                UsersManager usersManager = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
+                if (usersManager != null && user != null) {
+                    UserInfo userInfo;
+                    synchronized (usersManager) {
+                        userInfo = usersManager.lookForUser(user);
+                    }
+                    if (userInfo != null) {
+                        session.setAttribute("currentuser", userInfo);
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        return;
+                    }
+                }
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
+
 }

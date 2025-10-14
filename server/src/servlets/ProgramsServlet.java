@@ -106,23 +106,7 @@ public class ProgramsServlet extends HttpServlet {
             pm = ProgramsManager.getInstance();
             getServletContext().setAttribute(ContextAttributes.PROGRAMS.getAttributeName(), pm);
         }
-       /* if(request.getParameter("programname")!=null)
-        {
-            String programName=request.getParameter("programname");
-            ProgramInfo pi;
-            synchronized (pm) {
-                pi = pm.programExists(programName);
-            }
-            if(pi==null)
-            {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                response.getWriter().println("Program not found");
-                return;
-            }
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().println("{\"programname\":\""+pi.getProgramName()+"\",\"owner\":\""+pi.getUserUploaded()+"\",\"numinstructions\":\""+pi.getInstructionsCount()+"\",\"degree\":\""+pi.getDegree()+"\",\"numruns\":\""+pi.getNumRuns()+"\",\"avgcredits\":\""+pi.getAvgCreditsPrice()+"\"}");
-            return;
-        }*/
+
         StringBuilder sb=new StringBuilder();
         sb.append("[");
         synchronized (pm) {
