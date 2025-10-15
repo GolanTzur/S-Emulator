@@ -18,6 +18,8 @@ import java.util.Properties;
 
 @WebServlet(name = "UsersServlet", urlPatterns = {"/users"})
 public class UsersServlet extends HttpServlet {
+
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String action = request.getParameter("action");
@@ -78,6 +80,7 @@ public class UsersServlet extends HttpServlet {
         }
     }
 
+    // Update user credits
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Properties prop = new Properties();
@@ -99,7 +102,7 @@ public class UsersServlet extends HttpServlet {
                         break;
                     case "subtract":
                         try {
-                            userToUpdate.subtractCredits(Integer.parseInt(credits));
+                            userToUpdate.spendCredits(Integer.parseInt(credits));
                         } catch (Exception e) {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             resp.getWriter().println("Error updating credits: " + e.getMessage());

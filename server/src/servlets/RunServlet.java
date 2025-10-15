@@ -25,13 +25,12 @@ public class RunServlet extends HttpServlet {
      synchronized (user) {
          try {
              program.execute(user.getCreditsLeft());
-             user.subtractCredits(program.getCycleCount());
-             int x;
-             x=3;
+             user.spendCredits(program.getCycleCount());
          } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().println(e.getMessage());
-                user.subtractCredits(user.getCreditsLeft()); // remove all credits on error
+                user.spendCredits(user.getCreditsLeft()); // remove all credits on error
+                request.getSession(false).setAttribute("currentprogram",sourceprog);
                 return;
          }
      }

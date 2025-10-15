@@ -2,6 +2,7 @@ package servlets;
 
 import engine.RunInfo;
 import engine.UserInfo;
+import engine.basictypes.Architecture;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import classes.*;
 
 import java.io.IOException;
+import java.util.Properties;
 
 @WebServlet(name = "UserHistoryServlet", urlPatterns = {"/userhistory"})
 public class UserHistoryServlet extends HttpServlet {
@@ -42,12 +44,12 @@ public class UserHistoryServlet extends HttpServlet {
         synchronized (userInfo) {
             for (RunInfo ri : userInfo.getRunInfos()) {
                 sb.append("{");
-                sb.append("\"isMain\":\"").append(ri.isMain()).append("\",");
+                sb.append("\"isMain\":").append(ri.isMain()).append(",");
                 sb.append("\"name\":\"").append(ri.getName()).append("\",");
                 sb.append("\"arch\":\"").append(ri.getArch()).append("\",");
-                sb.append("\"result\":\"").append(ri.getResult()).append("\",");
-                sb.append("\"cycles\":\"").append(ri.getCycles()).append("\"");
-                sb.append("\"degree\":\"").append(ri.getDegree()).append("\"");
+                sb.append("\"result\":").append(ri.getResult()).append(",");
+                sb.append("\"cycles\":").append(ri.getCycles()).append(",");
+                sb.append("\"degree\":").append(ri.getDegree());
                 sb.append("},");
             }
         }
@@ -58,6 +60,49 @@ public class UserHistoryServlet extends HttpServlet {
             sb.append("]");
         }
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println(sb.toString());
+        response.getWriter().print(sb.toString());
+    }
+
+    //Add runinfo to user history
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Properties prop = new Properties();
+        prop.load(request.getInputStream());
+        String user = prop.getProperty("username");
+        String runname = prop.getProperty("programname");
+        String arch = prop.getProperty("architecture");
+        String resultStr = prop.getProperty("result");
+        String cyclesStr = prop.getProperty("cycles");
+        String degreeStr = prop.getProperty("degree");
+        String isMainStr = prop.getProperty("isMainProgram");
+
+        if(user==null || runname==null || arch==null || resultStr==null || cyclesStr==null || degreeStr==null || isMainStr==null) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Missing parameters");
+            return;
+        }
+
+        UsersManager um = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
+        synchronized (um) {
+            UserInfo userInfo = um.lookForUser(user);
+            boolean isMain = Boolean.parseBoolean(isMainStr);
+            int cycles;
+            int degree;
+            int result;
+            try {
+                cycles = Integer.parseInt(cyclesStr);
+                degree = Integer.parseInt(degreeStr);
+                result = Integer.parseInt(resultStr);
+            } catch (NumberFormatException e) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().println("Invalid number format for cycles or degree");
+                return;
+            }
+            userInfo.addRunInfo(new RunInfo(isMain, runname, Architecture.valueOf(arch), result, cycles, degree));
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
+
+
     }
 }

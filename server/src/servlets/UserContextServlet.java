@@ -9,6 +9,10 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet(name = "UserContextServlet", urlPatterns = {"/usercontext"})
 public class UserContextServlet extends HttpServlet {
 
+    //Get user context info
+    //info=username -> returns username
+    //info=credits -> returns credits left
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws jakarta.servlet.ServletException, java.io.IOException {
         String info = request.getParameter("info");

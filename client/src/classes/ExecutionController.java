@@ -585,12 +585,7 @@ public class ExecutionController {
         for (Map.Entry<Integer, TextField> entry : inputFields.entrySet()) {
             String value = entry.getValue().getText();
             if (value.isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Input Error");
-                alert.setHeaderText(null);
-                alert.setContentText("All input fields must be filled.");
-                alert.showAndWait();
-                return;
+                value = "0"; // Default to 0 if empty
             }
             inputBuilder.append(value).append(",");
         }
@@ -621,6 +616,7 @@ public class ExecutionController {
                     int cycles = (creditsprop.get() - (creditsLeft+selectedArch.getPrice()));
                     creditsprop.set(creditsLeft);
                     showVariables(cycles, runResult);
+                    updateRun(cycles,Integer.parseInt(runResult.result()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -628,6 +624,58 @@ public class ExecutionController {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText(resp);
+                alert.setContentText("Please try again later");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void updateRun(int cycles,int result) {
+        //Update statistics
+        OkHttpClient client = HttpClientSingleton.getInstance();
+        MediaType mediaType = MediaType.parse("text/plain");
+        String json = "cycles=" + cycles + "\n" + "result=" + result
+                       + "\n" + "isMainProgram=" + (String.valueOf(isMainProgram))
+                       + "\n" + "architecture=" + architectureoptions.getSelectionModel().getSelectedItem().name()
+                          + "\n" + "degree=" + currdegree.getValue()
+                            + "\n" + "username=" + username.getText()
+                            + "\n" + "programname=" + programname.getText();
+
+        RequestBody jsonBody = RequestBody.create(json, mediaType);
+        Request request = new Request.Builder()
+                .url("http://localhost:8080/server_war/userhistory")
+                .method("POST", jsonBody)
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            String responseBody = response.body().string();
+            if (!response.isSuccessful()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(responseBody);
+                alert.setContentText("Please try again later");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        //Add run count to program (only if main program)
+        if(!isMainProgram)
+            return;
+        String json2 = "programname=" + programname.getText() + "\n" + "credits=" + (cycles+architectureoptions.getSelectionModel().getSelectedItem().getPrice());
+        RequestBody jsonBody2 = RequestBody.create(json2, mediaType);
+        Request request2 = new Request.Builder()
+                .url("http://localhost:8080/server_war/programs")
+                .method("PUT", jsonBody2)
+                .build();
+        try {
+            Response response = client.newCall(request2).execute();
+            String responseBody = response.body().string();
+            if (!response.isSuccessful()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(responseBody);
                 alert.setContentText("Please try again later");
             }
         } catch (Exception e) {

@@ -15,11 +15,14 @@ import jakarta.servlet.http.Part;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Properties;
 import java.util.Set;
 
 @WebServlet(name = "ProgramsServlet", urlPatterns = {"/programs"})
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5) // 25 MBaa
 public class ProgramsServlet extends HttpServlet {
+
+    // Upload a new program
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Collection<Part> parts = request.getParts();
@@ -35,7 +38,7 @@ public class ProgramsServlet extends HttpServlet {
             if (part.getName().equals("file")) {
                 SProgram sProgram = xmlHandler.getSProgram(part.getInputStream());
                 try {
-                    ProgramsManager pm= (ProgramsManager)getServletContext().getAttribute(ContextAttributes.PROGRAMS.getAttributeName());
+                    ProgramsManager pm = (ProgramsManager) getServletContext().getAttribute(ContextAttributes.PROGRAMS.getAttributeName());
                     if (pm == null) {
                         pm = ProgramsManager.getInstance();
                         getServletContext().setAttribute(ContextAttributes.PROGRAMS.getAttributeName(), pm);
@@ -47,12 +50,12 @@ public class ProgramsServlet extends HttpServlet {
                             return;
                         }
                     }
-                    FunctionsManager fm= (FunctionsManager)getServletContext().getAttribute(ContextAttributes.FUNCTIONS.getAttributeName());
+                    FunctionsManager fm = (FunctionsManager) getServletContext().getAttribute(ContextAttributes.FUNCTIONS.getAttributeName());
                     if (fm == null) {
                         fm = FunctionsManager.getInstance();
                         getServletContext().setAttribute(ContextAttributes.FUNCTIONS.getAttributeName(), fm);
                     }
-                    UsersManager um= (UsersManager)getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
+                    UsersManager um = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
                     if (um == null) {
                         um = UsersManager.getInstance();
                         getServletContext().setAttribute(ContextAttributes.USERS.getAttributeName(), um);
@@ -99,15 +102,16 @@ public class ProgramsServlet extends HttpServlet {
         }
     }
 
+    // Get all programs
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ProgramsManager pm= (ProgramsManager)getServletContext().getAttribute(ContextAttributes.PROGRAMS.getAttributeName());
+        ProgramsManager pm = (ProgramsManager) getServletContext().getAttribute(ContextAttributes.PROGRAMS.getAttributeName());
         if (pm == null) {
             pm = ProgramsManager.getInstance();
             getServletContext().setAttribute(ContextAttributes.PROGRAMS.getAttributeName(), pm);
         }
 
-        StringBuilder sb=new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append("[");
         synchronized (pm) {
             for (ProgramInfo program : pm.getPrograms()) {
@@ -120,7 +124,7 @@ public class ProgramsServlet extends HttpServlet {
             }
         }
 
-        if(sb.length()==1)
+        if (sb.length() == 1)
             sb.deleteCharAt(0);
         else if (sb.charAt(sb.length() - 1) == ',') {
             sb.deleteCharAt(sb.length() - 1);
@@ -129,5 +133,38 @@ public class ProgramsServlet extends HttpServlet {
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().println(sb.toString());
+    }
+
+    //Add run count to program
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Properties prop = new Properties();
+        prop.load(request.getInputStream());
+        String programName = prop.getProperty("programname");
+        String credits = prop.getProperty("credits");
+        if (programName != null && credits != null) {
+            ProgramsManager pm = (ProgramsManager) getServletContext().getAttribute(ContextAttributes.PROGRAMS.getAttributeName());
+            if (pm == null) {
+                pm = ProgramsManager.getInstance();
+                getServletContext().setAttribute(ContextAttributes.PROGRAMS.getAttributeName(), pm);
+            }
+            ProgramInfo pi;
+            synchronized (pm) {
+                pi = pm.programExists(programName);
+            }
+            if (pi == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.getWriter().println("Program not found");
+                return;
+            }
+            synchronized (pi) {
+                pi.updateAvgCreditsPrice(Integer.parseInt(credits));
+            }
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Missing parameters");
+        }
+
     }
 }

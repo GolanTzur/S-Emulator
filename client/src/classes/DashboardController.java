@@ -493,11 +493,10 @@ public class DashboardController {
             maingrid.getChildren().addAll(anchor00,anchor01,anchor10,anchor11);
             this.userHistoryShow=usernameproperty.get();
 
-            //User history table update thread
+            //User history table update thread (in initialize userHistoryShow is null so it doesn't run)
             ScheduledExecutorService historyscheduler = Executors.newSingleThreadScheduledExecutor();
             Runnable showhistory = () -> {
                 try {
-                    synchronized (userHistoryShow) {
                         OkHttpClient CLIENT = new OkHttpClient();
                         Request req = new Request.Builder()
                                 .url("http://localhost:8080/server_war/userhistory?username=" + userHistoryShow)
@@ -523,7 +522,7 @@ public class DashboardController {
                                 }
                             }
                         });
-                    }
+
                 }
                 catch (Exception e) {
                     e.printStackTrace();

@@ -30,7 +30,7 @@ public class FunctionsServlet extends HttpServlet {
                 sb.append("\"mainprogramname\":\"").append(function.mainProgramContext()).append("\",");
                 sb.append("\"owner\":\"").append(function.userUploaded()).append("\",");
                 sb.append("\"numinstructions\":\"").append(function.func().getProg().getInstructions().size()).append("\",");
-                sb.append("\"degree\":\"").append(function.func().getDegree()).append("\"},");
+                sb.append("\"degree\":\"").append(function.func().getProg().getProgramDegree()).append("\"},");
             }
         }
 

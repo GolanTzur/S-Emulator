@@ -24,6 +24,12 @@ public class InputsServlet extends HttpServlet {
         Properties prop = new Properties();
         prop.load(req.getInputStream());
         String inputs = prop.getProperty("inputs");
+
+            if (inputs == null || inputs.isEmpty()) { // No inputs provided
+                resp.setStatus(HttpServletResponse.SC_OK);
+                return;
+            }
+
         Integer[] inputArray = inputs.split(",").length > 0 ? new Integer[inputs.split(",").length] : new Integer[0];
         for (int i = 0; i < inputs.split(",").length; i++) {
             inputArray[i] = Integer.parseInt(inputs.split(",")[i]);
@@ -41,6 +47,5 @@ public class InputsServlet extends HttpServlet {
         }
 
         resp.setStatus(HttpServletResponse.SC_OK);
-        //resp.getWriter().println("RunServlet is not yet implemented.");
     }
 }
