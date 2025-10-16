@@ -23,6 +23,12 @@ public class InputsServlet extends HttpServlet {
         Program currentProgram = (Program) req.getSession(false).getAttribute("currentprogram");
         Properties prop = new Properties();
         prop.load(req.getInputStream());
+
+        // If no properties in body, check if set as request attribute
+        if(prop.isEmpty()){
+            prop=req.getAttribute("properties")!=null?(Properties)req.getAttribute("properties"):new Properties();
+        }
+
         String inputs = prop.getProperty("inputs");
 
             if (inputs == null || inputs.isEmpty()) { // No inputs provided

@@ -258,7 +258,7 @@
             </VBox>
             <VBox id="programinputsvbox" alignment="TOP_CENTER" prefHeight="149.0" prefWidth="331.0" GridPane.columnIndex="2" GridPane.rowIndex="4" GridPane.rowSpan="3">
                <children>
-                  <HBox alignment="CENTER" prefHeight="33.0" prefWidth="347.0" spacing="10.0">
+                  <HBox id="architecturehbox" fx:id="architecturehbox" alignment="CENTER" prefHeight="33.0" prefWidth="347.0" spacing="10.0">
                      <children>
                         <Label text="Architecture:">
                            <font>

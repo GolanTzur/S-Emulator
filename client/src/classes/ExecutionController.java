@@ -32,6 +32,7 @@ public class ExecutionController {
     private final SimpleIntegerProperty currdegree = new SimpleIntegerProperty(0);
     private Map<Integer,TextField> inputFields = new HashMap<>();
     private boolean architectureCompatible = true;
+    private ObservableProgramVars prevProgVars;
 
     @FXML
     private HBox actionbuttonshbox;
@@ -39,6 +40,8 @@ public class ExecutionController {
     @FXML
     private ComboBox<Architecture> architectureoptions;
 
+    @FXML
+    private HBox architecturehbox;
 
     @FXML
     private Button collapse;
@@ -166,6 +169,9 @@ public class ExecutionController {
     private Button showstatus;
 
     @FXML
+    private Button stop;
+
+    @FXML
     private Button prevFunction;
 
     @FXML
@@ -193,6 +199,9 @@ public class ExecutionController {
 
         //Set architecture combobox options
         architectureoptions.getItems().addAll(Architecture.values());
+
+        //Set non debug mode by default
+        nonDebugMode();
 
         //Get degree for the program
         OkHttpClient client = HttpClientSingleton.getInstance();
@@ -520,20 +529,240 @@ public class ExecutionController {
 
 
     }
+    private void nonDebugMode()
+    {
+        resume.setVisible(false);
+        stop.setVisible(false);
+        run.setVisible(true);
+        progcontrolhbox2.setVisible(true);
+        architecturehbox.setVisible(true);
+        debug.setText("Debug");
+        markRowByIndex(-1);
+    }
+    private void debugMode()
+    {
+        resume.setVisible(true);
+        stop.setVisible(true);
+        run.setVisible(false);
+        progcontrolhbox2.setVisible(false);
+        architecturehbox.setVisible(false);
+        debug.setText("Step");
+    }
+
+
+
 
     @FXML
     public void debugProgram(ActionEvent actionEvent) {
+
+        if(debug.getText().equals("Debug")) {
+            Architecture selectedArch = architectureoptions.getSelectionModel().getSelectedItem();
+            if (!isRunAvailable())
+                return;
+            debugMode();
+            spendInitialCreditsArcitecture();
+            String inputBuilder = getInputsAsString();
+            OkHttpClient clientDebug = HttpClientSingleton.getInstance();
+            MediaType mediaType = MediaType.parse("text/plain");
+            RequestBody body = RequestBody.create("inputs=" + inputBuilder.toString()+"\n"
+                                                                    +"action=debug", mediaType);
+            Request requestRun = new Request.Builder()
+                    .url("http://localhost:8080/server_war/debug")
+                    .method("POST", body)
+                    .build();
+            try {
+                Response response = clientDebug.newCall(requestRun).execute();
+                String resp = response.body().string();
+                if (response.isSuccessful()) {
+                    String args[] = resp.split(",");
+                    int cycles= Integer.parseInt(args[0]);
+                    int numStep=Integer.parseInt(args[1]);
+
+                    markRowByIndex(numStep);
+                    creditsprop.set(creditsprop.getValue()-(cycles+selectedArch.getPrice()));
+
+                    //Get Program Vars
+                    RequestBody emptyBody = RequestBody.create(null, new byte[0]);
+                    Request requestVars = new Request.Builder()
+                            .url("http://localhost:8080/server_war/programcontext")
+                            .method("POST",emptyBody)
+                            .build();
+                    try {
+                        String respVars = clientDebug.newCall(requestVars).execute().body().string();
+                        Gson gson = new Gson();
+                        ObservableProgramVars runResult = gson.fromJson(respVars, ObservableProgramVars.class);
+                        prevProgVars=runResult;
+                        showVariables(cycles,runResult);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        else if(debug.getText().equals("Step")) {
+            OkHttpClient client = HttpClientSingleton.getInstance();
+            MediaType mediaType = MediaType.parse("text/plain");
+            RequestBody body = RequestBody.create("action=step", mediaType);
+            Request requestRun = new Request.Builder()
+                    .url("http://localhost:8080/server_war/debug")
+                    .method("POST", body)
+                    .build();
+            try {
+                Response response = client.newCall(requestRun).execute();
+                String resp = response.body().string();
+                if (response.isSuccessful()) {
+                    String[] inputs = resp.split(",");
+                    int cycles = Integer.parseInt(inputs[0]);
+                    int prevcycles=0;
+
+                    //Prev program cycles
+                    for (Node node : programvarsvbox.getChildren()) {
+                        if (node instanceof HBox) {
+                            for (Node child : ((HBox) node).getChildren()) {
+                                if (child instanceof Label) {
+                                    if (((Label) child).getText().startsWith("Cycles"))
+                                        prevcycles = Integer.parseInt(((Label) child).getText().substring(9));
+                                }
+
+                            }
+                        }
+                    }
+
+
+
+                    int numStep=Integer.parseInt(inputs[1]);
+                    markRowByIndex(numStep);
+                    creditsprop.set(creditsprop.get()-(cycles-prevcycles));
+
+                    //Get Program Vars
+                    RequestBody emptyBody = RequestBody.create(null, new byte[0]);
+                    Request requestVars = new Request.Builder()
+                            .url("http://localhost:8080/server_war/programcontext")
+                            .method("POST", emptyBody)
+                            .build();
+                    try {
+                        String respVars = client.newCall(requestVars).execute().body().string();
+                        Gson gson = new Gson();
+                        ObservableProgramVars runResult = gson.fromJson(respVars, ObservableProgramVars.class);
+                        showVariables(cycles,runResult,prevProgVars);
+                        prevProgVars=runResult;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            } catch (Exception e) {
+                if (e instanceof NumberFormatException) { //Finished debugging
+                    int cycles = 0;
+                    int result = 0;
+                    for (Node node : programvarsvbox.getChildren()) {
+                        if (node instanceof HBox) {
+                            for (Node child : ((HBox) node).getChildren()) {
+                                if (child instanceof Label) {
+                                    if (((Label) child).getText().startsWith("Cycles"))
+                                        cycles = Integer.parseInt(((Label) child).getText().substring(9));
+                                    if (((Label) child).getText().startsWith("y"))
+                                        try {
+                                            result = Integer.parseInt(((Label) child).getText().substring(4));
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
+                                        }
+                                }
+
+                            }
+                        }
+                    }
+                    updateRun(cycles, result);
+                    nonDebugMode();
+                    programvarsvbox.getChildren().clear();
+                }
+            }
+        }
+
+
     }
     @FXML
     public void resumeProgram(ActionEvent actionEvent) {
+        OkHttpClient client = HttpClientSingleton.getInstance();
+        MediaType mediaType = MediaType.parse("text/plain");
+        RequestBody body = RequestBody.create("action=resume", mediaType);
+        Request requestRun = new Request.Builder()
+                .url("http://localhost:8080/server_war/debug")
+                .method("POST", body)
+                .build();
+        try {
+            Response response = client.newCall(requestRun).execute();
+            String resp = response.body().string();
+            if (response.isSuccessful()) {
+                int cycles = Integer.parseInt(resp);
+                creditsprop.set(creditsprop.get()-cycles);
+
+                //Get Program Vars
+                RequestBody emptyBody = RequestBody.create(null, new byte[0]);
+                Request requestVars = new Request.Builder()
+                        .url("http://localhost:8080/server_war/programcontext")
+                        .method("POST", emptyBody)
+                        .build();
+                try {
+                    String respVars = client.newCall(requestVars).execute().body().string();
+                    Gson gson = new Gson();
+                    ObservableProgramVars runResult = gson.fromJson(respVars, ObservableProgramVars.class);
+                    showVariables(cycles, runResult, prevProgVars);
+                    prevProgVars = runResult;
+                    updateRun(cycles,Integer.parseInt(runResult.result()));
+
+                    //Send stop to end debug mode
+                    OkHttpClient clientStop = HttpClientSingleton.getInstance();
+                    MediaType mediaTypeStop = MediaType.parse("text/plain");
+                    RequestBody bodyStop = RequestBody.create("action=stop", mediaTypeStop);
+                    Request requestStop = new Request.Builder()
+                            .url("http://localhost:8080/server_war/debug")
+                            .method("POST", bodyStop)
+                            .build();
+                    try {
+                        Response responseStop = clientStop.newCall(requestStop).execute();
+                        nonDebugMode();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+
+        }
+
     }
     @FXML
     public void stopdebug(ActionEvent actionEvent) {
+        OkHttpClient client = HttpClientSingleton.getInstance();
+        MediaType mediaType = MediaType.parse("text/plain");
+        RequestBody body = RequestBody.create("action=stop", mediaType);
+        Request requestRun = new Request.Builder()
+                .url("http://localhost:8080/server_war/debug")
+                .method("POST", body)
+                .build();
+        try {
+            Response response = client.newCall(requestRun).execute();
+            String resp = response.body().string();
+            if (response.isSuccessful()) {
+                nonDebugMode();
+                programvarsvbox.getChildren().clear();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @FXML
     public void runProgram(ActionEvent actionEvent) {
-        Architecture selectedArch = architectureoptions.getSelectionModel().getSelectedItem();
+        /*Architecture selectedArch = architectureoptions.getSelectionModel().getSelectedItem();
         if (!architectureCompatible) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Run Program");
@@ -577,9 +806,15 @@ public class ExecutionController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
-
+        Architecture selectedArch = architectureoptions.getSelectionModel().getSelectedItem();
+        OkHttpClient client = HttpClientSingleton.getInstance();
+        if(!isRunAvailable())
+            return;
+        spendInitialCreditsArcitecture();
+        String inputBuilder = getInputsAsString();
+        /*
         //Run program with input variables
         StringBuilder inputBuilder = new StringBuilder();
         for (Map.Entry<Integer, TextField> entry : inputFields.entrySet()) {
@@ -591,8 +826,9 @@ public class ExecutionController {
         }
         if (inputBuilder.length() > 0) {
             inputBuilder.deleteCharAt(inputBuilder.length() - 1); // Remove last comma
-        }
+        }*/
 
+        MediaType mediaType = MediaType.parse("text/plain");
         RequestBody body = RequestBody.create("inputs=" + inputBuilder.toString(), mediaType);
         Request requestRun = new Request.Builder()
                 .url("http://localhost:8080/server_war/run")
@@ -611,12 +847,15 @@ public class ExecutionController {
                         .method("GET", null)
                         .build();
                 try {
-                    String respCredits = client.newCall(requestCredits).execute().body().string();
-                    int creditsLeft = Integer.parseInt(respCredits);
-                    int cycles = (creditsprop.get() - (creditsLeft+selectedArch.getPrice()));
-                    creditsprop.set(creditsLeft);
-                    showVariables(cycles, runResult);
-                    updateRun(cycles,Integer.parseInt(runResult.result()));
+                    Response responseCredits = client.newCall(requestCredits).execute();
+                    String respCredits = responseCredits.body().string();
+                    if(responseCredits.isSuccessful()) {
+                        int creditsLeft = Integer.parseInt(respCredits);
+                        int cycles = (creditsprop.get() - (creditsLeft + selectedArch.getPrice()));
+                        creditsprop.set(creditsLeft);
+                        showVariables(cycles, runResult);
+                        updateRun(cycles, Integer.parseInt(runResult.result()));
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -630,6 +869,85 @@ public class ExecutionController {
             e.printStackTrace();
         }
     }
+
+    private String getInputsAsString()
+    {
+        StringBuilder inputBuilder = new StringBuilder();
+        for (Map.Entry<Integer, TextField> entry : inputFields.entrySet()) {
+            String value = entry.getValue().getText();
+            if (value.isEmpty()) {
+                value = "0"; // Default to 0 if empty
+            }
+            inputBuilder.append(value).append(",");
+        }
+        if (inputBuilder.length() > 0) {
+            inputBuilder.deleteCharAt(inputBuilder.length() - 1); // Remove last comma
+        }
+        return inputBuilder.toString();
+    }
+
+    private void markRowByIndex(int index)
+    {
+        instructionstable.getSelectionModel().clearSelection();
+        if(index<0)
+            return;
+        instructionstable.getSelectionModel().select(index);
+        instructionstable.scrollTo(index);
+    }
+
+    private boolean isRunAvailable()
+    {
+        Architecture selectedArch = architectureoptions.getSelectionModel().getSelectedItem();
+        if (!architectureCompatible) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Run Program");
+            alert.setHeaderText(null);
+            alert.setContentText("The program is not compatible with the selected architecture.");
+            alert.showAndWait();
+            return false;
+        } else if (architectureoptions.getSelectionModel().getSelectedItem() == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Run Program");
+            alert.setHeaderText(null);
+            alert.setContentText("You must select an architecture.");
+            alert.showAndWait();
+            return false;
+        } else if (creditsprop.getValue() <= selectedArch.getPrice()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Run Program");
+            alert.setHeaderText(null);
+            alert.setContentText("You do not have enough credits to run the program.");
+            alert.showAndWait();
+            return false;
+        }
+        return true;
+    }
+    private void spendInitialCreditsArcitecture()
+    {
+        Architecture selectedArch = architectureoptions.getSelectionModel().getSelectedItem();
+        OkHttpClient client = HttpClientSingleton.getInstance();
+        //Subtract credits from user
+        MediaType mediaType = MediaType.parse("text/plain");
+        String json = "username=" + username.getText() + "\n" + "credits=" + selectedArch.getPrice() + "\n" + "action=subtract";
+        RequestBody jsonBody = RequestBody.create(json, mediaType);
+        Request request = new Request.Builder()
+                .url("http://localhost:8080/server_war/users")
+                .method("PUT", jsonBody)
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            String responseBody = response.body().string();
+            if(!response.isSuccessful()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(responseBody);
+                alert.setContentText("Please try again later");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void updateRun(int cycles,int result) {
         //Update statistics
         OkHttpClient client = HttpClientSingleton.getInstance();
