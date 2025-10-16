@@ -453,8 +453,10 @@ public class Function extends AbstractInstruction {
                 .mapToInt((arg)->((ResultVar)arg).getFunction().getDegree()+1)
                 .max().orElse(0);
         int a= Math.max(argDegree,prog.getProgramDegree()+1);
-        int b= Math.max(a,SyntheticType.ASSIGNMENT.getDegree()+1);
-        return b; // Every expanded function contains at least one assignment
+        if(!arguments.isEmpty()) {
+            return Math.max(a, SyntheticType.ASSIGNMENT.getDegree() + 1);
+        }
+        return a;
     }
     @Override //Activate with null
 

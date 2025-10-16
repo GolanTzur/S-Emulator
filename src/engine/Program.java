@@ -286,9 +286,9 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
       {
             int degree=0;
             if (instruction instanceof Function) {
-                degree = 1 + ((Function) instruction).getDegree();
+                degree = ((Function) instruction).getDegree();
             } else if (instruction instanceof JumpEqualFunction) {
-                degree=Math.max(1+((JumpEqualFunction)instruction).getFunc().getDegree(), SyntheticType.JUMP_EQUAL_FUNCTION.getDegree());
+                degree=Math.max(((JumpEqualFunction)instruction).getFunc().getDegree(), SyntheticType.JUMP_EQUAL_FUNCTION.getDegree());
             } else if (instruction instanceof SyntheticSugar) {
                 degree = ((SyntheticType) ((SyntheticSugar) instruction).getType()).getDegree();
                 if(instruction instanceof HasExtraVar) {

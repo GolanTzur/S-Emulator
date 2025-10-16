@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" maxWidth="1.7976931348623157E308" minHeight="538.6666870117188" minWidth="756.6666870117188" prefHeight="539.0" prefWidth="787.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="classes.ExecutionController">
+<ScrollPane fitToHeight="true" fitToWidth="true" maxWidth="1.7976931348623157E308" minHeight="538.6666870117188" minWidth="756.6666870117188" prefHeight="539.0" prefWidth="787.0" stylesheets="@light-theme.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="classes.ExecutionController">
    <content>
       <GridPane id="maingrid" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="479.3333435058594" minWidth="565.3333129882812" prefHeight="537.0" prefWidth="786.0">
         <columnConstraints>
@@ -275,7 +275,7 @@
                   </Label>
                   <ScrollPane maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="87.0" prefWidth="266.0" VBox.vgrow="ALWAYS">
                      <content>
-                        <VBox id="programvarsvbox" fx:id="programvarsvbox" fillWidth="false" prefHeight="82.0" prefWidth="265.0">
+                        <VBox id="programvarsvbox" fx:id="programvarsvbox" fillWidth="false" prefHeight="97.0" prefWidth="265.0">
                            <padding>
                               <Insets bottom="5.0" />
                            </padding>
