@@ -1,4 +1,4 @@
 package classes;
 
-public record ObservableAbstractInstruction(String pos,String label,String type,String instruction,String cycles) {
+public record ObservableAbstractInstruction(String pos,String label,String type,String architecture,String instruction,String cycles) {
 }

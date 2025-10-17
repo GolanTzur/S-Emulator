@@ -19,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import okhttp3.*;
@@ -159,6 +160,9 @@ public class DashboardController {
 
     @FXML
     private Label userhistorytext;
+
+    @FXML
+    private HBox usermenuhbox;
 
     @FXML
     private Label alluserstext;
@@ -491,6 +495,7 @@ public class DashboardController {
     public void setDashboardScene() { //A user is selected
             maingrid.getChildren().clear();
             maingrid.getChildren().addAll(anchor00,anchor01,anchor10,anchor11);
+            usermenuhbox.setVisible(true);
             this.userHistoryShow=usernameproperty.get();
 
             //User history table update thread (in initialize userHistoryShow is null so it doesn't run)
@@ -535,6 +540,7 @@ public class DashboardController {
     private void setLoginScene() {
         try {
             maingrid.getChildren().clear();
+            usermenuhbox.setVisible(false);
             FXMLLoader loginpane = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
             Node loginpaneNode = loginpane.load();
             LoginController loginController = loginpane.getController();
@@ -635,6 +641,8 @@ public class DashboardController {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText(responseBody);
+                alert.setContentText("Please try again later");
+                alert.showAndWait();
             }
         } catch (Exception e) {
             e.printStackTrace();

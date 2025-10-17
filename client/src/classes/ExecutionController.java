@@ -41,6 +41,26 @@ public class ExecutionController {
     private ComboBox<Architecture> architectureoptions;
 
     @FXML
+    private TableView<List<String>> architecturetable;
+
+    @FXML
+    private TableColumn<List<String>, ?> architecturetableheadline;
+
+    @FXML
+    private TableColumn<List<String>, String> architecturetablei;
+
+    @FXML
+    private TableColumn<List<String>, String> architecturetableii;
+
+    @FXML
+    private TableColumn<List<String>, String> architecturetableiii;
+
+    @FXML
+    private TableColumn<List<String>, String> architecturetableiv;
+
+
+
+    @FXML
     private HBox architecturehbox;
 
     @FXML
@@ -99,6 +119,9 @@ public class ExecutionController {
     private TableView<ObservableAbstractInstruction> instructionstable;
 
     @FXML
+    private TableColumn<ObservableAbstractInstruction, String> instructiontablearch;
+
+    @FXML
     private TableColumn<ObservableAbstractInstruction, String> instructiontablecycles;
 
     @FXML
@@ -118,6 +141,9 @@ public class ExecutionController {
 
     @FXML
     private TableView<ObservableAbstractInstruction> commandshistory;
+
+    @FXML
+    private TableColumn<ObservableAbstractInstruction, String> commandstablearch;
 
     @FXML
     private TableColumn<ObservableAbstractInstruction, String> commandstablecycles;
@@ -184,8 +210,9 @@ public class ExecutionController {
     public void initialize()
     {
         //Set instruction tables format
-        setInstructionTableAddFormat(instructiontablenumber,instructiontablelabel,instructiontabletype,instructiontableinstr,instructiontablecycles);
-        setInstructionTableAddFormat(commandstablenumber,commandstablelabel,commandstabletype,commandstableinstr,commandstablecycles);
+        setInstructionTableAddFormat(instructiontablenumber,instructiontablelabel,instructiontabletype,instructiontablearch,instructiontableinstr,instructiontablecycles);
+        setInstructionTableAddFormat(commandstablenumber,commandstablelabel,commandstabletype,commandstablearch,commandstableinstr,commandstablecycles);
+
 
         //Set listener for instruction table selection
         setCommandshistoryListener();
@@ -232,8 +259,16 @@ public class ExecutionController {
                 e.printStackTrace();
             }
 
-        //Get input variables for the program
+        //Fill architecture summary table
+        architecturetable.getItems().setAll(
+                instructionstable.getItems().stream()
+                        .map(ObservableAbstractInstruction::architecture)
+                        .toList()
+        );
 
+        setArchitectureSummaryTableFormat(architecturetablei,architecturetableii,architecturetableiii,architecturetableiv);
+
+        //Get input variables for the program
         RequestBody body = RequestBody.create(null, new byte[0]);
         Request requestInputs = new Request.Builder()
                 .url("http://localhost:8080/server_war/programcontext")
@@ -252,14 +287,51 @@ public class ExecutionController {
     private void setInstructionTableAddFormat(TableColumn<ObservableAbstractInstruction, String>pos,
                                               TableColumn<ObservableAbstractInstruction, String>label,
                                               TableColumn<ObservableAbstractInstruction, String>type,
+                                              TableColumn<ObservableAbstractInstruction, String>arch,
                                               TableColumn<ObservableAbstractInstruction, String>instr,
                                               TableColumn<ObservableAbstractInstruction, String>cycles) {
         label.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().label()));
         pos.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().pos()));
         type.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().type()));
+        arch.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().architecture()));
         instr.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().instruction()));
         cycles.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().cycles()));
     }
+
+    private void setArchitectureSummaryTableFormat(
+                                                    TableColumn<List<String>, String>icol,
+                                                    TableColumn<List<String>, String>iicol,
+                                                    TableColumn<List<String>, String>iiicol,
+                                                    TableColumn<List<String>, String>ivcol) {
+
+        int[] archstats = new int[4]; // I, II, III, IV
+        List<String> archnames = architecturetable.getItems().isEmpty() ?
+                Collections.emptyList() : architecturetable.getItems().get(0);
+        for (String archname : archnames) {
+            Architecture arch = Architecture.valueOf(archname);
+            switch (arch) {
+                case I -> archstats[0]++;
+                case II -> archstats[1]++;
+                case III -> archstats[2]++;
+                case IV -> archstats[3]++;
+            }
+        }
+
+        List<String> summaryRow = Arrays.asList(
+                String.valueOf(archstats[0]),
+                String.valueOf(archstats[1]),
+                String.valueOf(archstats[2]),
+                String.valueOf(archstats[3])
+        );
+        architecturetable.getItems().setAll(summaryRow);
+
+        icol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().get(0)));
+        iicol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().get(1)));
+        iiicol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().get(2)));
+        ivcol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().get(3)));
+    }
+
+
     private void setCommandshistoryListener() {
         instructionstable.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
             commandshistory.getItems().clear();
@@ -436,6 +508,15 @@ public class ExecutionController {
                 Gson gson = new Gson();
                 ObservableAbstractInstruction[] commands = gson.fromJson(resp, ObservableAbstractInstruction[].class);
                 instructionstable.getItems().addAll(commands);
+
+            //Fill architecture summary table
+            architecturetable.getItems().setAll(
+                    instructionstable.getItems().stream()
+                            .map(ObservableAbstractInstruction::architecture)
+                            .toList()
+            );
+            setArchitectureSummaryTableFormat(architecturetablei,architecturetableii,architecturetableiii,architecturetableiv);
+
                 clearTableSelection();
                 commandshistory.getItems().clear();
             if(architectureoptions.getSelectionModel().getSelectedItem()!=null){
@@ -471,6 +552,16 @@ public class ExecutionController {
             Gson gson = new Gson();
             ObservableAbstractInstruction[] commands = gson.fromJson(resp, ObservableAbstractInstruction[].class);
             instructionstable.getItems().addAll(commands);
+
+            //Fill architecture summary table
+            architecturetable.getItems().setAll(
+                    instructionstable.getItems().stream()
+                            .map(ObservableAbstractInstruction::architecture)
+                            .toList()
+            );
+
+            setArchitectureSummaryTableFormat(architecturetablei,architecturetableii,architecturetableiii,architecturetableiv);
+
             clearTableSelection();
             commandshistory.getItems().clear();
             if(architectureoptions.getSelectionModel().getSelectedItem()!=null){
@@ -517,6 +608,15 @@ public class ExecutionController {
             Gson gson = new Gson();
             ObservableAbstractInstruction[] commands = gson.fromJson(resp, ObservableAbstractInstruction[].class);
             instructionstable.getItems().addAll(commands);
+
+            //Fill architecture summary table
+            architecturetable.getItems().setAll(
+                    instructionstable.getItems().stream()
+                            .map(ObservableAbstractInstruction::architecture)
+                            .toList()
+            );
+            setArchitectureSummaryTableFormat(architecturetablei,architecturetableii,architecturetableiii,architecturetableiv);
+
             clearTableSelection();
             commandshistory.getItems().clear();
             if(architectureoptions.getSelectionModel().getSelectedItem()!=null){

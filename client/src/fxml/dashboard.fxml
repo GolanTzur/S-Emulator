@@ -54,7 +54,7 @@
             <Insets left="20.0" />
          </VBox.margin>
       </HBox>
-      <HBox alignment="CENTER_LEFT" prefHeight="39.0" prefWidth="740.0" spacing="10.0">
+      <HBox id="usermenuhbox" fx:id="usermenuhbox" alignment="CENTER_LEFT" prefHeight="39.0" prefWidth="740.0" spacing="10.0">
          <children>
             <Button id="load" fx:id="load" mnemonicParsing="false" onAction="#loadPressed" prefHeight="25.0" prefWidth="71.0" text="Load">
                <HBox.margin>
@@ -78,7 +78,7 @@
             <Button id="chargebutton" fx:id="chargebutton" mnemonicParsing="false" onAction="#chargePressed" text="Charge" />
          </children>
       </HBox>
-      <GridPane fx:id="maingrid" prefHeight="431.0" prefWidth="740.0">
+      <GridPane fx:id="maingrid" prefHeight="431.0" prefWidth="740.0" VBox.vgrow="ALWAYS">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="408.66668701171875" minWidth="10.0" prefWidth="399.66664632161456" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="466.0" minWidth="10.0" prefWidth="399.6666870117187" />
@@ -103,7 +103,7 @@
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <TableView id="allusers" fx:id="allusers" prefHeight="156.0" prefWidth="364.0" style="     -fx-font-size: 9px;     -fx-font-weight: bold; ">
+                        <TableView id="allusers" fx:id="allusers" maxHeight="1.7976931348623157E308" prefHeight="156.0" prefWidth="364.0" style="     -fx-font-size: 9px;     -fx-font-weight: bold; " VBox.vgrow="SOMETIMES">
                           <columns>
                             <TableColumn id="allusersname" fx:id="allusersname" prefWidth="74.66668891906738" text="Name" />
                               <TableColumn id="allusersfunctions" fx:id="allusersfunctions" maxWidth="44.666648864746094" minWidth="44.666648864746094" prefWidth="44.666648864746094" resizable="false" text="Functions" />
@@ -126,14 +126,14 @@
                   <Insets left="20.0" top="10.0" />
                </GridPane.margin>
                <children>
-                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="364.0" spacing="10.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="12.666666666666686" AnchorPane.topAnchor="0.0">
+                  <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="364.0" spacing="10.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="12.666666666666686" AnchorPane.topAnchor="0.0">
                      <children>
                         <Label id="userhistorytext" fx:id="userhistorytext" styleClass="headers" text="User History">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <TableView id="userhistory" fx:id="userhistory" prefHeight="170.0" prefWidth="314.0" style="     -fx-font-size: 9px;     -fx-font-weight: bold; ">
+                        <TableView id="userhistory" fx:id="userhistory" maxHeight="1.7976931348623157E308" prefHeight="170.0" prefWidth="314.0" style="     -fx-font-size: 9px;     -fx-font-weight: bold; " VBox.vgrow="ALWAYS">
                           <columns>
                             <TableColumn id="userhistorynumber" fx:id="userhistorynumber" maxWidth="29.999998092651367" minWidth="29.999998092651367" prefWidth="29.999998092651367" resizable="false" text="#" />
                               <TableColumn id="userhistoryname" fx:id="userhistoryname" prefWidth="71.33334732055664" text="Name" />
@@ -160,7 +160,7 @@
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <TableView id="allprograms" fx:id="allprograms" prefHeight="160.0" prefWidth="377.0" style="     -fx-font-size: 9px;     -fx-font-weight: bold; ">
+                        <TableView id="allprograms" fx:id="allprograms" maxHeight="1.7976931348623157E308" prefHeight="160.0" prefWidth="377.0" style="     -fx-font-size: 9px;     -fx-font-weight: bold; " VBox.vgrow="SOMETIMES">
                           <columns>
                             <TableColumn id="allprogramsname" fx:id="allprogramsname" prefWidth="73.33331549167633" text="Name" />
                               <TableColumn id="allprogramsowner" fx:id="allprogramsowner" prefWidth="76.00008392333984" text="Owner" />
@@ -186,14 +186,14 @@
                   <Insets left="10.0" top="10.0" />
                </GridPane.margin>
                <children>
-                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="377.0" spacing="10.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="12.666666666666686" AnchorPane.topAnchor="0.0">
+                  <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="377.0" spacing="10.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="12.666666666666686" AnchorPane.topAnchor="0.0">
                      <children>
                         <Label id="allfunctionstext" fx:id="allfunctionstext" styleClass="headers" text="All Sub-Programs">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <TableView id="allfunctions" fx:id="allfunctions" prefHeight="149.0" prefWidth="377.0" style="     -fx-font-size: 9px;     -fx-font-weight: bold; ">
+                        <TableView id="allfunctions" fx:id="allfunctions" maxHeight="1.7976931348623157E308" prefHeight="149.0" prefWidth="377.0" style="     -fx-font-size: 9px;     -fx-font-weight: bold; " VBox.vgrow="ALWAYS">
                           <columns>
                               <TableColumn id="allfunctionsname" fx:id="allfunctionsname" prefWidth="76.66662847995758" text="Name" />
                               <TableColumn id="allfunctionsmainprogram" fx:id="allfunctionsmainprogram" prefWidth="91.3333969116211" text="Main Program" />

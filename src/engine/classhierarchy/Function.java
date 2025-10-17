@@ -466,11 +466,13 @@ public class Function extends AbstractInstruction {
         try {
             //Arg vars
             ArrayList<Variable> argVars = new ArrayList<>();
-            for (Variable v : this.arguments) {
-                if (v instanceof ResultVar) {
-                    argVars.add(((ResultVar) v).clone(context, v.getPosition()));
-                } else {
-                    argVars.add(v.clone(context));
+            if(this.arguments!=null) {
+                for (Variable v : this.arguments) {
+                    if (v instanceof ResultVar) {
+                        argVars.add(((ResultVar) v).clone(context, v.getPosition()));
+                    } else {
+                        argVars.add(v.clone(context));
+                    }
                 }
             }
 

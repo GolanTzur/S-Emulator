@@ -74,95 +74,31 @@ public class XMLHandler { // Singleton class to handle XML operations
         String name = sprogram.getName();
         ProgramVars progVars = new ProgramVars();
         SInstructions sinstructions = sprogram.getSInstructions();
-        ArrayList<AbstractInstruction> instructions = loadInstructions(sinstructions,sprogram,progVars,recordFuncs);
+        try {
+            ArrayList<AbstractInstruction> instructions = loadInstructions(sinstructions, sprogram, progVars, recordFuncs);
+            if (recordFuncs.length > 0 && recordFuncs[0] != null)
+                addAllFunctions(sprogram.getSFunctions().getSFunction(), sprogram, recordFuncs[0]);
+            return new Program(name,instructions,progVars); // Returns a new Program object with the given name and instructions
+        } catch (Exception e) {
+            throw new Exception(e.getMessage()+" in program "+name, e);
+        }
 
-        /*List<SInstruction> sInstructions = sinstructions.getSInstruction();
-        ArrayList<AbstractInstruction> instructions = new ArrayList<AbstractInstruction>();
-
-
-        for (SInstruction sin : sInstructions) {
-            AbstractInstructionType type=getType(sin.getType(), sin.getName());
-            Variable var= null;
-            if(type!= SyntheticType.QUOTE)
-                var= loadVariable(sin.getSVariable(),progVars);
-            HasLabel label = loadLabel(sin.getSLabel());
-            if (label == FixedLabel.EXIT) {
-                throw new IllegalArgumentException("Invalid label: " + sin.getSLabel());
-            }
-            switch(type)
-            {
-                case ASSIGNMENT:
-                    String assign = lookforValue("assignedVariable", sin.getSInstructionArguments().getSInstructionArgument());
-                    Variable assignvar= loadVariable(assign,progVars);
-                    instructions.add(new Assignment(label,var, assignvar));
-                    break;
-                case CONSTANT_ASSIGNMENT:
-                     String const_assign = lookforValue("constantValue", sin.getSInstructionArguments().getSInstructionArgument());
-                     if(!const_assign.matches("\\d+")|| Integer.parseInt(const_assign) < 0) {
-                         throw new IllegalArgumentException("Invalid constant value: " + const_assign);
-                     }
-                     instructions.add(new ConstAssignment(label, var, Integer.parseInt(const_assign)));
-                    break;
-                case INCREASE:
-                    instructions.add(new Increase(label, var));
-                    break;
-                case DECREASE:
-                    instructions.add(new Decrease(label, var));
-                    break;
-                case NEUTRAL:
-                    instructions.add(new Neutral(label, var));
-                    break;
-                case JUMP_NOT_ZERO:
-                    String jumpNotZero = lookforValue("JNZLabel", sin.getSInstructionArguments().getSInstructionArgument());
-                    HasLabel gotoLabel_jnz = loadLabel(jumpNotZero);
-                    instructions.add(new JumpNotZero(label, var, gotoLabel_jnz));
-                    break;
-                case JUMP_ZERO:
-                    String jumpZero = lookforValue("JZLabel", sin.getSInstructionArguments().getSInstructionArgument());
-                    HasLabel gotoLabel_jz = loadLabel(jumpZero);
-                    instructions.add(new JumpZero(label, var, gotoLabel_jz));
-                    break;
-                case GOTO_LABEL:
-                    String gotoLabel = lookforValue("gotoLabel", sin.getSInstructionArguments().getSInstructionArgument());
-                    HasLabel gotoLabel_label = loadLabel(gotoLabel);
-                    instructions.add(new GotoLabel(label, gotoLabel_label));
-                    break;
-                case ZERO_VARIABLE:
-                    instructions.add(new ZeroVar(label, var));
-                    break;
-                case JUMP_EQUAL_CONSTANT:
-                    String jump_equal_const = lookforValue("constantValue", sin.getSInstructionArguments().getSInstructionArgument());
-                    if(!jump_equal_const.matches("\\d+")|| Integer.parseInt(jump_equal_const) < 0) {
-                        throw new IllegalArgumentException("Invalid constant value: " + jump_equal_const);
-                    }
-                    String jumpequalconst_label= lookforValue("JEConstantLabel", sin.getSInstructionArguments().getSInstructionArgument());
-                    HasLabel gotoLabel_je_const = loadLabel(jumpequalconst_label);
-                    instructions.add(new JumpEqualConstant(label, var, Integer.parseInt(jump_equal_const), gotoLabel_je_const));
-                    break;
-                case JUMP_EQUAL_VARIABLE:
-                    String jump_equal_var = lookforValue("variableName", sin.getSInstructionArguments().getSInstructionArgument());
-                    Variable jump_equal_var_var = loadVariable(jump_equal_var,progVars);
-                    String jumpequalvar_label= lookforValue("JEVariableLabel", sin.getSInstructionArguments().getSInstructionArgument());
-                    HasLabel gotoLabel_je_var = loadLabel(jumpequalvar_label);
-                    instructions.add(new JumpEqualVariable(label, var, jump_equal_var_var, gotoLabel_je_var));
-                    break;
-                case QUOTE:
-                    SFunction sfunc= lookforFunction("functionName", sprogram.getSFunctions().getSFunction());
-
-                default:
-                    throw new IllegalArgumentException("Unknown instruction type: " + sin.getType());
-            }
-        }*/
-        return new Program(name,instructions,progVars); // Returns a new Program object with the given name and instructions
     }
     private ArrayList<AbstractInstruction> loadInstructions(SInstructions inputinstructions,SProgram sprogram,ProgramVars progVars,AddFuncDetails... recordFuncs) throws IllegalArgumentException {
         List<SInstruction> sInstructions = inputinstructions.getSInstruction();
         ArrayList<AbstractInstruction> instructions = new ArrayList<AbstractInstruction>();
 
         for (SInstruction sin : sInstructions) {
-            AbstractInstructionType type=getType(sin.getType(), sin.getName());
+            AbstractInstructionType type;
+            HasLabel label;
+            try{
+            type=getType(sin.getType(), sin.getName());
+            } catch (IllegalArgumentException e){
+                 type= NEUTRAL;
+            }
             Variable var= loadVariable(sin.getSVariable(),progVars);
-            HasLabel label = loadLabel(sin.getSLabel());
+
+            label= sin.getSLabel() == null ? FixedLabel.EMPTY :loadLabel(sin.getSLabel());
             if (label == FixedLabel.EXIT) {
                 throw new IllegalArgumentException("Invalid label: " + sin.getSLabel());
             }
@@ -170,8 +106,12 @@ public class XMLHandler { // Singleton class to handle XML operations
             {
                 case ASSIGNMENT:
                     String assign = lookforValue("assignedVariable", sin.getSInstructionArguments().getSInstructionArgument());
-                    //Variable assignvar= loadVariable(assign,progVars);
-                    Variable assignvar=loadFuncArgs(assign,progVars,sprogram,recordFuncs).get(0);
+                    Variable assignvar;
+                    try {
+                        assignvar=loadFuncArgs(assign,progVars,sprogram,recordFuncs).get(0);
+                    } catch (IllegalArgumentException e) {
+                        throw new IllegalArgumentException(e.getMessage());
+                    }
                     instructions.add(new Assignment(label,var, assignvar));
                     break;
                 case CONSTANT_ASSIGNMENT:
@@ -219,103 +159,101 @@ public class XMLHandler { // Singleton class to handle XML operations
                     break;
                 case JUMP_EQUAL_VARIABLE:
                     String jump_equal_var = lookforValue("variableName", sin.getSInstructionArguments().getSInstructionArgument());
-                    //Variable jump_equal_var_var = loadVariable(jump_equal_var,progVars);
-                    Variable jump_equal_var_var=loadFuncArgs(jump_equal_var,progVars,sprogram,recordFuncs).get(0);
+                    Variable jump_equal_var_var;
+                    try {
+                        jump_equal_var_var = loadFuncArgs(jump_equal_var, progVars, sprogram, recordFuncs).get(0);
+                    } catch (IllegalArgumentException e) {
+                        throw new IllegalArgumentException(e.getMessage());
+                    }
                     String jumpequalvar_label= lookforValue("JEVariableLabel", sin.getSInstructionArguments().getSInstructionArgument());
                     HasLabel gotoLabel_je_var = loadLabel(jumpequalvar_label);
                     instructions.add(new JumpEqualVariable(label, var, jump_equal_var_var, gotoLabel_je_var));
                     break;
                 case QUOTE:
-                    String funcName=sin.getSInstructionArguments().getSInstructionArgument().stream()
-                            .filter((arg)-> arg.getName().equals("functionName"))
-                            .map(arg -> arg.getValue())
-                            .findFirst()
-                            .orElseThrow(()-> new IllegalArgumentException("Function name not found in function call)"));
+                    try {
+                        String funcName = sin.getSInstructionArguments().getSInstructionArgument().stream()
+                                .filter((arg) -> arg.getName().equals("functionName"))
+                                .map(arg -> arg.getValue())
+                                .findFirst()
+                                .orElseThrow(() -> new IllegalArgumentException("Function name not found in function call)"));
 
-                    SFunction sfunc= lookforFunction(funcName,sprogram.getSFunctions().getSFunction());
-                    Function func = null;
-                    if(sfunc==null)
-                    {
-                        if(recordFuncs.length>0&& recordFuncs[0]!=null)
-                        {
-                            if(recordFuncs[0].functionExists(funcName))
-                            {
-                                ProgramVars funcVars = new ProgramVars();
-                                func=recordFuncs[0].getFunctionInfo(funcName).func().clone(funcVars);
-                                func.setVar(var);
-                                func.setLab(label);
+                        SFunction sfunc = lookforFunction(funcName, sprogram.getSFunctions().getSFunction());
+                        Function func = null;
+                        if (sfunc == null) {
+                            if (recordFuncs.length > 0 && recordFuncs[0] != null) {
+                                if (recordFuncs[0].functionExists(funcName)) {
+                                    ProgramVars funcVars = new ProgramVars();
+                                    func = recordFuncs[0].getFunctionInfo(funcName).func().clone(funcVars);
+                                    func.setVar(var);
+                                    func.setLab(label);
+                                }
+
+                                if (func == null)
+                                    throw new IllegalArgumentException("Function " + funcName + " not found in function list or in recorded functions");
                             }
-
-                            if(func==null)
-                                throw new IllegalArgumentException("Function "+funcName+" not found in function list or in recorded functions");
+                        } else {
+                            ProgramVars funcVars = new ProgramVars();
+                            ArrayList<AbstractInstruction> funcInstructions = loadInstructions(sfunc.getSInstructions(), sprogram, funcVars, recordFuncs);
+                            func = new Function(label, var, new Program(sfunc.getName(), funcInstructions, funcVars), sfunc.getUserString());
                         }
-                    }
-                    else {
-                        ProgramVars funcVars = new ProgramVars();
-                        ArrayList<AbstractInstruction> funcInstructions = loadInstructions(sfunc.getSInstructions(), sprogram, funcVars, recordFuncs);
-                        func = new Function(label, var, new Program(sfunc.getName(), funcInstructions, funcVars), sfunc.getUserString());
-                    }
-                    if(recordFuncs.length>0&&recordFuncs[0]!=null)
-                    {
-                        if(!recordFuncs[0].functionExists(func.getProg().getName()))
-                            recordFuncs[0].addFunction(func);
-                    }
-                    String args=lookforValue("functionArguments",sin.getSInstructionArguments().getSInstructionArgument());
+                        if (recordFuncs.length > 0 && recordFuncs[0] != null) {
+                            if (!recordFuncs[0].functionExists(func.getProg().getName()))
+                                recordFuncs[0].addFunction(func);
+                        }
+                        String args = lookforValue("functionArguments", sin.getSInstructionArguments().getSInstructionArgument());
 
-                    ArrayList<Variable>funcargs=loadFuncArgs(args,progVars,sprogram,recordFuncs);
-                    func.setArguments(funcargs);
-                    //putFuncArgs(func,funcargs);
-                    //func.refreshInputs();
-                    //func.updateValues();
-
-                    instructions.add(func);
+                        ArrayList<Variable> funcargs = loadFuncArgs(args, progVars, sprogram, recordFuncs);
+                        func.setArguments(funcargs);
+                        instructions.add(func);
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException(e.getMessage());
+                    }
 
                     break;
                 case JUMP_EQUAL_FUNCTION:
-                    String jef_funcName=sin.getSInstructionArguments().getSInstructionArgument().stream()
-                            .filter((arg)-> arg.getName().equals("functionName"))
-                            .map(arg -> arg.getValue())
-                            .findFirst()
-                            .orElseThrow(()-> new IllegalArgumentException("Function name not found in function call)"));
+                    try {
+                        String jef_funcName = sin.getSInstructionArguments().getSInstructionArgument().stream()
+                                .filter((arg) -> arg.getName().equals("functionName"))
+                                .map(arg -> arg.getValue())
+                                .findFirst()
+                                .orElseThrow(() -> new IllegalArgumentException("Function name not found in function call)"));
 
-                    SFunction jef_sfunc= lookforFunction(jef_funcName,sprogram.getSFunctions().getSFunction());
-                    Function jef_func = null;
-                    if(jef_sfunc==null)
-                    {
-                        if(recordFuncs.length>0&& recordFuncs[0]!=null)
-                        {
-                            if(recordFuncs[0].functionExists(jef_funcName)) {
-                                ProgramVars jef_funcVars = new ProgramVars();
-                                jef_func = recordFuncs[0].getFunctionInfo(jef_funcName).func().clone(jef_funcVars);
-                                jef_func.setVar(var);
-                                jef_func.setLab(label);
-                            }
-                            if(jef_func==null)
-                                throw new IllegalArgumentException("Function "+jef_funcName+" not found in function list or in recorded functions");
+                        SFunction jef_sfunc = lookforFunction(jef_funcName, sprogram.getSFunctions().getSFunction());
+                        Function jef_func = null;
+                        if (jef_sfunc == null) {
+                            if (recordFuncs.length > 0 && recordFuncs[0] != null) {
+                                if (recordFuncs[0].functionExists(jef_funcName)) {
+                                    ProgramVars jef_funcVars = new ProgramVars();
+                                    jef_func = recordFuncs[0].getFunctionInfo(jef_funcName).func().clone(jef_funcVars);
+                                    jef_func.setVar(var);
+                                    jef_func.setLab(label);
+                                }
+                                if (jef_func == null)
+                                    throw new IllegalArgumentException("Function " + jef_funcName + " not found in function list or in recorded functions");
+                            } else
+                                throw new IllegalArgumentException("Function " + jef_funcName + " not found in function list");
+                        } else {
+                            ProgramVars jef_funcVars = new ProgramVars();
+                            ArrayList<AbstractInstruction> jef_funcInstructions = loadInstructions(jef_sfunc.getSInstructions(), sprogram, jef_funcVars, recordFuncs);
+                            jef_func = new Function(label, var, new Program(jef_sfunc.getName(), jef_funcInstructions, jef_funcVars), jef_sfunc.getUserString());
                         }
-                        else
-                            throw new IllegalArgumentException("Function "+jef_funcName+" not found in function list");
+                        if (recordFuncs.length > 0 && recordFuncs[0] != null) {
+                            if (!recordFuncs[0].functionExists(jef_func.getProg().getName()))
+                                recordFuncs[0].addFunction(jef_func);
+                        }
+                        jef_func.setVar(ResultVar.createDummyVar(VariableType.INPUT, 1, 0, jef_func));
+                        String jef_args = lookforValue("functionArguments", sin.getSInstructionArguments().getSInstructionArgument());
+                        ArrayList<Variable> jefargs = loadFuncArgs(jef_args, progVars, sprogram, recordFuncs);
+                        jef_func.setArguments(jefargs);
+                        String jef_label = lookforValue("JEFunctionLabel", sin.getSInstructionArguments().getSInstructionArgument());
+                        HasLabel gotoLabel_jef = loadLabel(jef_label);
+                        instructions.add(new JumpEqualFunction(label, var, jef_func, gotoLabel_jef));
+                        break;
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException(e.getMessage());
                     }
-                    else {
-                        ProgramVars jef_funcVars = new ProgramVars();
-                        ArrayList<AbstractInstruction> jef_funcInstructions = loadInstructions(jef_sfunc.getSInstructions(), sprogram, jef_funcVars, recordFuncs);
-                        jef_func = new Function(label, var, new Program(jef_sfunc.getName(), jef_funcInstructions, jef_funcVars), jef_sfunc.getUserString());
-                    }
-                    if(recordFuncs.length>0&& recordFuncs[0]!=null)
-                    {
-                        if(!recordFuncs[0].functionExists(jef_func.getProg().getName()))
-                            recordFuncs[0].addFunction(jef_func);
-                    }
-                    jef_func.setVar(ResultVar.createDummyVar(VariableType.INPUT,1,0,jef_func));
-                    String jef_args=lookforValue("functionArguments",sin.getSInstructionArguments().getSInstructionArgument());
-                    ArrayList<Variable>jefargs= loadFuncArgs(jef_args,progVars,sprogram,recordFuncs);
-                    jef_func.setArguments(jefargs);
-                    String jef_label= lookforValue("JEFunctionLabel", sin.getSInstructionArguments().getSInstructionArgument());
-                    HasLabel gotoLabel_jef = loadLabel(jef_label);
-                    instructions.add(new JumpEqualFunction(label,var,jef_func, gotoLabel_jef));
-                    break;
                 default:
-                    throw new IllegalArgumentException("Unknown instruction type: " + sin.getType());
+                    throw new IllegalArgumentException("Unsupported instruction type: " + type);
             }
         }
         return instructions;
@@ -386,11 +324,6 @@ public class XMLHandler { // Singleton class to handle XML operations
         if(parts.isEmpty())
             return result;
 
-        /*Map<Integer,Variable> inputVars = func.getProg().getVars().getInput();
-        List<Integer>keys=new ArrayList<>(inputVars.keySet());
-        Collections.sort(keys,Integer::compareTo);
-        Iterator<Integer> keyIterator=keys.iterator();*/
-
         int argNum=1;
         for (String part:parts)
         {
@@ -436,16 +369,14 @@ public class XMLHandler { // Singleton class to handle XML operations
                     if (split.length > 1) {
                         String functionArgs = part.substring(part.indexOf(",") + 1);
                         ArrayList<Variable> args = loadFuncArgs(functionArgs, parentContext,sp,recordFuncs);
-                        //putFuncArgs(subFunc,args);
-                        //subFunc.refreshInputs();
                         subFunc.setArguments(args);
                     } else
                         subFunc.setArguments(new ArrayList<>());
 
                     result.add(ResultVar.createDummyVar(VariableType.INPUT, argNum, 0, subFunc));
                     subFunc.setVar(result.get(result.size() - 1));
-                } catch (IllegalArgumentException e) {//look for function/program inServletContext
-
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException(e.getMessage());
                 }
             }
             else
@@ -456,35 +387,6 @@ public class XMLHandler { // Singleton class to handle XML operations
         }
         return result;
     }
-    public void putFuncArgs(Function func,ArrayList<Variable> args)
-    {
-        Map<Integer,Variable> inputVars = func.getProg().getVars().getInput();
-        List<Integer>keys=new ArrayList<>(inputVars.keySet());
-        Collections.sort(keys,Integer::compareTo);
-        Iterator<Integer> keyIterator=keys.iterator();
-
-        if(args.isEmpty())
-            return;
-
-        while(keyIterator.hasNext())
-        {
-            Variable currentInput=inputVars.get(keyIterator.next());
-            if(currentInput instanceof ResultVar)
-            {
-                //putFuncArgs(((ResultVar)currentInput).getFunction(),args);
-            }
-            else
-            {
-               int pos=currentInput.getPosition();
-                if(pos<=args.size())
-                {
-                       inputVars.put(pos,args.get(pos-1));
-                    // inputVars.get(pos).setValue(args.get(pos-1).getValue());
-                }
-            }
-        }
-    }
-
 
     private List<String> splitTopLevel(String input) {
         List<String> result = new ArrayList<>();
@@ -503,6 +405,19 @@ public class XMLHandler { // Singleton class to handle XML operations
         }
         result.add(input.substring(last));
         return result;
+    }
+
+    private void addAllFunctions(List<SFunction> sfunc,SProgram sprogram ,AddFuncDetails recordFuncs) {
+        for(SFunction sf:sfunc )
+        {
+            if(!recordFuncs.functionExists(sf.getName()))
+            {
+                ProgramVars funcVars = new ProgramVars();
+                ArrayList<AbstractInstruction> funcInstructions = loadInstructions(sf.getSInstructions(),sprogram , funcVars, recordFuncs);
+                Function func = new Function(FixedLabel.EMPTY, ResultVar.createDummyVar(VariableType.INPUT, 1, 0), new Program(sf.getName(), funcInstructions, funcVars), sf.getUserString());
+                recordFuncs.addFunction(func);
+            }
+        }
     }
 
 }

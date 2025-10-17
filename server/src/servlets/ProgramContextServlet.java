@@ -39,6 +39,7 @@ public class ProgramContextServlet extends HttpServlet {
                 else
                     builder.append("S");
                 builder.append("\",");
+                builder.append("\"architecture\":\"").append(instr.getType().getArchitecture().name()).append("\",");
                 builder.append("\"instruction\":\"").append(instr.getChildPart()).append("\",");
                 builder.append("\"cycles\":\"").append(instr.getType().getCycles()).append("\"},");
             }

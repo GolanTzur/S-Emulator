@@ -24,8 +24,8 @@
       <GridPane id="maingrid" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="479.3333435058594" minWidth="565.3333129882812" prefHeight="537.0" prefWidth="786.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="243.33333333333331" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="198.66666666666666" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="10.0" prefWidth="343.33333333333326" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="210.66662597656253" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="10.0" prefWidth="332.00004069010413" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints maxHeight="128.66668701171875" minHeight="0.0" prefHeight="45.333343505859375" vgrow="SOMETIMES" />
@@ -41,7 +41,7 @@
          <children>
             <BorderPane prefHeight="31.0" prefWidth="785.0" GridPane.columnSpan="3">
                <center>
-                  <Label id="headline" prefHeight="40.0" prefWidth="180.0" text="Execution" BorderPane.alignment="TOP_CENTER">
+                  <Label id="headline" prefHeight="40.0" prefWidth="138.0" text="Execution" BorderPane.alignment="TOP_CENTER">
                      <font>
                         <Font name="System Bold" size="28.0" />
                      </font>
@@ -189,14 +189,15 @@
                   </Button>
                </children>
             </HBox>
-            <AnchorPane maxHeight="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" prefHeight="243.0" prefWidth="397.0" GridPane.columnSpan="2" GridPane.rowIndex="4" GridPane.rowSpan="4" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS">
+            <AnchorPane maxHeight="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" prefHeight="315.0" prefWidth="420.0" GridPane.columnSpan="2" GridPane.rowIndex="4" GridPane.rowSpan="4" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS">
                <children>
-                  <TableView id="instructionstable" fx:id="instructionstable" editable="true" layoutX="1.3333333333333333" layoutY="1.3333333333333333" maxHeight="1.7976931348623157E308" prefHeight="226.0" prefWidth="395.0" AnchorPane.bottomAnchor="85.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
+                  <TableView id="instructionstable" fx:id="instructionstable" editable="true" layoutX="1.3333333333333333" layoutY="1.3333333333333333" maxHeight="1.7976931348623157E308" prefHeight="229.0" prefWidth="401.0" AnchorPane.bottomAnchor="85.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="1.0">
                     <columns>
                       <TableColumn id="instructiontablenumber" fx:id="instructiontablenumber" maxWidth="44.0" minWidth="44.0" prefWidth="44.0" resizable="false" text="#" />
                       <TableColumn id="instructiontablelabel" fx:id="instructiontablelabel" maxWidth="52.666656494140625" minWidth="52.666656494140625" prefWidth="52.666656494140625" resizable="false" text="Label" />
                         <TableColumn id="instructiontabletype" fx:id="instructiontabletype" maxWidth="48.666656494140625" minWidth="48.666656494140625" prefWidth="48.666656494140625" resizable="false" text="Type" />
-                        <TableColumn id="instructiontableinstr" fx:id="instructiontableinstr" maxWidth="1.7976931348623157E308" prefWidth="189.33334350585938" text="Instruction" />
+                        <TableColumn id="instructiontablearch" fx:id="instructiontablearch" maxWidth="76.0" minWidth="76.0" prefWidth="76.0" resizable="false" text="Architecture" />
+                        <TableColumn id="instructiontableinstr" fx:id="instructiontableinstr" maxWidth="1.7976931348623157E308" prefWidth="137.3332977294922" text="Instruction" />
                         <TableColumn id="instructiontablecycles" fx:id="instructiontablecycles" maxWidth="58.0" minWidth="58.0" prefWidth="58.0" resizable="false" text="Cycles" />
                     </columns>
                      <columnResizePolicy>
@@ -226,9 +227,10 @@
                         <TableView id="commandshistory" fx:id="commandshistory" editable="true" minHeight="-Infinity" prefHeight="102.0" prefWidth="392.0">
                            <columns>
                               <TableColumn id="commandstablenumber" fx:id="commandstablenumber" maxWidth="45.33334481716156" minWidth="45.33334481716156" prefWidth="45.33334481716156" resizable="false" text="#" />
-                              <TableColumn id="commandstablelabel" fx:id="commandstablelabel" maxWidth="49.333309173583984" minWidth="49.333309173583984" prefWidth="49.333309173583984" resizable="false" text="Label" />
-                              <TableColumn id="commandstabletype" fx:id="commandstabletype" maxWidth="51.333351135253906" minWidth="51.333351135253906" prefWidth="51.333351135253906" resizable="false" text="Type" />
-                              <TableColumn id="commandstableinstr" fx:id="commandstableinstr" maxWidth="1.7976931348623157E308" prefWidth="192.66661071777344" text="Instruction" />
+                              <TableColumn id="commandstablelabel" fx:id="commandstablelabel" maxWidth="55.999996185302734" minWidth="49.333309173583984" prefWidth="49.33333969116211" resizable="false" text="Label" />
+                              <TableColumn id="commandstabletype" fx:id="commandstabletype" maxWidth="59.33332061767578" minWidth="42.666664123535156" prefWidth="49.333351135253906" resizable="false" text="Type" />
+                              <TableColumn id="commandstablearch" fx:id="commandstablearch" maxWidth="74.66665649414062" minWidth="74.66665649414062" prefWidth="74.66665649414062" resizable="false" text="Architecture" />
+                              <TableColumn id="commandstableinstr" fx:id="commandstableinstr" maxWidth="1.7976931348623157E308" prefWidth="153.99998474121094" text="Instruction" />
                               <TableColumn id="commandstablecycles" fx:id="commandstablecycles" maxWidth="54.00006103515625" minWidth="54.00006103515625" prefWidth="54.00006103515625" resizable="false" text="Cycles" />
                            </columns>
                            <columnResizePolicy>
@@ -239,7 +241,7 @@
                   </VBox>
                </children>
             </AnchorPane>
-            <VBox id="programinputsvbox" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="141.0" prefWidth="327.0" GridPane.columnIndex="2" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.vgrow="ALWAYS">
+            <VBox id="programinputsvbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="141.0" prefWidth="327.0" GridPane.columnIndex="2" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.vgrow="ALWAYS">
                <children>
                   <Label id="programinputs" fx:id="programinputs" alignment="BOTTOM_CENTER" prefHeight="31.0" prefWidth="246.0" styleClass="headers" text="Program Inputs">
                      <font>
@@ -253,12 +255,12 @@
                   </ScrollPane>
                </children>
                <GridPane.margin>
-                  <Insets left="10.0" right="10.0" />
+                  <Insets left="20.0" />
                </GridPane.margin>
             </VBox>
-            <VBox id="programinputsvbox" alignment="TOP_CENTER" prefHeight="149.0" prefWidth="331.0" GridPane.columnIndex="2" GridPane.rowIndex="4" GridPane.rowSpan="3">
+            <VBox id="programinputsvbox" prefHeight="149.0" prefWidth="331.0" GridPane.columnIndex="2" GridPane.rowIndex="4" GridPane.rowSpan="3">
                <children>
-                  <HBox id="architecturehbox" fx:id="architecturehbox" alignment="CENTER" prefHeight="33.0" prefWidth="347.0" spacing="10.0">
+                  <HBox id="architecturehbox" fx:id="architecturehbox" alignment="BOTTOM_LEFT" prefHeight="33.0" prefWidth="347.0" spacing="10.0">
                      <children>
                         <Label text="Architecture:">
                            <font>
@@ -267,25 +269,31 @@
                         </Label>
                         <ComboBox id="architectureoptions" fx:id="architectureoptions" onAction="#selectarchitecture" prefHeight="25.0" prefWidth="61.0" visibleRowCount="4" />
                      </children>
+                     <VBox.margin>
+                        <Insets left="10.0" />
+                     </VBox.margin>
                   </HBox>
-                  <Label id="programinputs" fx:id="programinputs1" alignment="CENTER" prefHeight="27.0" prefWidth="247.0" styleClass="headers" text="Program Variables">
+                  <Label id="programinputs" fx:id="programinputs1" alignment="CENTER" prefHeight="27.0" prefWidth="259.0" styleClass="headers" text="Program Variables">
                      <font>
                         <Font size="16.0" />
                      </font>
+                     <VBox.margin>
+                        <Insets left="10.0" />
+                     </VBox.margin>
                   </Label>
-                  <ScrollPane maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="87.0" prefWidth="266.0" VBox.vgrow="ALWAYS">
+                  <ScrollPane maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="117.0" prefWidth="258.0" VBox.vgrow="ALWAYS">
                      <content>
-                        <VBox id="programvarsvbox" fx:id="programvarsvbox" fillWidth="false" prefHeight="97.0" prefWidth="265.0">
+                        <VBox id="programvarsvbox" fx:id="programvarsvbox" fillWidth="false" prefHeight="97.0" prefWidth="263.0">
                            <padding>
                               <Insets bottom="5.0" />
                            </padding>
                         </VBox>
                      </content>
                      <VBox.margin>
-                        <Insets bottom="5.0" />
+                        <Insets bottom="5.0" left="10.0" />
                      </VBox.margin>
                   </ScrollPane>
-                  <HBox id="actionbuttonshbox" fx:id="actionbuttonshbox" alignment="CENTER" prefHeight="29.0" prefWidth="348.0" spacing="20.0">
+                  <HBox id="actionbuttonshbox" fx:id="actionbuttonshbox" alignment="BOTTOM_LEFT" prefHeight="29.0" prefWidth="295.0" spacing="20.0">
                      <children>
                         <Button id="debug" fx:id="debug" mnemonicParsing="false" onAction="#debugProgram" styleClass="rightSideButtons" text="Debug" />
                         <Button id="resume" fx:id="resume" mnemonicParsing="false" onAction="#resumeProgram" styleClass="rightSideButtons" text="Resume" />
@@ -299,6 +307,9 @@
                            </HBox.margin>
                         </Button>
                      </children>
+                     <VBox.margin>
+                        <Insets left="10.0" />
+                     </VBox.margin>
                   </HBox>
                </children>
                <GridPane.margin>
@@ -306,6 +317,28 @@
                </GridPane.margin>
             </VBox>
             <Button id="back" fx:id="back" mnemonicParsing="false" onAction="#backToDashboard" prefHeight="29.0" prefWidth="125.0" text="Back to dashboard" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
+            <AnchorPane prefHeight="99.0" prefWidth="279.0" GridPane.columnIndex="2" GridPane.rowIndex="7" GridPane.vgrow="NEVER">
+               <children>
+                  <TableView id="architecturetable" fx:id="architecturetable" maxHeight="-Infinity" prefHeight="75.0" prefWidth="270.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columns>
+                      <TableColumn id="architecturetableheadline" fx:id="architecturetableheadline" maxWidth="320.0" minWidth="260.6666564941406" prefWidth="260.6666564941406" text="Architectures Summary">
+                           <columns>
+                              <TableColumn id="architecturetablei" fx:id="architecturetablei" maxWidth="80.0" minWidth="65.33328247070312" prefWidth="65.33328247070312" text="I" />
+                              <TableColumn id="architecturetableii" fx:id="architecturetableii" maxWidth="80.0" minWidth="65.3333740234375" prefWidth="65.3333740234375" text="II" />
+                              <TableColumn id="architecturetableiii" fx:id="architecturetableiii" maxWidth="80.0" minWidth="69.3333740234375" prefWidth="69.3333740234375" text="III" />
+                              <TableColumn id="architecturetableiv" fx:id="architecturetableiv" maxWidth="80.0" minWidth="66.6666259765625" prefWidth="66.6666259765625" text="IV" />
+                           </columns>
+                        </TableColumn>
+                    </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TableView>
+               </children>
+               <GridPane.margin>
+                  <Insets left="20.0" top="10.0" />
+               </GridPane.margin>
+            </AnchorPane>
          </children>
       </GridPane>
    </content>

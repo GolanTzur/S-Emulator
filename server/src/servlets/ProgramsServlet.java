@@ -63,32 +63,19 @@ public class ProgramsServlet extends HttpServlet {
                     synchronized (getServletContext()) {
                         UserInfo userInfo = um.lookForUser(user);
                         AddFuncDetails afd = new AddFuncDetails(userInfo, sProgram.getName(), fm.getFunctions());
-                        Program program = xmlHandler.convertToProgram(sProgram, afd); // here the functions are added
-                        program.checkValidity();
-                        ProgramInfo pi = new ProgramInfo(program, user);
-                        pm.addProgram(pi);
-                        userInfo.addProgram(pi);
+                        try {
+                            Program program = xmlHandler.convertToProgram(sProgram, afd); // here the functions are added
+                            program.checkValidity();
+                            ProgramInfo pi = new ProgramInfo(program, user);
+                            pm.addProgram(pi);
+                            userInfo.addProgram(pi);
+                        } catch (Exception e) {
+                            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            response.getWriter().println("Error processing program: " + e.getMessage());
+                            return;
+                        }
                     }
 
-                   /* synchronized (fm) {
-                        Set<String> functionNames = program.getAllFunctionsUsed();
-                        for(String functionName : functionNames) {
-                            if (!fm.functionExists(functionName)) {
-                                FunctionInfo fi = new FunctionInfo(functionName, user, program.getName());
-                                fm.addFunction(fi);
-                            }
-                            else
-                                functionNames.remove(functionName);
-                        }
-                        StringBuilder funcList = new StringBuilder();
-                        for (String funcname :functionNames) {
-                            funcList.append(funcname).append(",");
-                        }
-                        request.setAttribute("functions", funcList.toString());
-                        request.setAttribute("program", program.getName());
-                        request.setAttribute("action","increaseprograms");
-                        getServletContext().getRequestDispatcher("/users").forward(request, response);
-                    }*/
 
                 } catch (Exception e) {
                     e.printStackTrace();
