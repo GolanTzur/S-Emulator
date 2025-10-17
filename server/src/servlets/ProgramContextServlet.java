@@ -19,7 +19,6 @@ public class ProgramContextServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws jakarta.servlet.ServletException, java.io.IOException {
 
-
         Program program = (Program) request.getSession(false).getAttribute("currentprogram");
 
         String info = request.getParameter("info");

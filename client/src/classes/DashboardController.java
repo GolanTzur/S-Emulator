@@ -2,11 +2,6 @@ package classes;
 
 import com.google.gson.Gson;
 import engine.RunInfo;
-import engine.UserInfo;
-import engine.classhierarchy.AbstractInstruction;
-import engine.classhierarchy.Function;
-import engine.classhierarchy.SyntheticSugar;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -27,8 +22,6 @@ import okhttp3.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.net.http.HttpRequest;
-import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +30,11 @@ public class DashboardController {
     private final StringProperty usernameproperty = new SimpleStringProperty("");
     private final StringProperty creditsproperty = new SimpleStringProperty("");
     private String userHistoryShow=null;
+
+    private ScheduledExecutorService usersscheduler;
+    private ScheduledExecutorService programsscheduler;
+    private ScheduledExecutorService functionsscheduler;
+    private ScheduledExecutorService historyscheduler;
 
     @FXML
     private TableView<ObservableFunctionInfo> allfunctions;
@@ -320,7 +318,7 @@ public class DashboardController {
         setUserSelectedListener();
 
         //All users table update thread
-        ScheduledExecutorService usersscheduler = Executors.newSingleThreadScheduledExecutor();
+        usersscheduler = Executors.newSingleThreadScheduledExecutor();
 
         Runnable showusers = () -> {
             try {
@@ -377,7 +375,7 @@ public class DashboardController {
 
 
         //All programs table update thread
-        ScheduledExecutorService programsscheduler = Executors.newSingleThreadScheduledExecutor();
+        programsscheduler = Executors.newSingleThreadScheduledExecutor();
 
         Runnable showprograms = () -> {
             try {
@@ -433,7 +431,7 @@ public class DashboardController {
         programsscheduler.scheduleAtFixedRate(showprograms, 0, 5, TimeUnit.SECONDS);
 
         //All functions table update thread
-        ScheduledExecutorService functionsscheduler = Executors.newSingleThreadScheduledExecutor();
+        functionsscheduler = Executors.newSingleThreadScheduledExecutor();
         Runnable showfunctions = () -> {
             try {
                 OkHttpClient CLIENT = new OkHttpClient();
@@ -499,7 +497,7 @@ public class DashboardController {
             this.userHistoryShow=usernameproperty.get();
 
             //User history table update thread (in initialize userHistoryShow is null so it doesn't run)
-            ScheduledExecutorService historyscheduler = Executors.newSingleThreadScheduledExecutor();
+            historyscheduler = Executors.newSingleThreadScheduledExecutor();
             Runnable showhistory = () -> {
                 try {
                         OkHttpClient CLIENT = new OkHttpClient();
@@ -679,6 +677,10 @@ public class DashboardController {
             ExecutionController executionController = executionpane.getController();
             executionController.setInitialInfo(usernameproperty.get(), progname, Integer.parseInt(creditsproperty.get()),isMainProgram);
             this.maingrid.getScene().getWindow().hide();
+            usersscheduler.shutdown();
+            historyscheduler.shutdown();
+            programsscheduler.shutdown();
+            functionsscheduler.shutdown();
             Stage stage = new Stage();
             stage.setTitle("Execution - S-Emulator");
             stage.setScene(new Scene((Parent) executionpaneNode));
@@ -716,7 +718,6 @@ public class DashboardController {
             return;
         }
         moveToExecutionScene(selectedProgram.programname(),true);
-
     }
 
 }

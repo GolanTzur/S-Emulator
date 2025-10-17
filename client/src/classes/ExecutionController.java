@@ -698,6 +698,14 @@ public class ExecutionController {
                     }
 
                 }
+                else { //Not enough credits
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Debug Program");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Not enough credits to debug the program.");
+                    alert.showAndWait();
+                    nonDebugMode();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -753,6 +761,15 @@ public class ExecutionController {
                         e.printStackTrace();
                     }
 
+                }
+                else { //Not enough credits
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Debug Program");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Not enough credits to continue debugging the program.");
+                    alert.showAndWait();
+                    nonDebugMode();
+                    programvarsvbox.getChildren().clear();
                 }
             } catch (Exception e) {
                 if (e instanceof NumberFormatException) { //Finished debugging
@@ -833,6 +850,15 @@ public class ExecutionController {
                     e.printStackTrace();
                 }
             }
+            else { //Not enough credits
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Resume Program");
+                alert.setHeaderText(null);
+                alert.setContentText("Not enough credits to resume the program.");
+                alert.showAndWait();
+                nonDebugMode();
+                programvarsvbox.getChildren().clear();
+            }
         } catch (Exception e) {
 
         }
@@ -862,71 +888,12 @@ public class ExecutionController {
 
     @FXML
     public void runProgram(ActionEvent actionEvent) {
-        /*Architecture selectedArch = architectureoptions.getSelectionModel().getSelectedItem();
-        if (!architectureCompatible) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Run Program");
-            alert.setHeaderText(null);
-            alert.setContentText("The program is not compatible with the selected architecture.");
-            alert.showAndWait();
-            return;
-        } else if (architectureoptions.getSelectionModel().getSelectedItem() == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Run Program");
-            alert.setHeaderText(null);
-            alert.setContentText("You must select an architecture.");
-            alert.showAndWait();
-            return;
-        } else if (creditsprop.getValue() <= selectedArch.getPrice()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Run Program");
-            alert.setHeaderText(null);
-            alert.setContentText("You do not have enough credits to run the program.");
-            alert.showAndWait();
-            return;
-        }
-        OkHttpClient client = HttpClientSingleton.getInstance();
-
-        //Subtract credits from user
-        MediaType mediaType = MediaType.parse("text/plain");
-        String json = "username=" + username.getText() + "\n" + "credits=" + selectedArch.getPrice() + "\n" + "action=subtract";
-        RequestBody jsonBody = RequestBody.create(json, mediaType);
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/server_war/users")
-                .method("PUT", jsonBody)
-                .build();
-        try {
-            Response response = client.newCall(request).execute();
-            String responseBody = response.body().string();
-             if(!response.isSuccessful()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText(responseBody);
-                alert.setContentText("Please try again later");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
         Architecture selectedArch = architectureoptions.getSelectionModel().getSelectedItem();
         OkHttpClient client = HttpClientSingleton.getInstance();
         if(!isRunAvailable())
             return;
         spendInitialCreditsArcitecture();
         String inputBuilder = getInputsAsString();
-        /*
-        //Run program with input variables
-        StringBuilder inputBuilder = new StringBuilder();
-        for (Map.Entry<Integer, TextField> entry : inputFields.entrySet()) {
-            String value = entry.getValue().getText();
-            if (value.isEmpty()) {
-                value = "0"; // Default to 0 if empty
-            }
-            inputBuilder.append(value).append(",");
-        }
-        if (inputBuilder.length() > 0) {
-            inputBuilder.deleteCharAt(inputBuilder.length() - 1); // Remove last comma
-        }*/
 
         MediaType mediaType = MediaType.parse("text/plain");
         RequestBody body = RequestBody.create("inputs=" + inputBuilder.toString(), mediaType);

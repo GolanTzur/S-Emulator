@@ -23,17 +23,17 @@
                   <Font size="17.0" />
                </font>
             </Label>
-            <Label id="username" fx:id="username" prefHeight="26.0" prefWidth="127.0">
+            <Label id="username" fx:id="username" prefHeight="26.0" prefWidth="114.0">
                <font>
                   <Font size="17.0" />
                </font>
             </Label>
-            <Label id="headline" text="S-Emulator Dashboard">
+            <Label id="headline" prefHeight="38.0" prefWidth="281.0" text="S-Emulator Dashboard">
                <HBox.margin>
                   <Insets left="10.0" />
                </HBox.margin>
                <font>
-                  <Font size="21.0" />
+                  <Font name="System Bold" size="26.0" />
                </font>
             </Label>
             <Label text="Available credits:">

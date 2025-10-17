@@ -34,8 +34,6 @@ public class LoginController {
             return;
         }
         OkHttpClient client = new OkHttpClient().newBuilder().build();
-        MediaType mediaType = MediaType.parse("text/plain");
-        RequestBody body = RequestBody.create(mediaType, "");
         Request request = new Request.Builder()
                 .url("http://localhost:8080/server_war/users?action=login&username="+logintext.getText())
                 .method("GET",null)
@@ -45,7 +43,7 @@ public class LoginController {
             if (!resp.isSuccessful()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Login Error");
-                alert.setHeaderText(null);
+                alert.setHeaderText(resp.body().string());
                 alert.setContentText("Login failed. Please try again.");
                 alert.showAndWait();
                 return;

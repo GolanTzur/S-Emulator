@@ -52,7 +52,6 @@ public class RunServlet extends HttpServlet {
          } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().println(e.getMessage());
-                user.spendCredits(user.getCreditsLeft()); // remove all credits on error
                 request.getSession(false).setAttribute("currentprogram",programsource);
                 return;
          }

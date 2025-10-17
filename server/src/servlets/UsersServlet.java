@@ -37,10 +37,14 @@ public class UsersServlet extends HttpServlet {
                     if ((userInfo = usersManager.lookForUser(user)) == null) {
                         userToCheck = new UserInfo(user);
                         usersManager.addUser(userToCheck);
+                        response.setStatus(HttpServletResponse.SC_OK);
+                        response.getWriter().print(user + "," + userToCheck.getCreditsLeft());
                     } else
-                        userToCheck = userInfo;
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    response.getWriter().print(user + "," + userToCheck.getCreditsLeft());
+                    {
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        response.getWriter().print("User "+user+" already exists");
+                    }
+
                 }
 
             } else {

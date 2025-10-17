@@ -84,6 +84,10 @@ public class DebugServlet extends HttpServlet {
 
             } catch (Exception e) {
                 resp.setStatus(jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST);
+                Program programCopy = (Program) req.getSession().getAttribute("programcopy");
+                req.getSession().setAttribute("currentprogram", programCopy);
+                req.getSession().removeAttribute("programcopy");
+                req.getSession().removeAttribute("currentdebugger");
                 resp.getWriter().println(e.getMessage());
                 return;
             }
@@ -114,6 +118,10 @@ public class DebugServlet extends HttpServlet {
                 user.spendCredits(afterCycles-beforeCycles);
             } catch (Exception e) {
                 resp.setStatus(jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST);
+                Program programCopy = (Program) req.getSession().getAttribute("programcopy");
+                req.getSession().setAttribute("currentprogram", programCopy);
+                req.getSession().removeAttribute("programcopy");
+                req.getSession().removeAttribute("currentdebugger");
                 resp.getWriter().println(e.getMessage());
                 return;
             }
