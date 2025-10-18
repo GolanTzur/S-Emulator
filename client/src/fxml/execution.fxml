@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" maxWidth="1.7976931348623157E308" minHeight="538.6666870117188" minWidth="736.0" prefHeight="539.0" prefWidth="736.0" stylesheets="@light-theme.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="classes.ExecutionController">
+<ScrollPane fitToHeight="true" fitToWidth="true" maxWidth="1.7976931348623157E308" minHeight="538.6666870117188" minWidth="736.0" prefHeight="539.0" prefWidth="736.0" stylesheets="@light-theme.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ExecutionController">
    <content>
       <GridPane id="maingrid" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="479.3333435058594" minWidth="565.3333129882812" prefHeight="537.0" prefWidth="731.0">
         <columnConstraints>
@@ -319,7 +319,7 @@
             <Button id="back" fx:id="back" mnemonicParsing="false" onAction="#backToDashboard" prefHeight="29.0" prefWidth="125.0" text="Back to dashboard" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
             <AnchorPane prefHeight="99.0" prefWidth="279.0" GridPane.columnIndex="2" GridPane.rowIndex="7" GridPane.vgrow="NEVER">
                <children>
-                  <TableView id="architecturetable" fx:id="architecturetable" maxHeight="-Infinity" prefHeight="75.0" prefWidth="270.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TableView id="architecturetable" fx:id="architecturetable" maxHeight="75.0" minHeight="75.0" prefHeight="75.0" prefWidth="270.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="0.0">
                     <columns>
                       <TableColumn id="architecturetableheadline" fx:id="architecturetableheadline" maxWidth="320.0" minWidth="260.6666564941406" prefWidth="260.6666564941406" text="Architectures Summary">
                            <columns>

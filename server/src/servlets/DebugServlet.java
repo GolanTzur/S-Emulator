@@ -1,8 +1,8 @@
 package servlets;
 
 
-import classes.FunctionsManager;
-import classes.ProgramsManager;
+import entitymanagers.FunctionsManager;
+import entitymanagers.ProgramsManager;
 import engine.*;
 import jakarta.servlet.http.HttpServlet;
 

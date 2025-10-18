@@ -1,4 +1,4 @@
-package classes;
+package dto;
 
 public record ObservableProgramInfo (String programname, String owner, String numinstructions, String degree,String numruns,String avgcredits) {
 }

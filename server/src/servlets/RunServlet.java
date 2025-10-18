@@ -1,9 +1,8 @@
 package servlets;
 
-import classes.FunctionsManager;
-import classes.ProgramsManager;
+import entitymanagers.FunctionsManager;
+import entitymanagers.ProgramsManager;
 import engine.*;
-import engine.basictypes.Variable;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -11,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.*;
 
 @WebServlet(name = "RunServlet", urlPatterns = {"/run"})
 public class RunServlet extends HttpServlet {

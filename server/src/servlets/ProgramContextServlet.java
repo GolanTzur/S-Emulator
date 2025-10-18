@@ -1,21 +1,18 @@
 package servlets;
 
-import classes.ProgramsManager;
 import engine.Program;
-import engine.ProgramInfo;
 import engine.basictypes.InstructionType;
 import engine.basictypes.Variable;
 import engine.classhierarchy.AbstractInstruction;
-import engine.classhierarchy.Instruction;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 @WebServlet(name = "ProgramContextServlet", urlPatterns = {"/programcontext"})
 public class ProgramContextServlet extends HttpServlet {
 
+    // Get program info like degree , instructions list , instruction history
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws jakarta.servlet.ServletException, java.io.IOException {
 
@@ -89,6 +86,7 @@ public class ProgramContextServlet extends HttpServlet {
                 else
                     builder.append("S");
                 builder.append("\",");
+                builder.append("\"architecture\":\"").append(source.getType().getArchitecture().name()).append("\",");
                 builder.append("\"instruction\":\"").append(source.getChildPart()).append("\",");
                 builder.append("\"cycles\":\"").append(source.getType().getCycles()).append("\"},");
                 source = source.getSource();

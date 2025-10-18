@@ -1,4 +1,4 @@
-package classes;
+package entitymanagers;
 
 import engine.ProgramInfo;
 

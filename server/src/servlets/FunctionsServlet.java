@@ -1,9 +1,7 @@
 package servlets;
 
-import classes.FunctionsManager;
-import classes.ProgramsManager;
+import entitymanagers.FunctionsManager;
 import engine.FunctionInfo;
-import engine.ProgramInfo;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,6 +13,8 @@ import java.io.IOException;
 @WebServlet(name = "FunctionsServlet", urlPatterns = {"/functions"})
 public class FunctionsServlet extends HttpServlet {
 
+
+    // Get list of all functions
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         FunctionsManager fm= (FunctionsManager) getServletContext().getAttribute(ContextAttributes.FUNCTIONS.getAttributeName());

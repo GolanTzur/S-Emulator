@@ -1,8 +1,8 @@
 package servlets;
 
-import classes.FunctionsManager;
-import classes.ProgramsManager;
-import classes.UsersManager;
+import entitymanagers.FunctionsManager;
+import entitymanagers.ProgramsManager;
+import entitymanagers.UsersManager;
 import engine.*;
 import engine.UserInfo;
 import jakarta.servlet.ServletException;
@@ -158,7 +158,7 @@ public class UsersServlet extends HttpServlet {
         synchronized (functionsManager) {
             FunctionInfo functionToSet = null;
 
-            if (functionsManager.functionExists(functionname)) {
+            if ((functionsManager.getFunction(functionname)) != null) {
                 functionToSet = functionsManager.getFunction(functionname);
                 programToSet = functionToSet.func().getProg();
             }

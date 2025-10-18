@@ -1,4 +1,4 @@
-package classes;
+package entitymanagers;
 
 import engine.FunctionInfo;
 
@@ -16,14 +16,14 @@ public class FunctionsManager {
         return functions;
     }
 
-    public boolean functionExists(String functionName) {
+    /*public boolean functionExists(String functionName) {
         for (FunctionInfo fi : functions) {
             if (fi.func().getProg().getName().equals(functionName)) {
                 return true;
             }
         }
         return false;
-    }
+    }*/
     public FunctionInfo getFunction(String functionName) {
         for (FunctionInfo fi : functions) {
             if (fi.func().getProg().getName().equals(functionName)) {

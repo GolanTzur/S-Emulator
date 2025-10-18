@@ -1,16 +1,12 @@
-package classes;
+package controllers;
 
 import com.google.gson.Gson;
-import engine.Debugger;
-import engine.Program;
-import engine.ProgramVars;
-import engine.Statistics;
-import engine.basictypes.Architecture;
-import engine.basictypes.Variable;
-import engine.classhierarchy.AbstractInstruction;
+import dto.Architecture;
+import dto.ObservableAbstractInstruction;
+import dto.ObservableProgramVars;
+import httpclient.HttpClientSingleton;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

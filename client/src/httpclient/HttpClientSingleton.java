@@ -1,5 +1,5 @@
 // HttpClientSingleton.java
-package classes;
+package httpclient;
 
 import okhttp3.OkHttpClient;
 

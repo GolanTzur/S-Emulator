@@ -1,8 +1,8 @@
 package servlets;
 
-import classes.FunctionsManager;
-import classes.ProgramsManager;
-import classes.UsersManager;
+import entitymanagers.FunctionsManager;
+import entitymanagers.ProgramsManager;
+import entitymanagers.UsersManager;
 import engine.*;
 import engine.jaxbclasses.SProgram;
 import jakarta.servlet.ServletException;
@@ -16,7 +16,7 @@ import jakarta.servlet.http.Part;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.Set;
+
 
 @WebServlet(name = "ProgramsServlet", urlPatterns = {"/programs"})
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5) // 25 MBaa

@@ -3,12 +3,13 @@ package servlets;
 import engine.RunInfo;
 import engine.UserInfo;
 import engine.basictypes.Architecture;
+import entitymanagers.UsersManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import classes.*;
+import entitymanagers.*;
 
 import java.io.IOException;
 import java.util.Properties;
