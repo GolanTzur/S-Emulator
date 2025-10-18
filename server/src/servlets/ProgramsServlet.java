@@ -43,12 +43,11 @@ public class ProgramsServlet extends HttpServlet {
                         pm = ProgramsManager.getInstance();
                         getServletContext().setAttribute(ContextAttributes.PROGRAMS.getAttributeName(), pm);
                     }
-                    synchronized (pm) {
-                        if (pm.programExists(sProgram.getName()) != null) {
-                            response.setStatus(HttpServletResponse.SC_CONFLICT);
-                            response.getWriter().println("Program already exists");
-                            return;
-                        }
+
+                    if (pm.programExists(sProgram.getName()) != null) {
+                        response.setStatus(HttpServletResponse.SC_CONFLICT);
+                        response.getWriter().println("Program already exists");
+                        return;
                     }
                     FunctionsManager fm = (FunctionsManager) getServletContext().getAttribute(ContextAttributes.FUNCTIONS.getAttributeName());
                     if (fm == null) {
@@ -60,9 +59,9 @@ public class ProgramsServlet extends HttpServlet {
                         um = UsersManager.getInstance();
                         getServletContext().setAttribute(ContextAttributes.USERS.getAttributeName(), um);
                     }
-                    synchronized (getServletContext()) {
+
                         UserInfo userInfo = um.lookForUser(user);
-                        AddFuncDetails afd = new AddFuncDetails(userInfo, sProgram.getName(), fm.getFunctions());
+                        AddFuncDetails afd = new AddFuncDetails(userInfo, sProgram.getName(), fm.getFunctions(),fm.getLock());
                         try {
                             Program program = xmlHandler.convertToProgram(sProgram, afd); // here the functions are added
                             program.checkValidity();
@@ -74,7 +73,7 @@ public class ProgramsServlet extends HttpServlet {
                             response.getWriter().println("Error processing program: " + e.getMessage());
                             return;
                         }
-                    }
+
 
 
                 } catch (Exception e) {

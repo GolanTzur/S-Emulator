@@ -4,31 +4,48 @@ import engine.UserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class UsersManager {
     private static UsersManager instance = null;
-    private List<UserInfo> users;
+    private final List<UserInfo> users;
+    private final ReentrantReadWriteLock rwLock;
 
     private UsersManager() {
+        rwLock = new ReentrantReadWriteLock();
         this.users = new ArrayList<>();
     }
+
     public List<UserInfo> getUsers() {
-        return users;
+        rwLock.readLock().lock();
+        try {
+            return users;
+        } finally {
+            rwLock.readLock().unlock();
+        }
     }
+
     public UserInfo lookForUser(String name) {
-        for (UserInfo u : users) {
-            if (u.getName().equals(name)) {
-                return u;
+        rwLock.readLock().lock();
+        try {
+            for (UserInfo u : users) {
+                if (u.getName().equals(name)) {
+                    return u;
+                }
             }
+        } finally {
+            rwLock.readLock().unlock();
         }
         return null;
     }
 
-    public synchronized void addUser(UserInfo user) {
+    public void addUser(UserInfo user) {
+        rwLock.writeLock().lock();
         users.add(user);
+        rwLock.writeLock().unlock();
     }
 
-    public static UsersManager getInstance() {
+    public static synchronized UsersManager getInstance() {
         if (instance == null) {
             instance = new UsersManager();
         }

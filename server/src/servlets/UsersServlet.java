@@ -19,7 +19,7 @@ import java.util.Properties;
 @WebServlet(name = "UsersServlet", urlPatterns = {"/users"})
 public class UsersServlet extends HttpServlet {
 
-
+    // Handle user login and show users
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String action = request.getParameter("action");
@@ -31,20 +31,17 @@ public class UsersServlet extends HttpServlet {
                     usersManager = UsersManager.getInstance();
                     getServletContext().setAttribute(ContextAttributes.USERS.getAttributeName(), usersManager);
                 }
-                synchronized (usersManager) {
-                    UserInfo userInfo;
-                    UserInfo userToCheck;
-                    if ((userInfo = usersManager.lookForUser(user)) == null) {
-                        userToCheck = new UserInfo(user);
-                        usersManager.addUser(userToCheck);
-                        response.setStatus(HttpServletResponse.SC_OK);
-                        response.getWriter().print(user + "," + userToCheck.getCreditsLeft());
-                    } else
-                    {
-                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        response.getWriter().print("User "+user+" already exists");
-                    }
 
+                UserInfo userInfo;
+                UserInfo userToCheck;
+                if ((userInfo = usersManager.lookForUser(user)) == null) {
+                    userToCheck = new UserInfo(user);
+                    usersManager.addUser(userToCheck);
+                    response.setStatus(HttpServletResponse.SC_OK);
+                        response.getWriter().print(user + "," + userToCheck.getCreditsLeft());
+                } else {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().print("User " + user + " already exists");
                 }
 
             } else {

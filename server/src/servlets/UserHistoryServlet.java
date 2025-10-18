@@ -32,9 +32,8 @@ public class UserHistoryServlet extends HttpServlet {
             getServletContext().setAttribute(ContextAttributes.USERS.getAttributeName(), um);
         }
         UserInfo userInfo;
-        synchronized (um) {
-            userInfo = um.lookForUser(user);
-        }
+        userInfo = um.lookForUser(user);
+
         if (userInfo == null) {
             response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_NOT_FOUND);
             response.getWriter().println("User not found");
@@ -83,27 +82,23 @@ public class UserHistoryServlet extends HttpServlet {
         }
 
         UsersManager um = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
-        synchronized (um) {
-            UserInfo userInfo = um.lookForUser(user);
-            boolean isMain = Boolean.parseBoolean(isMainStr);
-            int cycles;
-            int degree;
-            int result;
-            try {
-                cycles = Integer.parseInt(cyclesStr);
-                degree = Integer.parseInt(degreeStr);
-                result = Integer.parseInt(resultStr);
-            } catch (NumberFormatException e) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().println("Invalid number format for cycles or degree");
-                return;
-            }
-            userInfo.addRunInfo(new RunInfo(isMain, runname, Architecture.valueOf(arch), result, cycles, degree));
-            response.setStatus(HttpServletResponse.SC_OK);
+
+        UserInfo userInfo = um.lookForUser(user);
+        boolean isMain = Boolean.parseBoolean(isMainStr);
+        int cycles;
+        int degree;
+        int result;
+        try {
+            cycles = Integer.parseInt(cyclesStr);
+            degree = Integer.parseInt(degreeStr);
+            result = Integer.parseInt(resultStr);
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Invalid number format for cycles or degree");
             return;
         }
-
-
+        userInfo.addRunInfo(new RunInfo(isMain, runname, Architecture.valueOf(arch), result, cycles, degree));
+        response.setStatus(HttpServletResponse.SC_OK);
 
     }
 }

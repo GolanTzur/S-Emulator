@@ -32,16 +32,12 @@ public class ExpansionServlet extends HttpServlet {
         ProgramsManager pm = (ProgramsManager) getServletContext().getAttribute(ContextAttributes.PROGRAMS.getAttributeName());
         ProgramInfo pi;
         Program search;
-        synchronized (pm)
-        {
-            pi = pm.programExists(progName);
-        }
+        pi = pm.programExists(progName);
+
             if(pi==null){ //If its not main program , its function
                 FunctionsManager fm = (FunctionsManager) getServletContext().getAttribute(ContextAttributes.FUNCTIONS.getAttributeName());
-                synchronized (fm) {
-                    FunctionInfo fi = fm.getFunction(progName);
-                    search = fi.func().getProg();
-               }
+                FunctionInfo fi = fm.getFunction(progName);
+                search = fi.func().getProg();
             }
             else
                 search = pi.getProgram();

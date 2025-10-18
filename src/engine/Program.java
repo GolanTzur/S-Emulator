@@ -2,9 +2,6 @@ package engine;
 
 import engine.basictypes.*;
 import engine.classhierarchy.*;
-
-
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -359,27 +356,9 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
         }
         return initialVars;
     }
-    /*public Program clone() {
-        ArrayList<AbstractInstruction> clonedInstructions = new ArrayList<>();
-        ProgramVars vars = new ProgramVars();
-
-        for (AbstractInstruction instruction : this.instructions) {
-            if (instruction instanceof Function) {
-                Function func = (Function) instruction;
-                ArrayList<Variable> inputs = new ArrayList<>(func.getProg().getVars().getInput().values());
-                for (Variable var : inputs) {
-
-                }
-                clonedInstructions.add(instruction.clone(vars));
-            }
-
-            return new Program(this.name, clonedInstructions, vars);
-
-        }
-    }*/
     @Override
-    public Program clone() {
-        // Deep copy of ProgramVars (implement clone if needed)
+    public synchronized Program clone() {
+        // Deep copy of ProgramVars
         ProgramVars clonedVars = this.vars.clone();
 
         // Deep copy of instructions
@@ -608,37 +587,6 @@ private void removeFirstLabelCollisions(Label parentLabel, ArrayList<AbstractIns
 
     public int getCycleCount() {
         return cycleCount;
-    }
-    public void setCycleCount(int cycleCount) {
-        this.cycleCount = cycleCount;
-    }
-
-    public Set<String> getAllFunctionsUsed()
-    {
-        Set<String> functions = new HashSet<>();
-        for(AbstractInstruction instr: instructions){
-            if(instr instanceof Function)
-            {
-                functions.add(((Function)instr).getProg().getName());
-                functions.addAll(((Function)instr).getProg().getAllFunctionsUsed());
-            }
-            if(instr instanceof JumpEqualFunction){
-                functions.add(((JumpEqualFunction)instr).getFunc().getProg().getName());
-                functions.addAll(((JumpEqualFunction)instr).getFunc().getProg().getAllFunctionsUsed());
-            }
-            if(instr.getVar() instanceof ResultVar){
-                functions.add(((ResultVar)instr.getVar()).getFunction().getProg().getName());
-                functions.addAll(((ResultVar)instr.getVar()).getFunction().getProg().getAllFunctionsUsed());
-            }
-            if(instr instanceof HasExtraVar){
-                HasExtraVar hev=(HasExtraVar) instr;
-                if(hev.getArg() instanceof ResultVar){
-                    functions.add(((ResultVar)hev.getArg()).getFunction().getProg().getName());
-                    functions.addAll(((ResultVar)hev.getArg()).getFunction().getProg().getAllFunctionsUsed());
-                }
-            }
-        }
-        return functions;
     }
 
 }

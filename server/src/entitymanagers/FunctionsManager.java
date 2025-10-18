@@ -4,40 +4,49 @@ import engine.FunctionInfo;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+
+//Addition is performed via AddFuncDetails class
 public class FunctionsManager {
+    private final ReentrantReadWriteLock rwLock;
     private static FunctionsManager instance = null;
-    private Set<FunctionInfo> functions;
+    private final Set<FunctionInfo> functions;
 
     private FunctionsManager() {
         this.functions = new HashSet<>();
+        rwLock = new ReentrantReadWriteLock();
     }
-    public Set<FunctionInfo> getFunctions() {
-        return functions;
+    public Set<FunctionInfo> getFunctions()
+    {
+        rwLock.readLock().lock();
+        try {
+            return functions;
+        }finally {
+            rwLock.readLock().unlock();
+        }
     }
 
-    /*public boolean functionExists(String functionName) {
-        for (FunctionInfo fi : functions) {
-            if (fi.func().getProg().getName().equals(functionName)) {
-                return true;
+    public FunctionInfo getFunction(String functionName) {
+        rwLock.readLock().lock();
+        try {
+            for (FunctionInfo fi : functions) {
+                if (fi.func().getProg().getName().equals(functionName)) {
+                    return fi;
+                }
             }
         }
-        return false;
-    }*/
-    public FunctionInfo getFunction(String functionName) {
-        for (FunctionInfo fi : functions) {
-            if (fi.func().getProg().getName().equals(functionName)) {
-                return fi;
-            }
+        finally {
+            rwLock.readLock().unlock();
         }
         return null;
     }
 
-    public synchronized void addFunction(FunctionInfo pi) {
-        functions.add(pi);
+    public ReentrantReadWriteLock getLock() {
+        return rwLock;
     }
 
-    public static FunctionsManager getInstance() {
+    public static synchronized FunctionsManager getInstance() {
         if (instance == null) {
             instance = new FunctionsManager();
         }

@@ -24,14 +24,13 @@ public class FunctionsServlet extends HttpServlet {
         }
         StringBuilder sb=new StringBuilder();
         sb.append("[");
-        synchronized (fm) {
-            for (FunctionInfo function : fm.getFunctions()) {
-                sb.append("{\"funcname\":\"").append(function.func().getProg().getName()).append("\",");
-                sb.append("\"mainprogramname\":\"").append(function.mainProgramContext()).append("\",");
-                sb.append("\"owner\":\"").append(function.userUploaded()).append("\",");
-                sb.append("\"numinstructions\":\"").append(function.func().getProg().getInstructions().size()).append("\",");
-                sb.append("\"degree\":\"").append(function.func().getProg().getProgramDegree()).append("\"},");
-            }
+
+        for (FunctionInfo function : fm.getFunctions()) {
+            sb.append("{\"funcname\":\"").append(function.func().getProg().getName()).append("\",");
+            sb.append("\"mainprogramname\":\"").append(function.mainProgramContext()).append("\",");
+            sb.append("\"owner\":\"").append(function.userUploaded()).append("\",");
+            sb.append("\"numinstructions\":\"").append(function.func().getProg().getInstructions().size()).append("\",");
+            sb.append("\"degree\":\"").append(function.func().getProg().getProgramDegree()).append("\"},");
         }
 
         if(sb.length()==1)
