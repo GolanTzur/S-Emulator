@@ -38,36 +38,46 @@ public class ProgramsServlet extends HttpServlet {
             if (part.getName().equals("file")) {
                 SProgram sProgram = xmlHandler.getSProgram(part.getInputStream());
                 try {
-                    ProgramsManager pm = (ProgramsManager) getServletContext().getAttribute(ContextAttributes.PROGRAMS.getAttributeName());
-                    if (pm == null) {
-                        pm = ProgramsManager.getInstance();
-                        getServletContext().setAttribute(ContextAttributes.PROGRAMS.getAttributeName(), pm);
-                    }
+                    ProgramsManager pm;
+                    FunctionsManager fm;
+                    UsersManager um;
+                    synchronized (getServletContext()) {
 
+                        pm = (ProgramsManager) getServletContext().getAttribute(ContextAttributes.PROGRAMS.getAttributeName());
+                        fm = (FunctionsManager) getServletContext().getAttribute(ContextAttributes.FUNCTIONS.getAttributeName());
+                        um = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
+
+                        if (pm == null) {
+                            pm = ProgramsManager.getInstance();
+                            getServletContext().setAttribute(ContextAttributes.PROGRAMS.getAttributeName(), pm);
+                        }
+
+                        if (fm == null) {
+                            fm = FunctionsManager.getInstance();
+                            getServletContext().setAttribute(ContextAttributes.FUNCTIONS.getAttributeName(), fm);
+                        }
+
+                        if (um == null) {
+                            um = UsersManager.getInstance();
+                            getServletContext().setAttribute(ContextAttributes.USERS.getAttributeName(), um);
+                        }
+                    }
                     if (pm.programExists(sProgram.getName()) != null) {
                         response.setStatus(HttpServletResponse.SC_CONFLICT);
                         response.getWriter().println("Program already exists");
                         return;
                     }
-                    FunctionsManager fm = (FunctionsManager) getServletContext().getAttribute(ContextAttributes.FUNCTIONS.getAttributeName());
-                    if (fm == null) {
-                        fm = FunctionsManager.getInstance();
-                        getServletContext().setAttribute(ContextAttributes.FUNCTIONS.getAttributeName(), fm);
-                    }
-                    UsersManager um = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
-                    if (um == null) {
-                        um = UsersManager.getInstance();
-                        getServletContext().setAttribute(ContextAttributes.USERS.getAttributeName(), um);
-                    }
 
-                        UserInfo userInfo = um.lookForUser(user);
-                        AddFuncDetails afd = new AddFuncDetails(userInfo, sProgram.getName(), fm.getFunctions(),fm.getLock());
+                    UserInfo userInfo = um.lookForUser(user);
+                        AddFuncDetails afd = new AddFuncDetails(userInfo, sProgram.getName(), fm.getFunctions(),fm.getLock(),um.getRwLock());
                         try {
                             Program program = xmlHandler.convertToProgram(sProgram, afd); // here the functions are added
                             program.checkValidity();
                             ProgramInfo pi = new ProgramInfo(program, user);
                             pm.addProgram(pi);
+                            um.getRwLock().writeLock().lock();
                             userInfo.addProgram(pi);
+                            um.getRwLock().writeLock().unlock();
                         } catch (Exception e) {
                             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             response.getWriter().println("Error processing program: " + e.getMessage());
@@ -99,7 +109,7 @@ public class ProgramsServlet extends HttpServlet {
 
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        synchronized (pm) {
+       pm.getRwLock().readLock().lock();
             for (ProgramInfo program : pm.getPrograms()) {
                 sb.append("{\"programname\":\"").append(program.getProgramName()).append("\",");
                 sb.append("\"owner\":\"").append(program.getUserUploaded()).append("\",");
@@ -108,7 +118,7 @@ public class ProgramsServlet extends HttpServlet {
                 sb.append("\"numruns\":\"").append(program.getNumRuns()).append("\",");
                 sb.append("\"avgcredits\":\"").append(program.getAvgCreditsPrice()).append("\"},");
             }
-        }
+        pm.getRwLock().readLock().unlock();
 
         if (sb.length() == 1)
             sb.deleteCharAt(0);
@@ -135,17 +145,16 @@ public class ProgramsServlet extends HttpServlet {
                 getServletContext().setAttribute(ContextAttributes.PROGRAMS.getAttributeName(), pm);
             }
             ProgramInfo pi;
-            synchronized (pm) {
-                pi = pm.programExists(programName);
-            }
+            pi = pm.programExists(programName);
+
             if (pi == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 response.getWriter().println("Program not found");
                 return;
             }
-            synchronized (pi) {
+            pm.getRwLock().writeLock().lock();
                 pi.updateAvgCreditsPrice(Integer.parseInt(credits));
-            }
+            pm.getRwLock().writeLock().unlock();
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

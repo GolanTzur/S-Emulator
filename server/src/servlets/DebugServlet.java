@@ -4,6 +4,7 @@ package servlets;
 import entitymanagers.FunctionsManager;
 import entitymanagers.ProgramsManager;
 import engine.*;
+import entitymanagers.UsersManager;
 import jakarta.servlet.http.HttpServlet;
 
 import jakarta.servlet.annotation.WebServlet;
@@ -12,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 
 import java.util.Properties;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @WebServlet(name = "DebugServlet", urlPatterns = {"/debug"})
 public class DebugServlet extends HttpServlet {
@@ -23,6 +25,8 @@ public class DebugServlet extends HttpServlet {
         String action = prop.getProperty("action");
         req.setAttribute("properties", prop);
         UserInfo user = (UserInfo) req.getSession().getAttribute("currentuser");
+        ReentrantReadWriteLock userLock = ((UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName())).getRwLock();
+
         if(action.equals("debug")) {
             Program program = (Program) req.getSession().getAttribute("currentprogram");
 
@@ -48,7 +52,11 @@ public class DebugServlet extends HttpServlet {
             programsource.deployToDegree(programsource.getProgramDegree()-degree);
             req.getSession().setAttribute("programcopy", programsource);
 
-            Debugger debugger=new Debugger(new Runner(program.getInstructions(),user.getCreditsLeft()));
+            userLock.readLock().lock();
+            int creditsLeft= user.getCreditsLeft();
+            userLock.readLock().unlock();
+
+            Debugger debugger=new Debugger(new Runner(program.getInstructions(),creditsLeft));
             debugger.setRunning(true);
             req.getSession().setAttribute("currentdebugger", debugger);
             getServletContext().getRequestDispatcher("/inputs").include(req, resp);
@@ -67,7 +75,10 @@ public class DebugServlet extends HttpServlet {
                 int beforeCycles=debugger.getCycleCount();
                 debugger.step();
                 int afterCycles=debugger.getCycleCount();
+
+                userLock.writeLock().lock();
                 user.spendCredits(afterCycles-beforeCycles);
+                userLock.writeLock().unlock();
 
                 if (!debugger.isRunning()) {
                     resp.setStatus(HttpServletResponse.SC_OK);

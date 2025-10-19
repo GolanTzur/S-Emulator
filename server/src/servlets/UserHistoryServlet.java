@@ -97,7 +97,9 @@ public class UserHistoryServlet extends HttpServlet {
             response.getWriter().println("Invalid number format for cycles or degree");
             return;
         }
+        um.getRwLock().writeLock().lock();
         userInfo.addRunInfo(new RunInfo(isMain, runname, Architecture.valueOf(arch), result, cycles, degree));
+        um.getRwLock().writeLock().unlock();
         response.setStatus(HttpServletResponse.SC_OK);
 
     }

@@ -3,7 +3,8 @@ package servlets;
 public enum ContextAttributes {
     USERS("AllUsers"),
     PROGRAMS("AllPrograms"),
-    FUNCTIONS("AllFunctions");
+    FUNCTIONS("AllFunctions"),
+    CHAT("AllChats");
 
     private final String attributeName;
 

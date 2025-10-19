@@ -3,6 +3,7 @@ package servlets;
 import entitymanagers.FunctionsManager;
 import entitymanagers.ProgramsManager;
 import engine.*;
+import entitymanagers.UsersManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @WebServlet(name = "RunServlet", urlPatterns = {"/run"})
 public class RunServlet extends HttpServlet {
@@ -40,10 +42,17 @@ public class RunServlet extends HttpServlet {
        programsource.deployToDegree(programsource.getProgramDegree()-degree);
        getServletContext().getRequestDispatcher("/inputs").include(request,response);
        UserInfo user=(UserInfo)request.getSession(false).getAttribute("currentuser");
-
+       ReentrantReadWriteLock userLock=((UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName())).getRwLock();
        try {
-           program.execute(user.getCreditsLeft());
+           userLock.readLock().lock();
+           int creditsLeft=user.getCreditsLeft();
+           userLock.readLock().unlock();
+
+           program.execute(creditsLeft);
+
+           userLock.writeLock().lock();
            user.spendCredits(program.getCycleCount());
+           userLock.writeLock().unlock();
        } catch (Exception e) {
            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
            response.getWriter().println(e.getMessage());

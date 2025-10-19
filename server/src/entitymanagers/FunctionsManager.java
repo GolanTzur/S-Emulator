@@ -22,7 +22,8 @@ public class FunctionsManager {
         rwLock.readLock().lock();
         try {
             return functions;
-        }finally {
+        }
+        finally {
             rwLock.readLock().unlock();
         }
     }

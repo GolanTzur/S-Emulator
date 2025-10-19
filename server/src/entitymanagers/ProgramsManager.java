@@ -8,16 +8,20 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ProgramsManager {
 
-    private ReentrantReadWriteLock rwLock;
+    private final ReentrantReadWriteLock rwLock;
     private static ProgramsManager instance = null;
     private final List<ProgramInfo> programs;
 
     private ProgramsManager() {
         this.programs = new ArrayList<>();
+        rwLock = new ReentrantReadWriteLock();
     }
     public List<ProgramInfo> getPrograms() {
-        rwLock = new ReentrantReadWriteLock();
         return programs;
+    }
+
+    public ReentrantReadWriteLock getRwLock() {
+        return rwLock;
     }
 
     public void addProgram(ProgramInfo pi) {

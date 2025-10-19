@@ -85,3 +85,15 @@
     -fx-text-fill: #1565c0;
 }
 
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #222;
+    -fx-font-size: 16px;
+    -fx-padding: 4px 6px;
+}
+
+.list-cell:selected {
+    -fx-background-color: #e3eaff;
+    -fx-text-fill: #0057b8;
+}
+

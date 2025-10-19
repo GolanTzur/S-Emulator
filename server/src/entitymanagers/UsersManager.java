@@ -16,6 +16,10 @@ public class UsersManager {
         this.users = new ArrayList<>();
     }
 
+    public ReentrantReadWriteLock getRwLock() {
+        return rwLock;
+    }
+
     public List<UserInfo> getUsers() {
         rwLock.readLock().lock();
         try {

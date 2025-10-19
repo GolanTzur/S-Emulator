@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 public class DashboardController {
     private final StringProperty usernameproperty = new SimpleStringProperty("");
     private final StringProperty creditsproperty = new SimpleStringProperty("");
-    private String userHistoryShow=null;
+    private String userHistoryShow = null;
 
     private ScheduledExecutorService usersscheduler;
     private ScheduledExecutorService programsscheduler;
@@ -44,19 +44,19 @@ public class DashboardController {
     private TableView<ObservableFunctionInfo> allfunctions;
 
     @FXML
-    private TableColumn<ObservableFunctionInfo,String> allfunctionsdegree;
+    private TableColumn<ObservableFunctionInfo, String> allfunctionsdegree;
 
     @FXML
-    private TableColumn<ObservableFunctionInfo,String> allfunctionsinstructions;
+    private TableColumn<ObservableFunctionInfo, String> allfunctionsinstructions;
 
     @FXML
-    private TableColumn<ObservableFunctionInfo,String> allfunctionsmainprogram;
+    private TableColumn<ObservableFunctionInfo, String> allfunctionsmainprogram;
 
     @FXML
-    private TableColumn<ObservableFunctionInfo,String> allfunctionsname;
+    private TableColumn<ObservableFunctionInfo, String> allfunctionsname;
 
     @FXML
-    private TableColumn<ObservableFunctionInfo,String> allfunctionsowner;
+    private TableColumn<ObservableFunctionInfo, String> allfunctionsowner;
 
     @FXML
     private TableView<ObservableProgramInfo> allprograms;
@@ -77,7 +77,7 @@ public class DashboardController {
     private TableColumn<ObservableProgramInfo, String> allprogramsowner;
 
     @FXML
-    private TableColumn<ObservableProgramInfo,String> allprogramsruns;
+    private TableColumn<ObservableProgramInfo, String> allprogramsruns;
 
     @FXML
     private TableView<ObservableUserInfo> allusers;
@@ -86,19 +86,19 @@ public class DashboardController {
     private TableColumn<ObservableUserInfo, String> alluserscredits;
 
     @FXML
-    private TableColumn<ObservableUserInfo,String> allusersfunctions;
+    private TableColumn<ObservableUserInfo, String> allusersfunctions;
 
     @FXML
-    private TableColumn<ObservableUserInfo,String> allusersname;
+    private TableColumn<ObservableUserInfo, String> allusersname;
 
     @FXML
-    private TableColumn<ObservableUserInfo,String> allusersprograms;
+    private TableColumn<ObservableUserInfo, String> allusersprograms;
 
     @FXML
-    private TableColumn<ObservableUserInfo,String> allusersruns;
+    private TableColumn<ObservableUserInfo, String> allusersruns;
 
     @FXML
-    private TableColumn<ObservableUserInfo,String> allusersspent;
+    private TableColumn<ObservableUserInfo, String> allusersspent;
 
     @FXML
     private Button chargebutton;
@@ -122,6 +122,9 @@ public class DashboardController {
     private AnchorPane anchor11;
 
     @FXML
+    private Button chatbutton;
+
+    @FXML
     private Button deselectuser;
 
     @FXML
@@ -143,22 +146,22 @@ public class DashboardController {
     private TableColumn<RunInfo, String> userhistoryarchitecture;
 
     @FXML
-    private TableColumn<RunInfo,Integer> userhistorycycles;
+    private TableColumn<RunInfo, Integer> userhistorycycles;
 
     @FXML
-    private TableColumn<RunInfo,Integer> userhistorydegree;
+    private TableColumn<RunInfo, Integer> userhistorydegree;
 
     @FXML
-    private TableColumn<RunInfo,String> userhistorymainprogram;
+    private TableColumn<RunInfo, String> userhistorymainprogram;
 
     @FXML
-    private TableColumn<RunInfo,String> userhistoryname;
+    private TableColumn<RunInfo, String> userhistoryname;
 
     @FXML
-    private TableColumn<RunInfo,Integer> userhistorynumber;
+    private TableColumn<RunInfo, Integer> userhistorynumber;
 
     @FXML
-    private TableColumn<RunInfo,Integer> userhistoryresult;
+    private TableColumn<RunInfo, Integer> userhistoryresult;
 
     @FXML
     private Label userhistorytext;
@@ -182,11 +185,11 @@ public class DashboardController {
     private Label username;
 
     private void setUsersTableAddFormat(TableColumn<ObservableUserInfo, String> username,
-                                       TableColumn<ObservableUserInfo, String> programs,
-                                       TableColumn<ObservableUserInfo, String> functions,
-                                       TableColumn<ObservableUserInfo, String> runs,
-                                       TableColumn<ObservableUserInfo, String> credits,
-                                       TableColumn<ObservableUserInfo, String> spent) {
+                                        TableColumn<ObservableUserInfo, String> programs,
+                                        TableColumn<ObservableUserInfo, String> functions,
+                                        TableColumn<ObservableUserInfo, String> runs,
+                                        TableColumn<ObservableUserInfo, String> credits,
+                                        TableColumn<ObservableUserInfo, String> spent) {
         // Define how each column gets its value
         username.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().username())
@@ -211,6 +214,7 @@ public class DashboardController {
         );
 
     }
+
     private void setProgramsTableAddFormat(TableColumn<ObservableProgramInfo, String> name,
                                            TableColumn<ObservableProgramInfo, String> owner,
                                            TableColumn<ObservableProgramInfo, String> instructions,
@@ -241,11 +245,12 @@ public class DashboardController {
         );
 
     }
+
     private void setFunctionsTableAddFormat(TableColumn<ObservableFunctionInfo, String> name,
-                                           TableColumn<ObservableFunctionInfo, String> owner,
-                                           TableColumn<ObservableFunctionInfo, String> mainprogram,
-                                           TableColumn<ObservableFunctionInfo, String> instructions,
-                                           TableColumn<ObservableFunctionInfo, String> degree) {
+                                            TableColumn<ObservableFunctionInfo, String> owner,
+                                            TableColumn<ObservableFunctionInfo, String> mainprogram,
+                                            TableColumn<ObservableFunctionInfo, String> instructions,
+                                            TableColumn<ObservableFunctionInfo, String> degree) {
         // Define how each column gets its value
         name.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().funcname())
@@ -267,13 +272,14 @@ public class DashboardController {
         );
 
     }
+
     private void setUserHistoryTableAddFormat(TableColumn<RunInfo, Integer> number,
-                                           TableColumn<RunInfo, String> name,
-                                           TableColumn<RunInfo, String> mainprogram,
-                                           TableColumn<RunInfo, String> architecture,
-                                           TableColumn<RunInfo, Integer> result,
-                                           TableColumn<RunInfo, Integer> cycles,
-                                           TableColumn<RunInfo, Integer> degree) {
+                                              TableColumn<RunInfo, String> name,
+                                              TableColumn<RunInfo, String> mainprogram,
+                                              TableColumn<RunInfo, String> architecture,
+                                              TableColumn<RunInfo, Integer> result,
+                                              TableColumn<RunInfo, Integer> cycles,
+                                              TableColumn<RunInfo, Integer> degree) {
         // Define how each column gets its value
         number.setCellValueFactory(cellData ->
                 new SimpleIntegerProperty(userhistory.getItems().indexOf(cellData.getValue()) + 1).asObject()
@@ -303,11 +309,11 @@ public class DashboardController {
     }
 
     public void setUserSelectedListener() {
-            allusers.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
-                        if (newSel != null)
-                          this.userHistoryShow = newSel.username();
-                    }
-            );
+        allusers.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
+                    if (newSel != null)
+                        this.userHistoryShow = newSel.username();
+                }
+        );
     }
 
 
@@ -315,10 +321,10 @@ public class DashboardController {
     public void initialize() {
         setLoginScene();
         fileroute.setEditable(false);
-        setUsersTableAddFormat(allusersname,allusersprograms,allusersfunctions,allusersruns,alluserscredits,allusersspent);
-        setProgramsTableAddFormat(allprogramsname,allprogramsowner,allprogramsinstructions,allprogramsdegree,allprogramsavgcredits,allprogramsruns);
-        setFunctionsTableAddFormat(allfunctionsname,allfunctionsowner,allfunctionsmainprogram,allfunctionsinstructions,allfunctionsdegree);
-        setUserHistoryTableAddFormat(userhistorynumber,userhistoryname,userhistorymainprogram,userhistoryarchitecture,userhistoryresult,userhistorycycles,userhistorydegree);
+        setUsersTableAddFormat(allusersname, allusersprograms, allusersfunctions, allusersruns, alluserscredits, allusersspent);
+        setProgramsTableAddFormat(allprogramsname, allprogramsowner, allprogramsinstructions, allprogramsdegree, allprogramsavgcredits, allprogramsruns);
+        setFunctionsTableAddFormat(allfunctionsname, allfunctionsowner, allfunctionsmainprogram, allfunctionsinstructions, allfunctionsdegree);
+        setUserHistoryTableAddFormat(userhistorynumber, userhistoryname, userhistorymainprogram, userhistoryarchitecture, userhistoryresult, userhistorycycles, userhistorydegree);
         setUserSelectedListener();
 
         //All users table update thread
@@ -331,7 +337,7 @@ public class DashboardController {
                         .url("http://localhost:8080/server_war/users?action=showusers")
                         .get()
                         .build();
-                   CLIENT.newCall(req).enqueue(new Callback() {
+                CLIENT.newCall(req).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
 
@@ -351,8 +357,8 @@ public class DashboardController {
                                 String selectedName = selected != null ? selected.username() : null;
 
                                 allusers.getItems().clear();
-                                if(users!=null&&users.length>0)
-                                 allusers.getItems().addAll(users);
+                                if (users != null && users.length > 0)
+                                    allusers.getItems().addAll(users);
 
                                 if (selectedName != null) {
                                     for (ObservableUserInfo u : allusers.getItems()) {
@@ -363,7 +369,7 @@ public class DashboardController {
                                     }
                                 }
                             });
-                         }
+                        }
                     }
 
                 });
@@ -408,8 +414,8 @@ public class DashboardController {
                                 String selectedName = selected != null ? selected.programname() : null;
 
                                 allprograms.getItems().clear();
-                                if (programs != null&&programs.length>0)
-                                 allprograms.getItems().addAll(programs);
+                                if (programs != null && programs.length > 0)
+                                    allprograms.getItems().addAll(programs);
 
                                 if (selectedName != null) {
                                     for (ObservableProgramInfo p : allprograms.getItems()) {
@@ -448,6 +454,7 @@ public class DashboardController {
                     public void onFailure(Call call, IOException e) {
 
                     }
+
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         String responseBody = response.body().string();
@@ -461,7 +468,7 @@ public class DashboardController {
                                 String selectedName = selected != null ? selected.funcname() : null;
 
                                 allfunctions.getItems().clear();
-                                if(functions!=null&&functions.length>0)
+                                if (functions != null && functions.length > 0)
                                     allfunctions.getItems().addAll(functions);
 
                                 if (selectedName != null) {
@@ -486,57 +493,56 @@ public class DashboardController {
     }
 
 
-    public void setUserLogged(String userLogged,int initialcredits) {
+    public void setUserLogged(String userLogged, int initialcredits) {
         usernameproperty.set(userLogged);
-        creditsproperty.set(String.valueOf(initialcredits)+"");
+        creditsproperty.set(String.valueOf(initialcredits) + "");
         username.textProperty().bind(usernameproperty);
         credits.textProperty().bind(creditsproperty);
         setDashboardScene();
     }
 
     public void setDashboardScene() { //A user is selected
-            maingrid.getChildren().clear();
-            maingrid.getChildren().addAll(anchor00,anchor01,anchor10,anchor11);
-            usermenuhbox.setVisible(true);
-            this.userHistoryShow=usernameproperty.get();
+        maingrid.getChildren().clear();
+        maingrid.getChildren().addAll(anchor00, anchor01, anchor10, anchor11,chatbutton);
+        usermenuhbox.setVisible(true);
+        this.userHistoryShow = usernameproperty.get();
 
-            //User history table update thread (in initialize userHistoryShow is null so it doesn't run)
-            historyscheduler = Executors.newSingleThreadScheduledExecutor();
-            Runnable showhistory = () -> {
-                try {
-                        OkHttpClient CLIENT = new OkHttpClient();
-                        Request req = new Request.Builder()
-                                .url("http://localhost:8080/server_war/userhistory?username=" + userHistoryShow)
-                                .get()
-                                .build();
-                        CLIENT.newCall(req).enqueue(new Callback() {
-                            @Override
-                            public void onFailure(Call call, IOException e) {
+        //User history table update thread (in initialize userHistoryShow is null so it doesn't run)
+        historyscheduler = Executors.newSingleThreadScheduledExecutor();
+        Runnable showhistory = () -> {
+            try {
+                OkHttpClient CLIENT = new OkHttpClient();
+                Request req = new Request.Builder()
+                        .url("http://localhost:8080/server_war/userhistory?username=" + userHistoryShow)
+                        .get()
+                        .build();
+                CLIENT.newCall(req).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
 
-                            }
+                    }
 
-                            @Override
-                            public void onResponse(Call call, Response response) throws IOException {
-                                String responseBody = response.body().string();
-                                if (response.isSuccessful()) {
-                                    Gson gson = new Gson();
-                                    RunInfo[] runs = gson.fromJson(responseBody, RunInfo[].class);
-                                    javafx.application.Platform.runLater(() -> {
-                                        userhistory.getItems().clear();
-                                        if(runs!=null&&runs.length>0)
-                                         userhistory.getItems().addAll(runs);
-                                    });
-                                }
-                            }
-                        });
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String responseBody = response.body().string();
+                        if (response.isSuccessful()) {
+                            Gson gson = new Gson();
+                            RunInfo[] runs = gson.fromJson(responseBody, RunInfo[].class);
+                            javafx.application.Platform.runLater(() -> {
+                                userhistory.getItems().clear();
+                                if (runs != null && runs.length > 0)
+                                    userhistory.getItems().addAll(runs);
+                            });
+                        }
+                    }
+                });
 
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
-            };
-            // Run immediately, then every 5 seconds
-            historyscheduler.scheduleAtFixedRate(showhistory, 0, 5, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        };
+        // Run immediately, then every 5 seconds
+        historyscheduler.scheduleAtFixedRate(showhistory, 0, 5, TimeUnit.SECONDS);
     }
 
     private void setLoginScene() {
@@ -548,7 +554,7 @@ public class DashboardController {
             LoginController loginController = loginpane.getController();
             loginController.setDashboardController(this);
             maingrid.add(loginpaneNode, 0, 0);
-            GridPane.setColumnSpan(loginpaneNode, 2);
+            GridPane.setColumnSpan(loginpaneNode, 3);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -563,7 +569,7 @@ public class DashboardController {
             OkHttpClient client = new OkHttpClient().newBuilder()
                     .build();
             MediaType mediaType = MediaType.parse("text/plain");
-            String json = "username=" + user + "\n"+"credits=" + creditsToAdd + "\n"+"action=add";
+            String json = "username=" + user + "\n" + "credits=" + creditsToAdd + "\n" + "action=add";
             RequestBody jsonBody = RequestBody.create(json, mediaType);
             Request request = new Request.Builder()
                     .url("http://localhost:8080/server_war/users")
@@ -592,8 +598,8 @@ public class DashboardController {
 
     @FXML
     void deselectuserPressed(ActionEvent event) {
-            this.userHistoryShow = usernameproperty.get();
-            allusers.getSelectionModel().clearSelection();
+        this.userHistoryShow = usernameproperty.get();
+        allusers.getSelectionModel().clearSelection();
     }
 
     @FXML
@@ -606,8 +612,7 @@ public class DashboardController {
             return; // User cancelled the file chooser
         }
         String filename = file.getName();
-        if (!filename.toLowerCase().endsWith(".xml"))
-        {
+        if (!filename.toLowerCase().endsWith(".xml")) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Invalid file type");
@@ -652,25 +657,25 @@ public class DashboardController {
     }
 
 
-        private void moveToExecutionScene(String progname,boolean isMainProgram) {
-            OkHttpClient client = HttpClientSingleton.getInstance();
-            RequestBody body = RequestBody.create(null, new byte[0]);
-            try {
+    private void moveToExecutionScene(String progname, boolean isMainProgram) {
+        OkHttpClient client = HttpClientSingleton.getInstance();
+        RequestBody body = RequestBody.create(null, new byte[0]);
+        try {
             String encodedProgname = URLEncoder.encode(progname, "UTF-8");
             Request request = new Request.Builder()
-                    .url("http://localhost:8080/server_war/users?programname=" + encodedProgname+"&username="+usernameproperty.get())
+                    .url("http://localhost:8080/server_war/users?programname=" + encodedProgname + "&username=" + usernameproperty.get())
                     .method("POST", body)
                     .build();
 
-                Response response = client.newCall(request).execute();
-                if (!response.isSuccessful()) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText("Could not set program for execution");
-                    alert.setContentText("Please try again later");
-                    alert.showAndWait();
-                    return;
-                }
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Could not set program for execution");
+                alert.setContentText("Please try again later");
+                alert.showAndWait();
+                return;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -679,7 +684,7 @@ public class DashboardController {
             FXMLLoader executionpane = new FXMLLoader(getClass().getResource("/fxml/execution.fxml"));
             Node executionpaneNode = executionpane.load();
             ExecutionController executionController = executionpane.getController();
-            executionController.setInitialInfo(usernameproperty.get(), progname, Integer.parseInt(creditsproperty.get()),isMainProgram);
+            executionController.setInitialInfo(usernameproperty.get(), progname, Integer.parseInt(creditsproperty.get()), isMainProgram);
             this.maingrid.getScene().getWindow().hide();
             usersscheduler.shutdown();
             historyscheduler.shutdown();
@@ -695,7 +700,6 @@ public class DashboardController {
     }
 
 
-
     @FXML
     void selectFunctionPressed(ActionEvent event) {
         ObservableFunctionInfo selectedFunction = allfunctions.getSelectionModel().getSelectedItem();
@@ -707,7 +711,7 @@ public class DashboardController {
             alert.showAndWait();
             return;
         }
-        moveToExecutionScene(selectedFunction.funcname(),false);
+        moveToExecutionScene(selectedFunction.funcname(), false);
     }
 
     @FXML
@@ -721,8 +725,25 @@ public class DashboardController {
             alert.showAndWait();
             return;
         }
-        moveToExecutionScene(selectedProgram.programname(),true);
+        moveToExecutionScene(selectedProgram.programname(), true);
     }
 
+    @FXML
+    void movetochatroom(ActionEvent event) {
+        try {
+            FXMLLoader chatpane = new FXMLLoader(getClass().getResource("/fxml/chats.fxml"));
+            Node chatpaneNode = chatpane.load();
+            ChatController chatroomController = chatpane.getController();
+            chatroomController.setCurrentUser(usernameproperty.get());
+            Stage stage = new Stage();
+            stage.setTitle("Chatroom - S-Emulator");
+            stage.setScene(new Scene((Parent) chatpaneNode));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
+    }
 }
 

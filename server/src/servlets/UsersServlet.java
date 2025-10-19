@@ -26,10 +26,13 @@ public class UsersServlet extends HttpServlet {
         if (action != null && action.equals("login")) {
             String user = request.getParameter("username");
             if (user != null) {
-                UsersManager usersManager = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
-                if (usersManager == null) {
-                    usersManager = UsersManager.getInstance();
-                    getServletContext().setAttribute(ContextAttributes.USERS.getAttributeName(), usersManager);
+                UsersManager usersManager;
+                synchronized (getServletContext()) {
+                    usersManager = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
+                    if (usersManager == null) {
+                        usersManager = UsersManager.getInstance();
+                        getServletContext().setAttribute(ContextAttributes.USERS.getAttributeName(), usersManager);
+                    }
                 }
 
                 UserInfo userInfo;
@@ -56,7 +59,7 @@ public class UsersServlet extends HttpServlet {
             }
             StringBuilder sb = new StringBuilder();
             sb.append("[");
-            synchronized (usersManager) {
+           usersManager.getRwLock().readLock().lock();
                 for (UserInfo ui : usersManager.getUsers()) {
                     sb.append("{\"username\":\"").append(ui.getName()).append("\",");
                     sb.append("\"numfunctions\":\"").append(ui.getFunctionsUploaded().size()).append("\",");
@@ -65,7 +68,8 @@ public class UsersServlet extends HttpServlet {
                     sb.append("\"creditsspent\":\"").append(ui.getCreditsSpent()).append("\",");
                     sb.append("\"numruns\":\"").append(ui.getRunInfos().size()).append("\"},");
                 }
-            }
+            usersManager.getRwLock().readLock().unlock();
+
             if (sb.length() == 1)
                 sb.deleteCharAt(0);
             else if (sb.charAt(sb.length() - 1) == ',') {
@@ -83,48 +87,56 @@ public class UsersServlet extends HttpServlet {
 
     // Update user credits
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Properties prop = new Properties();
-        prop.load(req.getInputStream());
-        String credits = prop.getProperty("credits");
-        String user = prop.getProperty("username");
-        String action = prop.getProperty("action");
-        if (user != null && credits != null && action != null) {
-            UserInfo userToUpdate = null;
-            UsersManager usersManager = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
-            synchronized (usersManager) {
-                if ((userToUpdate = usersManager.lookForUser(user)) == null) {
-                    usersManager.addUser(new UserInfo(user));
-                }
+protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    Properties prop = new Properties();
+    prop.load(req.getInputStream());
+    String credits = prop.getProperty("credits");
+    String user = prop.getProperty("username");
+    String action = prop.getProperty("action");
+    if (user != null && credits != null && action != null) {
+        UsersManager usersManager = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
+        UserInfo userToUpdate = usersManager.lookForUser(user);
+        if (userToUpdate == null) {
+            usersManager.addUser(new UserInfo(user));
+            userToUpdate = usersManager.lookForUser(user);
+        }
 
-                switch (action) {
-                    case "add":
-                        userToUpdate.addCredits(Integer.parseInt(credits));
-                        break;
-                    case "subtract":
-                        try {
-                            userToUpdate.spendCredits(Integer.parseInt(credits));
-                        } catch (Exception e) {
-                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                            resp.getWriter().println("Error updating credits: " + e.getMessage());
-                            return;
-                        }
-                        break;
-                    default:
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        resp.getWriter().println("Invalid 'action' parameter");
-                        return;
+        switch (action) {
+            case "add":
+                usersManager.getRwLock().writeLock().lock();
+                try {
+                    userToUpdate.addCredits(Integer.parseInt(credits));
+                } finally {
+                    usersManager.getRwLock().writeLock().unlock();
                 }
-                resp.setStatus(HttpServletResponse.SC_OK);
-                resp.getWriter().print(userToUpdate.getCreditsLeft());
+                break;
+            case "subtract":
+                usersManager.getRwLock().writeLock().lock();
+                try {
+                    userToUpdate.spendCredits(Integer.parseInt(credits));
+                    //resp.setStatus(HttpServletResponse.SC_OK);
+                    //resp.getWriter().print(userToUpdate.getCreditsLeft());
+                } catch (Exception e) {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.getWriter().println("Error updating credits: " + e.getMessage());
+                    return;
+                } finally {
+                    usersManager.getRwLock().writeLock().unlock();
+                }
+                break;
+            default:
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().println("Invalid 'action' parameter");
                 return;
-            }
         }
-        else {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().println("Missing 'username' or 'credits' parameter");
-        }
+        resp.setStatus(HttpServletResponse.SC_OK);
+        resp.getWriter().print(userToUpdate.getCreditsLeft());
+    } else {
+        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        resp.getWriter().println("Missing 'username' or 'credits' parameter");
     }
+
+}
 
 
     //Set Client Session with the program selected
@@ -152,42 +164,37 @@ public class UsersServlet extends HttpServlet {
             return;
         }
         Program programToSet = null;
-        synchronized (functionsManager) {
-            FunctionInfo functionToSet = null;
+        FunctionInfo functionToSet = null;
 
-            if ((functionsManager.getFunction(functionname)) != null) {
-                functionToSet = functionsManager.getFunction(functionname);
-                programToSet = functionToSet.func().getProg();
-            }
+        if ((functionsManager.getFunction(functionname)) != null) {
+            functionToSet = functionsManager.getFunction(functionname);
+            programToSet = functionToSet.func().getProg();
         }
+
         if (programToSet == null) {
-            synchronized (programsManager) {
-                ProgramInfo programInfoToSet = null;
-                if ((programInfoToSet = programsManager.programExists(functionname)) != null) {
-                    programToSet = programInfoToSet.getProgram();
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    resp.getWriter().println("Function/Program not found");
-                    return;
-                }
+            ProgramInfo programInfoToSet = null;
+            if ((programInfoToSet = programsManager.programExists(functionname)) != null) {
+                programToSet = programInfoToSet.getProgram();
+            } else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                resp.getWriter().println("Function/Program not found");
+                return;
             }
         }
-                HttpSession session = req.getSession(true);
-                session.setAttribute("currentprogram", programToSet.clone());
+        HttpSession session = req.getSession(true);
+        session.setAttribute("currentprogram", programToSet.clone());
 
-                UsersManager usersManager = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
-                if (usersManager != null && user != null) {
-                    UserInfo userInfo;
-                    synchronized (usersManager) {
-                        userInfo = usersManager.lookForUser(user);
-                    }
-                    if (userInfo != null) {
-                        session.setAttribute("currentuser", userInfo);
-                        resp.setStatus(HttpServletResponse.SC_OK);
-                        return;
-                    }
-                }
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        UsersManager usersManager = (UsersManager) getServletContext().getAttribute(ContextAttributes.USERS.getAttributeName());
+        if (usersManager != null && user != null) {
+            UserInfo userInfo;
+            userInfo = usersManager.lookForUser(user);
+            if (userInfo != null) {
+                session.setAttribute("currentuser", userInfo);
+                resp.setStatus(HttpServletResponse.SC_OK);
+                return;
+            }
+        }
+        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
 }

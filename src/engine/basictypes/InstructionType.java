@@ -1,7 +1,5 @@
 package engine.basictypes;
 
-import javafx.scene.shape.Arc;
-
 public enum InstructionType implements AbstractInstructionType {
     INCREASE("INCREASE",1),
     DECREASE("DECREASE",1),

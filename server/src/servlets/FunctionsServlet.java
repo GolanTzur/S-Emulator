@@ -18,13 +18,16 @@ public class FunctionsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         FunctionsManager fm= (FunctionsManager) getServletContext().getAttribute(ContextAttributes.FUNCTIONS.getAttributeName());
-        if (fm == null) {
-            fm = FunctionsManager.getInstance();
-            getServletContext().setAttribute(ContextAttributes.FUNCTIONS.getAttributeName(), fm);
+        synchronized (getServletContext()) {
+            if (fm == null) {
+                fm = FunctionsManager.getInstance();
+                getServletContext().setAttribute(ContextAttributes.FUNCTIONS.getAttributeName(), fm);
+            }
         }
         StringBuilder sb=new StringBuilder();
         sb.append("[");
 
+        fm.getLock().readLock().lock();
         for (FunctionInfo function : fm.getFunctions()) {
             sb.append("{\"funcname\":\"").append(function.func().getProg().getName()).append("\",");
             sb.append("\"mainprogramname\":\"").append(function.mainProgramContext()).append("\",");
@@ -32,6 +35,7 @@ public class FunctionsServlet extends HttpServlet {
             sb.append("\"numinstructions\":\"").append(function.func().getProg().getInstructions().size()).append("\",");
             sb.append("\"degree\":\"").append(function.func().getProg().getProgramDegree()).append("\"},");
         }
+        fm.getLock().readLock().unlock();
 
         if(sb.length()==1)
             sb.deleteCharAt(0);
