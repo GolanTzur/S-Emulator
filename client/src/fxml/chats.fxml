@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="547.0" prefWidth="786.0" stylesheets="@light-theme.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/24.0.1" fx:controller="controllers.ChatController">
+<ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="547.0" prefWidth="786.0" stylesheets="@light-theme.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ChatController">
    <content>
       <VBox prefHeight="542.0" prefWidth="782.0">
          <children>
@@ -42,9 +42,9 @@
                   <Insets left="20.0" />
                </VBox.margin>
             </HBox>
-            <HBox prefHeight="476.0" prefWidth="782.0">
+            <HBox prefHeight="483.0" prefWidth="782.0" VBox.vgrow="ALWAYS">
                <children>
-                  <VBox alignment="TOP_CENTER" prefHeight="476.0" prefWidth="193.0" HBox.hgrow="ALWAYS">
+                  <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="200.0" minWidth="150.0" prefHeight="476.0" prefWidth="193.0" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets left="20.0" />
                      </HBox.margin>
@@ -54,10 +54,10 @@
                               <Font size="21.0" />
                            </font>
                         </Label>
-                        <ListView id="userslist" fx:id="userslist" prefHeight="447.0" prefWidth="193.0" />
+                        <ListView id="userslist" fx:id="userslist" maxWidth="-Infinity" minHeight="200.0" minWidth="150.0" prefHeight="447.0" prefWidth="193.0" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
-                  <VBox alignment="TOP_CENTER" prefHeight="476.0" prefWidth="558.0" HBox.hgrow="ALWAYS">
+                  <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="400.0" prefHeight="476.0" prefWidth="558.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label styleClass="headers" text="Message" underline="true">
                            <font>
@@ -66,7 +66,7 @@
                         </Label>
                         <HBox>
                            <children>
-                              <TextArea id="message" fx:id="message" prefHeight="45.0" prefWidth="453.0">
+                              <TextArea id="message" fx:id="message" minHeight="-Infinity" minWidth="300.0" prefHeight="45.0" prefWidth="453.0" HBox.hgrow="ALWAYS">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -86,7 +86,7 @@
                               <Font size="21.0" />
                            </font>
                         </Label>
-                        <TextArea id="chat" fx:id="chat" editable="false" prefHeight="367.0" prefWidth="558.0">
+                        <TextArea id="chat" fx:id="chat" editable="false" minHeight="300.0" minWidth="300.0" prefHeight="367.0" prefWidth="558.0" VBox.vgrow="ALWAYS">
                            <font>
                               <Font size="15.0" />
                            </font>
