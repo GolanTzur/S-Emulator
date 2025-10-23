@@ -716,25 +716,18 @@ public class ExecutionController {
 
                 if (e instanceof NumberFormatException) { //Finished debugging
                     int cycles = 0;
-                    int result = 0;
                     for (Node node : programvarsvbox.getChildren()) {
                         if (node instanceof HBox) {
                             for (Node child : ((HBox) node).getChildren()) {
                                 if (child instanceof Label) {
                                     if (((Label) child).getText().startsWith("Cycles"))
                                         cycles = Integer.parseInt(((Label) child).getText().substring(9));
-                                    if (((Label) child).getText().startsWith("y"))
-                                        try {
-                                            result = Integer.parseInt(((Label) child).getText().substring(4));
-                                        } catch (Exception ex) {
-                                            ex.printStackTrace();
-                                        }
                                 }
 
                             }
                         }
                     }
-                    updateRun(cycles,runResult);
+                    updateRun(cycles,prevProgVars);
                     nonDebugMode();
                     programvarsvbox.getChildren().clear();
                 }
@@ -824,7 +817,7 @@ public class ExecutionController {
                             }
                         }
                     }
-                    updateRun(cycles,runResult);
+                    updateRun(cycles,prevProgVars);
                     nonDebugMode();
                     programvarsvbox.getChildren().clear();
                 }
