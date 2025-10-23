@@ -136,7 +136,7 @@
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <TableView id="userhistory" fx:id="userhistory" maxHeight="1.7976931348623157E308" prefHeight="170.0" prefWidth="314.0" style="     -fx-font-size: 9px;     -fx-font-weight: bold; " VBox.vgrow="ALWAYS">
+                        <TableView id="userhistory" fx:id="userhistory" maxHeight="1.7976931348623157E308" prefHeight="165.0" prefWidth="373.0" style="     -fx-font-size: 9px;     -fx-font-weight: bold; " VBox.vgrow="ALWAYS">
                           <columns>
                             <TableColumn id="userhistorynumber" fx:id="userhistorynumber" maxWidth="29.999998092651367" minWidth="29.999998092651367" prefWidth="29.999998092651367" resizable="false" text="#" />
                               <TableColumn id="userhistoryname" fx:id="userhistoryname" prefWidth="71.33334732055664" text="Name" />
@@ -150,6 +150,16 @@
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                         </TableView>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <Button id="showstatus" fx:id="showstatus" mnemonicParsing="false" onAction="#showStatus" text="Show Status" />
+                              <Button id="reload" fx:id="reload" mnemonicParsing="false" onAction="#reloadFromHistory" text="Reload">
+                                 <HBox.margin>
+                                    <Insets left="10.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
                      </children>
                   </VBox>
                </children>

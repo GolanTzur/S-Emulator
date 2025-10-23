@@ -386,7 +386,7 @@ public class ExecutionController {
 
         for (int i=0;i<observableProgramVars.inputVarsNames().length;i++) {
             String var = observableProgramVars.inputVarsNames()[i];
-            String pos=var.substring(1,var.length());
+            String pos=var.substring(1);
             int varPos=Integer.parseInt(pos);
 
             Label label = new Label(var);
@@ -415,6 +415,16 @@ public class ExecutionController {
             HBox hBox = new HBox(10, previousLabel, previousTextField); // 10 is spacing between label and field
             hBox.paddingProperty().set(new javafx.geometry.Insets(5, 5, 5, 5));
             programinputsvbox.getChildren().add(hBox);
+        }
+    }
+
+    public void reloadPrevInputs(String[] inputNames, String[] inputValues) {
+        for (int i = 0; i < inputNames.length; i++) {
+            int pos = Integer.parseInt(inputNames[i].substring(1));
+            TextField textField = inputFields.get(pos);
+            if (textField != null) {
+                textField.setText(inputValues[i]);
+            }
         }
     }
 
@@ -650,7 +660,7 @@ public class ExecutionController {
 
     @FXML
     public void debugProgram(ActionEvent actionEvent) {
-
+        ObservableProgramVars runResult=null;
         if(debug.getText().equals("Debug")) {
             Architecture selectedArch = architectureoptions.getSelectionModel().getSelectedItem();
             if (!isRunAvailable())
@@ -686,7 +696,7 @@ public class ExecutionController {
                     try {
                         String respVars = clientDebug.newCall(requestVars).execute().body().string();
                         Gson gson = new Gson();
-                        ObservableProgramVars runResult = gson.fromJson(respVars, ObservableProgramVars.class);
+                        runResult = gson.fromJson(respVars, ObservableProgramVars.class);
                         prevProgVars=runResult;
                         showVariables(cycles,runResult);
                     } catch (Exception e) {
@@ -703,7 +713,33 @@ public class ExecutionController {
                     nonDebugMode();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+
+                if (e instanceof NumberFormatException) { //Finished debugging
+                    int cycles = 0;
+                    int result = 0;
+                    for (Node node : programvarsvbox.getChildren()) {
+                        if (node instanceof HBox) {
+                            for (Node child : ((HBox) node).getChildren()) {
+                                if (child instanceof Label) {
+                                    if (((Label) child).getText().startsWith("Cycles"))
+                                        cycles = Integer.parseInt(((Label) child).getText().substring(9));
+                                    if (((Label) child).getText().startsWith("y"))
+                                        try {
+                                            result = Integer.parseInt(((Label) child).getText().substring(4));
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
+                                        }
+                                }
+
+                            }
+                        }
+                    }
+                    updateRun(cycles,runResult);
+                    nonDebugMode();
+                    programvarsvbox.getChildren().clear();
+                }
+
+
             }
         }
         else if(debug.getText().equals("Step")) {
@@ -750,7 +786,7 @@ public class ExecutionController {
                     try {
                         String respVars = client.newCall(requestVars).execute().body().string();
                         Gson gson = new Gson();
-                        ObservableProgramVars runResult = gson.fromJson(respVars, ObservableProgramVars.class);
+                        runResult = gson.fromJson(respVars, ObservableProgramVars.class);
                         showVariables(cycles,runResult,prevProgVars);
                         prevProgVars=runResult;
                     } catch (Exception e) {
@@ -788,7 +824,7 @@ public class ExecutionController {
                             }
                         }
                     }
-                    updateRun(cycles, result);
+                    updateRun(cycles,runResult);
                     nonDebugMode();
                     programvarsvbox.getChildren().clear();
                 }
@@ -825,7 +861,7 @@ public class ExecutionController {
                     ObservableProgramVars runResult = gson.fromJson(respVars, ObservableProgramVars.class);
                     showVariables(cycles, runResult, prevProgVars);
                     prevProgVars = runResult;
-                    updateRun(cycles,Integer.parseInt(runResult.result()));
+                    updateRun(cycles,runResult);
 
                     //Send stop to end debug mode
                     OkHttpClient clientStop = HttpClientSingleton.getInstance();
@@ -858,6 +894,7 @@ public class ExecutionController {
         } catch (Exception e) {
 
         }
+
 
     }
     @FXML
@@ -917,7 +954,7 @@ public class ExecutionController {
                         int cycles = (creditsprop.get() - (creditsLeft + selectedArch.getPrice()));
                         creditsprop.set(creditsLeft);
                         showVariables(cycles, runResult);
-                        updateRun(cycles, Integer.parseInt(runResult.result()));
+                        updateRun(cycles,runResult);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1011,11 +1048,14 @@ public class ExecutionController {
         }
     }
 
-    private void updateRun(int cycles,int result) {
+    private void updateRun(int cycles,ObservableProgramVars result) {
+        Gson gson = new Gson();
+        String resultJson = gson.toJson(result);
+
         //Update statistics
         OkHttpClient client = HttpClientSingleton.getInstance();
         MediaType mediaType = MediaType.parse("text/plain");
-        String json = "cycles=" + cycles + "\n" + "result=" + result
+        String json = "cycles=" + cycles + "\n" + "results=" + resultJson
                        + "\n" + "isMainProgram=" + (String.valueOf(isMainProgram))
                        + "\n" + "architecture=" + architectureoptions.getSelectionModel().getSelectedItem().name()
                           + "\n" + "degree=" + currdegree.getValue()

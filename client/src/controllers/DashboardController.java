@@ -1,10 +1,7 @@
 package controllers;
 
 import com.google.gson.Gson;
-import dto.ObservableFunctionInfo;
-import dto.ObservableProgramInfo;
-import dto.ObservableUserInfo;
-import dto.RunInfo;
+import dto.*;
 import httpclient.HttpClientSingleton;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -140,28 +137,28 @@ public class DashboardController {
     private Button selectProgram;
 
     @FXML
-    private TableView<RunInfo> userhistory;
+    private TableView<ObservableRunInfo> userhistory;
 
     @FXML
-    private TableColumn<RunInfo, String> userhistoryarchitecture;
+    private TableColumn<ObservableRunInfo, String> userhistoryarchitecture;
 
     @FXML
-    private TableColumn<RunInfo, Integer> userhistorycycles;
+    private TableColumn<ObservableRunInfo, Integer> userhistorycycles;
 
     @FXML
-    private TableColumn<RunInfo, Integer> userhistorydegree;
+    private TableColumn<ObservableRunInfo, Integer> userhistorydegree;
 
     @FXML
-    private TableColumn<RunInfo, String> userhistorymainprogram;
+    private TableColumn<ObservableRunInfo, String> userhistorymainprogram;
 
     @FXML
-    private TableColumn<RunInfo, String> userhistoryname;
+    private TableColumn<ObservableRunInfo, String> userhistoryname;
 
     @FXML
-    private TableColumn<RunInfo, Integer> userhistorynumber;
+    private TableColumn<ObservableRunInfo, Integer> userhistorynumber;
 
     @FXML
-    private TableColumn<RunInfo, Integer> userhistoryresult;
+    private TableColumn<ObservableRunInfo, String> userhistoryresult;
 
     @FXML
     private Label userhistorytext;
@@ -177,6 +174,12 @@ public class DashboardController {
 
     @FXML
     private Label allmainprogramstext;
+
+    @FXML
+    private Button showstatus;
+
+    @FXML
+    private Button reload;
 
     @FXML
     private GridPane maingrid;
@@ -273,13 +276,13 @@ public class DashboardController {
 
     }
 
-    private void setUserHistoryTableAddFormat(TableColumn<RunInfo, Integer> number,
-                                              TableColumn<RunInfo, String> name,
-                                              TableColumn<RunInfo, String> mainprogram,
-                                              TableColumn<RunInfo, String> architecture,
-                                              TableColumn<RunInfo, Integer> result,
-                                              TableColumn<RunInfo, Integer> cycles,
-                                              TableColumn<RunInfo, Integer> degree) {
+    private void setUserHistoryTableAddFormat(TableColumn<ObservableRunInfo, Integer> number,
+                                              TableColumn<ObservableRunInfo, String> name,
+                                              TableColumn<ObservableRunInfo, String> mainprogram,
+                                              TableColumn<ObservableRunInfo, String> architecture,
+                                              TableColumn<ObservableRunInfo, String> result,
+                                              TableColumn<ObservableRunInfo, Integer> cycles,
+                                              TableColumn<ObservableRunInfo, Integer> degree) {
         // Define how each column gets its value
         number.setCellValueFactory(cellData ->
                 new SimpleIntegerProperty(userhistory.getItems().indexOf(cellData.getValue()) + 1).asObject()
@@ -297,7 +300,7 @@ public class DashboardController {
                 new SimpleStringProperty(cellData.getValue().getArch().toString())
         );
         result.setCellValueFactory(cellData ->
-                new SimpleIntegerProperty(cellData.getValue().getResult()).asObject()
+                new SimpleStringProperty(cellData.getValue().getResults().result())
         );
         cycles.setCellValueFactory(cellData ->
                 new SimpleIntegerProperty(cellData.getValue().getCycles()).asObject()
@@ -527,11 +530,18 @@ public class DashboardController {
                         String responseBody = response.body().string();
                         if (response.isSuccessful()) {
                             Gson gson = new Gson();
-                            RunInfo[] runs = gson.fromJson(responseBody, RunInfo[].class);
+                            ObservableRunInfo[] runs = gson.fromJson(responseBody, ObservableRunInfo[].class);
                             javafx.application.Platform.runLater(() -> {
+
+                                int selectedIndex = userhistory.getSelectionModel().getSelectedIndex();
+
                                 userhistory.getItems().clear();
-                                if (runs != null && runs.length > 0)
+                                if (runs != null && runs.length > 0) {
                                     userhistory.getItems().addAll(runs);
+                                    if (selectedIndex >= 0 && selectedIndex < userhistory.getItems().size()) {
+                                        userhistory.getSelectionModel().select(selectedIndex);
+                                    }
+                                }
                             });
                         }
                     }
@@ -657,7 +667,7 @@ public class DashboardController {
     }
 
 
-    private void moveToExecutionScene(String progname, boolean isMainProgram) {
+    private void moveToExecutionScene(String progname, boolean isMainProgram,ObservableProgramVars... loadedVars) {
         OkHttpClient client = HttpClientSingleton.getInstance();
         RequestBody body = RequestBody.create(null, new byte[0]);
         try {
@@ -685,6 +695,11 @@ public class DashboardController {
             Node executionpaneNode = executionpane.load();
             ExecutionController executionController = executionpane.getController();
             executionController.setInitialInfo(usernameproperty.get(), progname, Integer.parseInt(creditsproperty.get()), isMainProgram);
+
+            if(loadedVars.length>0){
+                executionController.reloadPrevInputs(loadedVars[0].inputVarsNames(),loadedVars[0].inputVarsValues());
+            }
+
             this.maingrid.getScene().getWindow().hide();
             usersscheduler.shutdown();
             historyscheduler.shutdown();
@@ -693,6 +708,7 @@ public class DashboardController {
             Stage stage = new Stage();
             stage.setTitle("Execution - S-Emulator");
             stage.setScene(new Scene((Parent) executionpaneNode));
+
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
@@ -741,9 +757,43 @@ public class DashboardController {
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
-
         }
 
     }
+    @FXML
+    void showStatus(ActionEvent event) {
+
+        ObservableRunInfo info=userhistory.getSelectionModel().getSelectedItem();
+        if(info==null){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("No run selected");
+            alert.setContentText("Please select a run from the history");
+            alert.showAndWait();
+            return;
+        }
+
+        ObservableProgramVars display=info.getResults();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Run Status");
+        alert.setHeaderText("Run Results");
+        alert.setContentText(display.toString());
+        alert.showAndWait();
+    }
+    @FXML
+    void reloadFromHistory(ActionEvent event) {
+        ObservableRunInfo info=userhistory.getSelectionModel().getSelectedItem();
+        if(info==null){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("No run selected");
+            alert.setContentText("Please select a run from the history");
+            alert.showAndWait();
+            return;
+        }
+        moveToExecutionScene(info.getName(),info.isMain(),info.getResults());
+
+    }
+
 }
 

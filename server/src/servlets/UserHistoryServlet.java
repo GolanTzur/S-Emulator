@@ -1,18 +1,21 @@
 package servlets;
 
+import com.google.gson.Gson;
+import engine.ProgramVars;
 import engine.RunInfo;
 import engine.UserInfo;
 import engine.basictypes.Architecture;
+import engine.basictypes.Variable;
+import engine.basictypes.VariableType;
 import entitymanagers.UsersManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import entitymanagers.*;
-
 import java.io.IOException;
 import java.util.Properties;
+import helperclasses.ObservableProgramVars;
 
 @WebServlet(name = "UserHistoryServlet", urlPatterns = {"/userhistory"})
 public class UserHistoryServlet extends HttpServlet {
@@ -47,13 +50,13 @@ public class UserHistoryServlet extends HttpServlet {
                 sb.append("\"isMain\":").append(ri.isMain()).append(",");
                 sb.append("\"name\":\"").append(ri.getName()).append("\",");
                 sb.append("\"arch\":\"").append(ri.getArch()).append("\",");
-                sb.append("\"result\":").append(ri.getResult()).append(",");
+                sb.append("\"results\":").append(ProgramContextServlet.serializeprogramVars(ri.getResults())).append(",");
                 sb.append("\"cycles\":").append(ri.getCycles()).append(",");
                 sb.append("\"degree\":").append(ri.getDegree());
                 sb.append("},");
             }
         }
-        if(sb.length()==1)
+        if (sb.length() == 1)
             sb.deleteCharAt(0);
         else if (sb.charAt(sb.length() - 1) == ',') {
             sb.deleteCharAt(sb.length() - 1);
@@ -70,12 +73,12 @@ public class UserHistoryServlet extends HttpServlet {
         String user = prop.getProperty("username");
         String runname = prop.getProperty("programname");
         String arch = prop.getProperty("architecture");
-        String resultStr = prop.getProperty("result");
+        String resultStr = prop.getProperty("results");
         String cyclesStr = prop.getProperty("cycles");
         String degreeStr = prop.getProperty("degree");
         String isMainStr = prop.getProperty("isMainProgram");
 
-        if(user==null || runname==null || arch==null || resultStr==null || cyclesStr==null || degreeStr==null || isMainStr==null) {
+        if (user == null || runname == null || arch == null || resultStr == null || cyclesStr == null || degreeStr == null || isMainStr == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Missing parameters");
             return;
@@ -87,12 +90,14 @@ public class UserHistoryServlet extends HttpServlet {
         boolean isMain = Boolean.parseBoolean(isMainStr);
         int cycles;
         int degree;
-        int result;
+        ProgramVars result;
         try {
             cycles = Integer.parseInt(cyclesStr);
             degree = Integer.parseInt(degreeStr);
-            result = Integer.parseInt(resultStr);
-        } catch (NumberFormatException e) {
+            Gson gson = new Gson();
+            ObservableProgramVars tempVars = gson.fromJson(resultStr, ObservableProgramVars.class);
+            result = deserializeprogramVars(tempVars);
+        } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Invalid number format for cycles or degree");
             return;
@@ -103,4 +108,27 @@ public class UserHistoryServlet extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
 
     }
+
+    public ProgramVars deserializeprogramVars(ObservableProgramVars programVars) {
+        ProgramVars vars = new ProgramVars();
+        int inputlength=programVars.inputVarsNames().length;
+        for (int i=0;i<inputlength;i++) {
+
+            int pos=Integer.parseInt(programVars.inputVarsNames()[i].substring(1));
+            int value=Integer.parseInt(programVars.inputVarsValues()[i]);
+
+            vars.getInput().put(pos,Variable.createDummyVar(VariableType.INPUT,pos,value));
+        }
+
+        int worklength=programVars.workVarsNames().length;
+        for (int i=0;i<worklength;i++) {
+            int pos = Integer.parseInt(programVars.workVarsNames()[i].substring(1));
+            int value = Integer.parseInt(programVars.workVarsValues()[i]);
+            vars.getEnvvars().put(pos, Variable.createDummyVar(VariableType.WORK,pos,value));
+        }
+
+        vars.getY().setValue(Integer.parseInt(programVars.result()));
+        return vars;
+    }
 }
+

@@ -1,17 +1,17 @@
 package dto;
 
-public class RunInfo {
+public class ObservableRunInfo {
     private final boolean isMain;
     private final String name;
     private final Architecture arch;
-    private final int result;
+    private final ObservableProgramVars results;
     private final int cycles;
     private final int degree;
-    public RunInfo(boolean isMain, String name, Architecture arch, int result, int cycles,int degree) {
+    public ObservableRunInfo(boolean isMain, String name, Architecture arch, ObservableProgramVars results, int cycles, int degree) {
         this.isMain = isMain;
         this.name = name;
         this.arch = arch;
-        this.result = result;
+        this.results = results;
         this.cycles = cycles;
         this.degree = degree;
     }
@@ -24,8 +24,8 @@ public class RunInfo {
     public Architecture getArch() {
         return arch;
     }
-    public int getResult() {
-        return result;
+    public ObservableProgramVars getResults() {
+        return results;
     }
     public int getCycles() {
         return cycles;

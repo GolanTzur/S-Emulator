@@ -1,6 +1,7 @@
 package servlets;
 
 import engine.Program;
+import engine.ProgramVars;
 import engine.basictypes.InstructionType;
 import engine.basictypes.Variable;
 import engine.classhierarchy.AbstractInstruction;
@@ -110,10 +111,17 @@ public class ProgramContextServlet extends HttpServlet {
     //program vars will be accessed with post method
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws jakarta.servlet.ServletException, java.io.IOException {
         Program program = (Program) request.getSession(false).getAttribute("currentprogram");
+        ProgramVars programVars = program.getVars();
+        String result = serializeprogramVars(programVars);
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().print(result);
+        return;
+    }
+    public static String serializeprogramVars(ProgramVars programVars) {
         StringBuilder builder = new StringBuilder();
         builder.append("{");
         builder.append("\"inputVarsNames\":[");
-        for (Integer pos : program.getVars().getInput().keySet()) {
+        for (Integer pos : programVars.getInput().keySet()) {
             builder.append("\"x").append(pos).append("\",");
         }
         if (builder.charAt(builder.length() - 1) == ',') {
@@ -121,7 +129,7 @@ public class ProgramContextServlet extends HttpServlet {
         }
         builder.append("],");
         builder.append("\"inputVarsValues\":[");
-        for (Variable var : program.getVars().getInput().values()) {
+        for (Variable var : programVars.getInput().values()) {
             builder.append(var.getValue()).append(",");
         }
         if (builder.charAt(builder.length() - 1) == ',') {
@@ -129,7 +137,7 @@ public class ProgramContextServlet extends HttpServlet {
         }
         builder.append("],");
         builder.append("\"workVarsNames\":[");
-        for (Integer pos : program.getVars().getEnvvars().keySet()) {
+        for (Integer pos : programVars.getEnvvars().keySet()) {
             builder.append("\"z").append(pos).append("\",");
         }
         if (builder.charAt(builder.length() - 1) == ',') {
@@ -137,22 +145,19 @@ public class ProgramContextServlet extends HttpServlet {
         }
         builder.append("],");
         builder.append("\"workVarsValues\":[");
-        for (Variable var : program.getVars().getEnvvars().values()) {
+        for (Variable var : programVars.getEnvvars().values()) {
             builder.append(var.getValue()).append(",");
         }
         if (builder.charAt(builder.length() - 1) == ',') {
             builder.deleteCharAt(builder.length() - 1);
         }
         builder.append("],");
-        builder.append("\"result\":" + program.getVars().getY().getValue());
+        builder.append("\"result\":" + programVars.getY().getValue());
         builder.append("}");
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().print(builder.toString());
-        return;
-
-        }
+        return builder.toString();
     }
+
+}
 
 
 
